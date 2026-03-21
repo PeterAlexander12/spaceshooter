@@ -3,8 +3,15 @@ import time
 import random
 from pgzero.builtins import Actor
 
+# behind pygame zero:
+# while True:
+#    handle_input()
+#    update()
+#    draw()
+
 WIDTH = 600
 HEIGHT = 700
+SECONDS_BETWEEN_METEORS = 3
 
 hp = 100
 xp = 0
@@ -23,27 +30,6 @@ mode = "menu"
 highscore_file = open("highscore.txt","r")
 highscore = int(highscore_file.read())
 highscore_file.close()
-
-def draw():
-    screen.fill((0,0,0))
-    background.draw()
-    if mode == "menu":
-        screen.draw.text("SPACE SHOOTER", center=(WIDTH/2, 300), fontsize=50)
-        screen.draw.text("Tryck mellanslag för att spela!", center=(WIDTH/2,350))
-        screen.draw.text("Highscore: " + str(highscore), center=(WIDTH/2,370))
-    if mode == "game":
-        ship.draw()
-        for m in missiles:
-            m.draw()
-        for m in meteors:
-            m.draw()
-        for e in explosions:
-            e.draw()
-        screen.draw.text("hp: " + str(hp), (50, 15))
-        screen.draw.text("xp: " + str(xp), (50, 30))
-    if mode == "end":
-        screen.draw.text("Bra jobbat! Du fick: " + str(xp) + " xp", center=(WIDTH/2, HEIGHT/2-10))
-        screen.draw.text("Tryck escape för att komma till meny", center=(WIDTH/2, HEIGHT/2+10))
 
 def update():
     global xp, hp, mode, highscore
@@ -72,6 +58,27 @@ def update():
         if keyboard.escape or keyboard.space:
             mode = "menu"
 
+def draw():
+    screen.fill((0,0,0))
+    background.draw()
+    if mode == "menu":
+        screen.draw.text("SPACE SHOOTER", center=(WIDTH/2, 300), fontsize=50)
+        screen.draw.text("Tryck mellanslag för att spela!", center=(WIDTH/2,350))
+        screen.draw.text("Highscore: " + str(highscore), center=(WIDTH/2,370))
+    if mode == "game":
+        ship.draw()
+        for m in missiles:
+            m.draw()
+        for m in meteors:
+            m.draw()
+        for e in explosions:
+            e.draw()
+        screen.draw.text("hp: " + str(hp), (50, 15))
+        screen.draw.text("xp: " + str(xp), (50, 30))
+    if mode == "end":
+        screen.draw.text("Bra jobbat! Du fick: " + str(xp) + " xp", center=(WIDTH/2, HEIGHT/2-10))
+        screen.draw.text("Tryck escape för att komma till meny", center=(WIDTH/2, HEIGHT/2+10))
+
 def update_ship():
     global hp
     if keyboard.left and ship.left > 0:
@@ -84,14 +91,14 @@ def update_ship():
         hp -= 1
 
 def update_background():
-    background.y += 10
+    background.y += 6 
     if background.y >= 600+HEIGHT:
         background.y = HEIGHT
 
 def update_meteors():
     global meteor_time
     current_time = time.time()*1000
-    if current_time - meteor_time > 1000:
+    if current_time - meteor_time > SECONDS_BETWEEN_METEORS * 1000:
         meteor_image = METEOR_IMAGES[random.randint(0,len(METEOR_IMAGES)-1)]
         meteor_x = random.randint(20,WIDTH-20)
         meteor = Actor(meteor_image, (meteor_x, -100))
@@ -99,13 +106,14 @@ def update_meteors():
         meteor_time = time.time()*1000
         
     for m in meteors:
-        m.y += 10
+        m.y += 6
         rotate_meteor(m)
         if m.y > HEIGHT+100:
             meteors.remove(m)
 
 def rotate_meteor(m):
-    if m.image != "veronica-huvud-5": # rotera inte bilden om det är veronica
+    # rotera inte bilden om det är veronica
+    if m.image != "veronica-huvud-5": 
         m.angle -= 4
 
 def remove_explosion():
