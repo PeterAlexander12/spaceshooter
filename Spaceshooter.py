@@ -1,7 +1,8 @@
 import pgzrun
 import time
 import random
-from pgzero.builtins import Actor
+
+from pgzero.builtins import Actor, keyboard, clock
 
 # behind pygame zero:
 # while True:
