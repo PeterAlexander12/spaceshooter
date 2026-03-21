@@ -97,19 +97,27 @@ def update_background():
 
 def update_meteors():
     global meteor_time
-    current_time = time.time()*1000
+    current_time = time.time() * 1000
+
     if current_time - meteor_time > SECONDS_BETWEEN_METEORS * 1000:
-        meteor_image = METEOR_IMAGES[random.randint(0,len(METEOR_IMAGES)-1)]
-        meteor_x = random.randint(20,WIDTH-20)
-        meteor = Actor(meteor_image, (meteor_x, -100))
-        meteors.append(meteor)
-        meteor_time = time.time()*1000
-        
-    for m in meteors:
-        m.y += 6
-        rotate_meteor(m)
-        if m.y > HEIGHT+100:
-            meteors.remove(m)
+        selected_meteor_image = METEOR_IMAGES[random.randint(0, len(METEOR_IMAGES) - 1)]
+        starting_x_position = random.randint(20, WIDTH - 20)
+        new_meteor = Actor(selected_meteor_image, (starting_x_position, -100))
+        new_meteor.horizontal_speed = random.choice([-3, 3])
+        meteors.append(new_meteor)
+        meteor_time = time.time() * 1000
+
+    for meteor in meteors[:]:
+        meteor.y += 6
+        meteor.x += meteor.horizontal_speed
+
+        if meteor.left <= 0 or meteor.right >= WIDTH:
+            meteor.horizontal_speed = -meteor.horizontal_speed
+
+        rotate_meteor(meteor)
+
+        if meteor.y > HEIGHT + 100:
+            meteors.remove(meteor)
 
 def rotate_meteor(m):
     # rotera inte bilden om det är veronica
