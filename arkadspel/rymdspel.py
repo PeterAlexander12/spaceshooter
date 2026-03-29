@@ -43,6 +43,19 @@ def update():
     if keyboard.right:
         spelare.x += 5
 
+    # Fiender rör sig mot spelaren (en pixel närmare)
+    for f in fiende:
+        if f.x < spelare.x:
+            f.x += 1
+        if f.x > spelare.x:
+            f.x -= 1
+        if f.y < spelare.y:
+            f.y += 1
+        if f.y > spelare.y:
+            f.y -= 1
+
+
+
     # 2. Flytta missiler
     i = 0
     while i < len(missiler):
