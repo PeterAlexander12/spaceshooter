@@ -19,6 +19,7 @@ missiler = []
 
 antal_fiender = 5
 liv = 3
+lage = "spel"
 
 for i in range(antal_fiender):
     x = random.randint(0, WIDTH)
@@ -28,16 +29,26 @@ for i in range(antal_fiender):
 
 def draw():
     screen.fill((0,0,0))
+    if lage == "slut":
+        screen.draw.text("Game Over!", center=(300, 250), color="red", fontsize=60)
+        screen.draw.text("Tryck mellanslag för att starta om", center=(300, 320), color="white", fontsize=30)
+        return
     spelare.draw()
     for f in fiende:
         f.draw()
     for m in missiler:
         m.draw()
-
     screen.draw.text("Liv: " + str(liv), (10, 10), color="white", fontsize=40)
 
-
 def update():
+    
+    global liv, lage
+
+    if lage == "slut":
+        if keyboard.space:
+            restart()
+        return
+    
     # 1. Spelarrörelse
     if keyboard.up:
         spelare.y -= 5
@@ -59,13 +70,12 @@ def update():
         if f.y > spelare.y:
             f.y -= 1
 
-    global liv
     for f in list(fiende):
         if f.colliderect(spelare):
             fiende.remove(f)
             liv -= 1
         if liv <= 0:
-            print("Game over!")
+            lage = "slut"
 
 
 
@@ -101,6 +111,18 @@ def on_mouse_down(pos):
     ny_missil.angle = ny_missil.angle_to(pos) + 270
     missiler.append(ny_missil)
 
+def restart():
+    global liv, lage, fiende, missiler
+    liv = 3
+    lage = "spel"
+    spelare.x = 300
+    spelare.y = 300
+    missiler = []
+    fiende = []
+    for i in range(5):
+        x = random.randint(0, WIDTH)
+        y = random.randint(0, HEIGHT)
+        fiende.append(Actor("bear", (x, y)))
 
 
 pgzrun.go()
