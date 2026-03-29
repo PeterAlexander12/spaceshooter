@@ -1,3 +1,5 @@
+from platform import libc_ver
+
 import pgzrun
 import random
 import time
@@ -16,7 +18,7 @@ spelare = Actor("ball", (300,300))
 missiler = []
 
 antal_fiender = 5
-
+liv = 3
 
 for i in range(antal_fiender):
     x = random.randint(0, WIDTH)
@@ -31,6 +33,9 @@ def draw():
         f.draw()
     for m in missiler:
         m.draw()
+
+    screen.draw.text("Liv: " + str(liv), (10, 10), color="white", fontsize=40)
+
 
 def update():
     # 1. Spelarrörelse
@@ -54,9 +59,17 @@ def update():
         if f.y > spelare.y:
             f.y -= 1
 
+    global liv
+    for f in list(fiende):
+        if f.colliderect(spelare):
+            fiende.remove(f)
+            liv -= 1
+        if liv <= 0:
+            print("Game over!")
 
 
-    # 2. Flytta missiler
+
+# 2. Flytta missiler
     i = 0
     while i < len(missiler):
         m = missiler[i]
