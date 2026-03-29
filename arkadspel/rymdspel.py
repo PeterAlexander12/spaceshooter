@@ -2,6 +2,12 @@ import pgzrun
 import random
 import time
 
+# behind pygame zero:
+# while True:
+#    handle_input()
+#    update()
+#    draw()
+
 WIDTH = 600
 HEIGHT = 600
 
@@ -9,21 +15,35 @@ fiende = []
 spelare = Actor("ball", (300,300))
 missiler = []
 
-for i in range(1):
+antal_fiender = 5
+
+
+for i in range(antal_fiender):
     x = random.randint(0, WIDTH)
     y = random.randint(0, HEIGHT)
     fiende.append(Actor("bear", (x, y)))
 
 
 def draw():
-    global fiende
     screen.fill((0,0,0))
     spelare.draw()
-    fiende[0].draw()
+    for f in fiende:
+        f.draw()
     for m in missiler:
         m.draw()
-        
+
 def update():
+    # 1. Spelarrörelse
+    if keyboard.up:
+        spelare.y -= 5
+    if keyboard.down:
+        spelare.y += 5
+    if keyboard.left:
+        spelare.x -= 5
+    if keyboard.right:
+        spelare.x += 5
+
+    # 2. Flytta missiler
     i = 0
     while i < len(missiler):
         m = missiler[i]
@@ -34,6 +54,14 @@ def update():
             missiler.remove(m)
         else:
             i += 1
+
+    # 3. Kollision mellan missiler och fiender
+    for m in list(missiler):
+        for f in list(fiende):
+            if m.colliderect(f):
+                missiler.remove(m)
+                fiende.remove(f)
+                break
 
 
 
