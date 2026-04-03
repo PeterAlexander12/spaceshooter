@@ -1,5 +1,3 @@
-from xml.etree.ElementPath import xpath_tokenizer
-
 import pygame
 import random
 import math
@@ -26,7 +24,7 @@ lage = "spel"
 xp = 0
 
 # skapa fiender
-fiende = []
+fiender = []
 
 
 def spawn_enemies():
@@ -35,7 +33,7 @@ def spawn_enemies():
         y = random.choice([random.randint(-200, 0), random.randint(600, 800)])
         r = pygame.Rect(x, y, fiende_bild.get_width(), fiende_bild.get_height())
         r.center = (x, y)
-        fiende.append(r)
+        fiender.append({"rect": r, "hp": 3})
 
 missiler = []  # each missile: {"rect": Rect, "x_hastighet": float, "y_hastighet": float, "angle": float}
 
@@ -44,12 +42,12 @@ stor_font = pygame.font.Font(None, 60)
 spawn_enemies()
 
 def restart():
-    global liv, lage, fiende, missiler
+    global liv, lage, fiender, missiler
     liv = 3
     lage = "spel"
     spelare.center = (300, 300)
     missiler = []
-    fiende = []
+    fiender = []
     spawn_enemies()
 
 # game loop
@@ -84,20 +82,20 @@ while running:
     # 2. update
     if lage == "spel":
         # fiender rör sig mot spelaren
-        for f in fiende:
-            if f.centerx < spelare.centerx:
-                f.x += 1
-            if f.centerx > spelare.centerx:
-                f.x -= 1
-            if f.centery < spelare.centery:
-                f.y += 1
-            if f.centery > spelare.centery:
-                f.y -= 1
+        for f in fiender:
+            if f["rect"].centerx < spelare.centerx:
+                f["rect"].x += 1
+            if f["rect"].centerx > spelare.centerx:
+                f["rect"].x -= 1
+            if f["rect"].centery < spelare.centery:
+                f["rect"].y += 1
+            if f["rect"].centery > spelare.centery:
+                f["rect"].y -= 1
 
-        # fiende-spelare kollision
-        for f in list(fiende):
-            if f.colliderect(spelare):
-                fiende.remove(f)
+        # fiender-spelare kollision
+        for f in list(fiender):
+            if f["rect"].colliderect(spelare):
+                fiender.remove(f)
                 liv -= 1
                 if liv <= 0:
                     lage = "slut"
@@ -114,16 +112,18 @@ while running:
             else:
                 i += 1
 
-        # missil-fiende kollision
+        # missil-fiender kollision
         for m in list(missiler):
-            for f in list(fiende):
-                if m["rect"].colliderect(f):
+            for f in list(fiender):
+                if m["rect"].colliderect(f["rect"]):
+                    f["hp"] -= 1
+                    if f["hp"] <= 0:
+                        fiender.remove(f)
                     missiler.remove(m)
-                    fiende.remove(f)
                     xp += 100
                     break
         
-        if len(fiende) == 0:
+        if len(fiender) == 0:
             spawn_enemies()
 
     # 3. draw
@@ -136,8 +136,8 @@ while running:
         screen.blit(text2, text2.get_rect(center=(300, 320)))
     else:
         screen.blit(spelare_bild, spelare)
-        for f in fiende:
-            screen.blit(fiende_bild, f)
+        for f in fiender:
+            screen.blit(fiende_bild, f["rect"])
         for m in missiler:
             roterad = pygame.transform.rotate(missil_bild, m["angle"])
             screen.blit(roterad, roterad.get_rect(center=m["rect"].center))
