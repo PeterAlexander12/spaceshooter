@@ -1,142 +1,156 @@
-import pgzrun
+import pygame
 import random
+import math
 
-# behind pygame zero:
-# while True:
-#    handle_input()
-#    update()
-#    draw()
+pygame.init()
 
 WIDTH = 600
 HEIGHT = 600
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+clock = pygame.time.Clock()
 
-fiende = []
-spelare = Actor("ball", (300,300))
-missiler = []
+# ladda bilder
+spelare_bild = pygame.image.load("images/ball.png").convert_alpha()
+fiende_bild = pygame.image.load("images/bear.png").convert_alpha()
+missil_bild = pygame.image.load("images/bullet.png").convert_alpha()
+
+# spelare
+spelare = pygame.Rect(300, 300, spelare_bild.get_width(), spelare_bild.get_height())
+spelare.center = (300, 300)
 
 antal_fiender = 5
 liv = 3
 lage = "spel"
 
-#skapa fiender
+# skapa fiender
+fiende = []
 for i in range(antal_fiender):
     x = random.randint(0, WIDTH)
     y = random.randint(0, HEIGHT)
-    fiende.append(Actor("bear", (x, y)))
-    
-# 1 input
-def on_mouse_down(pos):
-    ny_missil = Actor("bullet", spelare.pos)
-    x_led = pos[0] - spelare.x
-    y_led = pos[1] - spelare.y
-    avstand = (x_led ** 2 + y_led ** 2) ** 0.5
-    ny_missil.x_hastighet = x_led / avstand * 3
-    ny_missil.y_hastighet = y_led / avstand * 3
-    ny_missil.angle = ny_missil.angle_to(pos) + 270
-    missiler.append(ny_missil)
+    r = pygame.Rect(x, y, fiende_bild.get_width(), fiende_bild.get_height())
+    r.center = (x, y)
+    fiende.append(r)
 
-def on_mouse_up(pos, button):
-    pass
+missiler = []  # each missile: {"rect": Rect, "x_hastighet": float, "y_hastighet": float, "angle": float}
 
-def on_mouse_move(pos, rel, buttons):
-    pass
-
-def on_key_down(key, mod, unicode):
-    pass
-
-def on_key_up(key, mod):
-    pass
-
-def on_music_end():
-    pass
-
-
-# 2 update
-def update():
-
-    global liv, lage # global: change the outer variable
-
-    if lage == "slut":
-        if keyboard.space:
-            restart()
-        return
-
-    # 1. Spelarrörelse
-    if keyboard.up:
-        spelare.y -= 5
-    if keyboard.down:
-        spelare.y += 5
-    if keyboard.left:
-        spelare.x -= 5
-    if keyboard.right:
-        spelare.x += 5
-
-    # Fiender rör sig mot spelaren (en pixel närmare)
-    for f in fiende:
-        if f.x < spelare.x:
-            f.x += 1
-        if f.x > spelare.x:
-            f.x -= 1
-        if f.y < spelare.y:
-            f.y += 1
-        if f.y > spelare.y:
-            f.y -= 1
-
-    for f in list(fiende):
-        if f.colliderect(spelare):
-            fiende.remove(f)
-            liv -= 1
-        if liv <= 0:
-            lage = "slut"
-
-# 3 draw
-def draw():
-    screen.fill((0,0,0))
-    if lage == "slut":
-        screen.draw.text("Game Over!", center=(300, 250), color="red", fontsize=60)
-        screen.draw.text("Tryck mellanslag för att starta om", center=(300, 320), color="white", fontsize=30)
-        return
-    spelare.draw()
-    for f in fiende:
-        f.draw()
-    for m in missiler:
-        m.draw()
-    screen.draw.text("Liv: " + str(liv), (10, 10), color="white", fontsize=40)
-
-
-    #Flytta missiler
-    i = 0
-    while i < len(missiler):
-        m = missiler[i]
-        m.x += m.x_hastighet
-        m.y += m.y_hastighet
-
-        if m.x < 0 or m.x > WIDTH or m.y < 0 or m.y > HEIGHT:
-            missiler.remove(m)
-        else:
-            i += 1
-
-    # 3. Kollision mellan missiler och fiender
-    for m in list(missiler):
-        for f in list(fiende):
-            if m.colliderect(f):
-                missiler.remove(m)
-                fiende.remove(f)
-                break
+font = pygame.font.Font(None, 40)
+stor_font = pygame.font.Font(None, 60)
 
 
 def restart():
     global liv, lage, fiende, missiler
     liv = 3
     lage = "spel"
-    spelare.x = 300
-    spelare.y = 300
+    spelare.center = (300, 300)
     missiler = []
     fiende = []
-    for i in range(5):
+    for i in range(antal_fiender):
         x = random.randint(0, WIDTH)
         y = random.randint(0, HEIGHT)
-        fiende.append(Actor("bear", (x, y)))
+        r = pygame.Rect(x, y, fiende_bild.get_width(), fiende_bild.get_height())
+        r.center = (x, y)
+        fiende.append(r)
 
 
-pgzrun.go()
+# game loop
+running = True
+while running:
+    # 1. handle input
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if lage == "spel":
+                mx, my = event.pos
+                x_led = mx - spelare.centerx
+                y_led = my - spelare.centery
+                avstand = math.sqrt(x_led ** 2 + y_led ** 2)
+                if avstand > 0:
+                    hastighet = 3
+                    missil_rect = missil_bild.get_rect(center=spelare.center)
+                    angle = math.degrees(math.atan2(-y_led, x_led)) - 90
+                    missiler.append({
+                        "rect": missil_rect,
+                        "x_hastighet": x_led / avstand * hastighet,
+                        "y_hastighet": y_led / avstand * hastighet,
+                        "angle": angle
+                    })
+
+        if event.type == pygame.KEYDOWN:
+            if lage == "slut" and event.key == pygame.K_SPACE:
+                restart()
+
+    # 2. update
+    if lage == "spel":
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_UP]:
+            spelare.y -= 5
+        if keys[pygame.K_DOWN]:
+            spelare.y += 5
+        if keys[pygame.K_LEFT]:
+            spelare.x -= 5
+        if keys[pygame.K_RIGHT]:
+            spelare.x += 5
+
+        # fiender rör sig mot spelaren
+        for f in fiende:
+            if f.centerx < spelare.centerx:
+                f.x += 1
+            if f.centerx > spelare.centerx:
+                f.x -= 1
+            if f.centery < spelare.centery:
+                f.y += 1
+            if f.centery > spelare.centery:
+                f.y -= 1
+
+        # fiende-spelare kollision
+        for f in list(fiende):
+            if f.colliderect(spelare):
+                fiende.remove(f)
+                liv -= 1
+            if liv <= 0:
+                lage = "slut"
+
+        # flytta missiler
+        i = 0
+        while i < len(missiler):
+            m = missiler[i]
+            m["rect"].x += m["x_hastighet"]
+            m["rect"].y += m["y_hastighet"]
+
+            if m["rect"].x < 0 or m["rect"].x > WIDTH or m["rect"].y < 0 or m["rect"].y > HEIGHT:
+                missiler.pop(i)
+            else:
+                i += 1
+
+        # missil-fiende kollision
+        for m in list(missiler):
+            for f in list(fiende):
+                if m["rect"].colliderect(f):
+                    missiler.remove(m)
+                    fiende.remove(f)
+                    break
+
+    # 3. draw
+    screen.fill((0, 0, 0))
+
+    if lage == "slut":
+        text1 = stor_font.render("Game Over!", True, (255, 0, 0))
+        text2 = font.render("Tryck mellanslag för att starta om", True, (255, 255, 255))
+        screen.blit(text1, text1.get_rect(center=(300, 250)))
+        screen.blit(text2, text2.get_rect(center=(300, 320)))
+    else:
+        screen.blit(spelare_bild, spelare)
+        for f in fiende:
+            screen.blit(fiende_bild, f)
+        for m in missiler:
+            roterad = pygame.transform.rotate(missil_bild, m["angle"])
+            screen.blit(roterad, roterad.get_rect(center=m["rect"].center))
+        liv_text = font.render("Liv: " + str(liv), True, (255, 255, 255))
+        screen.blit(liv_text, (10, 10))
+
+    pygame.display.flip()
+    clock.tick(60)
+
+pygame.quit()
