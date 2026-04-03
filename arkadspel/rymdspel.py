@@ -24,18 +24,21 @@ lage = "spel"
 
 # skapa fiender
 fiende = []
-for i in range(antal_fiender):
-    x = random.randint(0, WIDTH)
-    y = random.randint(0, HEIGHT)
-    r = pygame.Rect(x, y, fiende_bild.get_width(), fiende_bild.get_height())
-    r.center = (x, y)
-    fiende.append(r)
+
+
+def spawn_enemies():
+    for i in range(antal_fiender):
+        x = random.randint(0, WIDTH)
+        y = random.randint(0, HEIGHT)
+        r = pygame.Rect(x, y, fiende_bild.get_width(), fiende_bild.get_height())
+        r.center = (x, y)
+        fiende.append(r)
 
 missiler = []  # each missile: {"rect": Rect, "x_hastighet": float, "y_hastighet": float, "angle": float}
 
 font = pygame.font.Font(None, 40)
 stor_font = pygame.font.Font(None, 60)
-
+spawn_enemies()
 
 def restart():
     global liv, lage, fiende, missiler
@@ -44,13 +47,7 @@ def restart():
     spelare.center = (300, 300)
     missiler = []
     fiende = []
-    for i in range(antal_fiender):
-        x = random.randint(0, WIDTH)
-        y = random.randint(0, HEIGHT)
-        r = pygame.Rect(x, y, fiende_bild.get_width(), fiende_bild.get_height())
-        r.center = (x, y)
-        fiende.append(r)
-
+    spawn_enemies()
 
 # game loop
 running = True
@@ -61,7 +58,7 @@ while running:
             running = False
 
         if event.type == pygame.MOUSEBUTTONDOWN:
-            if lage == "spel":
+            if event.button == 1 and lage == "spel":
                 mx, my = event.pos
                 x_led = mx - spelare.centerx
                 y_led = my - spelare.centery
@@ -83,26 +80,13 @@ while running:
             if lage == "vunnit" and event.key == pygame.K_ESCAPE:
                 running = False
             if lage == "vunnit" and event.key == pygame.K_SPACE:
-                for i in range(antal_fiender):
-                    x = random.randint(0, WIDTH)
-                    y = random.randint(0, HEIGHT)
-                    r = pygame.Rect(x, y, fiende_bild.get_width(), fiende_bild.get_height())
-                    r.center = (x, y)
-                    fiende.append(r)
+                fiende.clear()
+                missiler.clear()
+                spawn_enemies()
                 lage = "spel"
 
     # 2. update
     if lage == "spel":
-        keys = pygame.key.get_pressed()
-        if keys[pygame.K_UP]:
-            spelare.y -= 5
-        if keys[pygame.K_DOWN]:
-            spelare.y += 5
-        if keys[pygame.K_LEFT]:
-            spelare.x -= 5
-        if keys[pygame.K_RIGHT]:
-            spelare.x += 5
-
         # fiender rör sig mot spelaren
         for f in fiende:
             if f.centerx < spelare.centerx:
@@ -119,8 +103,8 @@ while running:
             if f.colliderect(spelare):
                 fiende.remove(f)
                 liv -= 1
-            if liv <= 0:
-                lage = "slut"
+                if liv <= 0:
+                    lage = "slut"
 
         # flytta missiler
         i = 0
