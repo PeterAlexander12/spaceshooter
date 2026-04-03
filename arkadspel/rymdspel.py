@@ -1,3 +1,5 @@
+from xml.etree.ElementPath import xpath_tokenizer
+
 import pygame
 import random
 import math
@@ -21,6 +23,7 @@ spelare.center = (300, 300)
 antal_fiender = 5
 liv = 3
 lage = "spel"
+xp = 0
 
 # skapa fiender
 fiende = []
@@ -124,6 +127,7 @@ while running:
                 if m["rect"].colliderect(f):
                     missiler.remove(m)
                     fiende.remove(f)
+                    xp += 100
                     break
         
         if len(fiende) == 0:
@@ -153,6 +157,8 @@ while running:
             screen.blit(roterad, roterad.get_rect(center=m["rect"].center))
         liv_text = font.render("Liv: " + str(liv), True, (255, 255, 255))
         screen.blit(liv_text, (10, 10))
+        xp_text = font.render("XP: " + str(liv), True, (255, 255, 255))
+        screen.blit(xp_text, (250, 10))
 
     pygame.display.flip()
     clock.tick(60)
