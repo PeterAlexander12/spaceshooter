@@ -80,6 +80,16 @@ while running:
         if event.type == pygame.KEYDOWN:
             if lage == "slut" and event.key == pygame.K_SPACE:
                 restart()
+            if lage == "vunnit" and event.key == pygame.K_ESCAPE:
+                running = False
+            if lage == "vunnit" and event.key == pygame.K_SPACE:
+                for i in range(antal_fiender):
+                    x = random.randint(0, WIDTH)
+                    y = random.randint(0, HEIGHT)
+                    r = pygame.Rect(x, y, fiende_bild.get_width(), fiende_bild.get_height())
+                    r.center = (x, y)
+                    fiende.append(r)
+                lage = "spel"
 
     # 2. update
     if lage == "spel":
@@ -131,11 +141,21 @@ while running:
                     missiler.remove(m)
                     fiende.remove(f)
                     break
+        
+        if len(fiende) == 0:
+            lage = "vunnit"
 
     # 3. draw
     screen.fill((0, 0, 0))
 
-    if lage == "slut":
+    if lage == "vunnit":
+        text1 = stor_font.render("Alla fiender är döda!", True, (0, 255, 0))
+        text2 = font.render("Tryck mellanslag för ny våg", True, (255, 255, 255))
+        text3 = font.render("Tryck ESC för att avsluta", True, (255, 255, 255))
+        screen.blit(text1, text1.get_rect(center=(300, 250)))
+        screen.blit(text2, text2.get_rect(center=(300, 320)))
+        screen.blit(text3, text3.get_rect(center=(300, 370)))
+    elif lage == "slut":
         text1 = stor_font.render("Game Over!", True, (255, 0, 0))
         text2 = font.render("Tryck mellanslag för att starta om", True, (255, 255, 255))
         screen.blit(text1, text1.get_rect(center=(300, 250)))
