@@ -31,8 +31,8 @@ fiende = []
 
 def spawn_enemies():
     for i in range(antal_fiender):
-        x = random.randint(0, WIDTH)
-        y = random.randint(0, HEIGHT)
+        x = random.choice([random.randint(-200, 0), random.randint(600, 800)])
+        y = random.choice([random.randint(-200, 0), random.randint(600, 800)])
         r = pygame.Rect(x, y, fiende_bild.get_width(), fiende_bild.get_height())
         r.center = (x, y)
         fiende.append(r)
