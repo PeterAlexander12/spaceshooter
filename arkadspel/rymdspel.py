@@ -80,13 +80,6 @@ while running:
         if event.type == pygame.KEYDOWN:
             if lage == "slut" and event.key == pygame.K_SPACE:
                 restart()
-            if lage == "vunnit" and event.key == pygame.K_ESCAPE:
-                running = False
-            if lage == "vunnit" and event.key == pygame.K_SPACE:
-                fiende.clear()
-                missiler.clear()
-                spawn_enemies()
-                lage = "spel"
 
     # 2. update
     if lage == "spel":
@@ -131,19 +124,12 @@ while running:
                     break
         
         if len(fiende) == 0:
-            lage = "vunnit"
+            spawn_enemies()
 
     # 3. draw
     screen.fill((0, 0, 0))
 
-    if lage == "vunnit":
-        text1 = stor_font.render("Alla fiender är döda!", True, (0, 255, 0))
-        text2 = font.render("Tryck mellanslag för ny våg", True, (255, 255, 255))
-        text3 = font.render("Tryck ESC för att avsluta", True, (255, 255, 255))
-        screen.blit(text1, text1.get_rect(center=(300, 250)))
-        screen.blit(text2, text2.get_rect(center=(300, 320)))
-        screen.blit(text3, text3.get_rect(center=(300, 370)))
-    elif lage == "slut":
+    if lage == "slut":
         text1 = stor_font.render("Game Over!", True, (255, 0, 0))
         text2 = font.render("Tryck mellanslag för att starta om", True, (255, 255, 255))
         screen.blit(text1, text1.get_rect(center=(300, 250)))
