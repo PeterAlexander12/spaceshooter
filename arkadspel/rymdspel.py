@@ -1,8 +1,5 @@
-from platform import libc_ver
-
 import pgzrun
 import random
-import time
 
 # behind pygame zero:
 # while True:
@@ -21,34 +18,49 @@ antal_fiender = 5
 liv = 3
 lage = "spel"
 
+#skapa fiender
 for i in range(antal_fiender):
     x = random.randint(0, WIDTH)
     y = random.randint(0, HEIGHT)
     fiende.append(Actor("bear", (x, y)))
-
-
-def draw():
-    screen.fill((0,0,0))
-    if lage == "slut":
-        screen.draw.text("Game Over!", center=(300, 250), color="red", fontsize=60)
-        screen.draw.text("Tryck mellanslag för att starta om", center=(300, 320), color="white", fontsize=30)
-        return
-    spelare.draw()
-    for f in fiende:
-        f.draw()
-    for m in missiler:
-        m.draw()
-    screen.draw.text("Liv: " + str(liv), (10, 10), color="white", fontsize=40)
-
-def update():
     
-    global liv, lage
+# 1 input
+def on_mouse_down(pos):
+    ny_missil = Actor("bullet", spelare.pos)
+    x_led = pos[0] - spelare.x
+    y_led = pos[1] - spelare.y
+    avstand = (x_led ** 2 + y_led ** 2) ** 0.5
+    ny_missil.x_hastighet = x_led / avstand * 3
+    ny_missil.y_hastighet = y_led / avstand * 3
+    ny_missil.angle = ny_missil.angle_to(pos) + 270
+    missiler.append(ny_missil)
+
+def on_mouse_up(pos, button):
+    pass
+
+def on_mouse_move(pos, rel, buttons):
+    pass
+
+def on_key_down(key, mod, unicode):
+    pass
+
+def on_key_up(key, mod):
+    pass
+
+def on_music_end():
+    pass
+
+
+# 2 update
+def update():
+
+    global liv, lage # global: change the outer variable
 
     if lage == "slut":
         if keyboard.space:
             restart()
         return
-    
+
     # 1. Spelarrörelse
     if keyboard.up:
         spelare.y -= 5
@@ -77,9 +89,22 @@ def update():
         if liv <= 0:
             lage = "slut"
 
+# 3 draw
+def draw():
+    screen.fill((0,0,0))
+    if lage == "slut":
+        screen.draw.text("Game Over!", center=(300, 250), color="red", fontsize=60)
+        screen.draw.text("Tryck mellanslag för att starta om", center=(300, 320), color="white", fontsize=30)
+        return
+    spelare.draw()
+    for f in fiende:
+        f.draw()
+    for m in missiler:
+        m.draw()
+    screen.draw.text("Liv: " + str(liv), (10, 10), color="white", fontsize=40)
 
 
-# 2. Flytta missiler
+    #Flytta missiler
     i = 0
     while i < len(missiler):
         m = missiler[i]
@@ -99,17 +124,6 @@ def update():
                 fiende.remove(f)
                 break
 
-
-
-def on_mouse_down(pos):
-    ny_missil = Actor("bullet", spelare.pos)
-    x_led = pos[0] - spelare.x
-    y_led = pos[1] - spelare.y
-    avstand = (x_led**2 + y_led**2)**0.5
-    ny_missil.x_hastighet = x_led/avstand*3
-    ny_missil.y_hastighet = y_led/avstand*3
-    ny_missil.angle = ny_missil.angle_to(pos) + 270
-    missiler.append(ny_missil)
 
 def restart():
     global liv, lage, fiende, missiler
