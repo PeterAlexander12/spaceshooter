@@ -26,35 +26,37 @@ xp = 0
 kill_count = 0
 level = 1
 shoot_power = 1
+enemy_speed = 1
 
 # skapa fiender
 fiender = []
 
 
-def spawn_enemies():
+def spawn_enemies(hp):
     for i in range(antal_fiender):
         x = random.choice([random.randint(-200, 0), random.randint(600, 800)])
         y = random.choice([random.randint(-200, 0), random.randint(600, 800)])
         r = pygame.Rect(x, y, fiende_bild.get_width(), fiende_bild.get_height())
         r.center = (x, y)
-        fiender.append({"rect": r, "hp": 3})
+        fiender.append({"rect": r, "hp": hp})
 
 def level_up():
-    global level
-    global liv
-    global shoot_power
+    global level, liv, shoot_power, enemy_speed
     level += 1
     upgradering = random.choice(["extra_liv", "shoot_power"])
     if upgradering == "extra_liv":
         liv += 1
     if upgradering == "shoot_power":
         shoot_power += 1
+    enemy_speed += 1
+
+    return 3 + level
 
 missiler = []  # each missile: {"rect": Rect, "x_hastighet": float, "y_hastighet": float, "angle": float}
 
 font = pygame.font.Font(None, 40)
 stor_font = pygame.font.Font(None, 60)
-spawn_enemies()
+spawn_enemies(3)
 
 def restart():
     global liv, lage, fiender, missiler
@@ -63,7 +65,7 @@ def restart():
     spelare.center = (300, 300)
     missiler = []
     fiender = []
-    spawn_enemies()
+    spawn_enemies(3)
 
 # game loop
 running = True
@@ -99,13 +101,13 @@ while running:
         # fiender rör sig mot spelaren
         for f in fiender:
             if f["rect"].centerx < spelare.centerx:
-                f["rect"].x += 1
+                f["rect"].x += enemy_speed
             if f["rect"].centerx > spelare.centerx:
-                f["rect"].x -= 1
+                f["rect"].x -= enemy_speed
             if f["rect"].centery < spelare.centery:
-                f["rect"].y += 1
+                f["rect"].y += enemy_speed
             if f["rect"].centery > spelare.centery:
-                f["rect"].y -= 1
+                f["rect"].y -= enemy_speed
 
         # fiender-spelare kollision
         for f in list(fiender):
@@ -139,12 +141,14 @@ while running:
                     missiler.remove(m)
                     
                     break
-        
+
         if len(fiender) == 0:
+            new_enemy_hp = 3
             if kill_count > 14:
-                level_up()
+                new_enemy_hp = level_up()
                 kill_count = 0
-            spawn_enemies()
+            spawn_enemies(new_enemy_hp)
+
 
     # 3. draw
     screen.blit(bakgrund_bild, (0, 0))
