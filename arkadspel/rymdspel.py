@@ -13,6 +13,7 @@ clock = pygame.time.Clock()
 spelare_bild = pygame.image.load("images/ball.png").convert_alpha()
 fiende_bild = pygame.image.load("images/bear.png").convert_alpha()
 missil_bild = pygame.image.load("images/bullet.png").convert_alpha()
+bakgrund_bild = pygame.image.load("images/background.png").convert()
 
 # spelare
 spelare = pygame.Rect(300, 300, spelare_bild.get_width(), spelare_bild.get_height())
@@ -22,6 +23,8 @@ antal_fiender = 5
 liv = 3
 lage = "spel"
 xp = 0
+kill_count = 0
+level = 1
 
 # skapa fiender
 fiender = []
@@ -119,15 +122,20 @@ while running:
                     f["hp"] -= 1
                     if f["hp"] <= 0:
                         fiender.remove(f)
+                        kill_count += 1
+                        xp += 100
                     missiler.remove(m)
-                    xp += 100
+                    
                     break
         
         if len(fiender) == 0:
+            if kill_count > 14:
+                level += 1
+                kill_count = 0
             spawn_enemies()
 
     # 3. draw
-    screen.fill((0, 0, 0))
+    screen.blit(bakgrund_bild, (0, 0))
 
     if lage == "slut":
         text1 = stor_font.render("Game Over!", True, (255, 0, 0))
@@ -143,8 +151,10 @@ while running:
             screen.blit(roterad, roterad.get_rect(center=m["rect"].center))
         liv_text = font.render("Liv: " + str(liv), True, (255, 255, 255))
         screen.blit(liv_text, (10, 10))
-        xp_text = font.render("XP: " + str(liv), True, (255, 255, 255))
+        xp_text = font.render("XP: " + str(xp), True, (255, 255, 255))
         screen.blit(xp_text, (250, 10))
+        level_text = font.render("Level: " + str(level), True, (255, 255, 255))
+        screen.blit(level_text, (10, 570))
 
     pygame.display.flip()
     clock.tick(60)
