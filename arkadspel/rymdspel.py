@@ -25,6 +25,7 @@ lage = "spel"
 xp = 0
 kill_count = 0
 level = 1
+shoot_power = 1
 
 # skapa fiender
 fiender = []
@@ -37,6 +38,17 @@ def spawn_enemies():
         r = pygame.Rect(x, y, fiende_bild.get_width(), fiende_bild.get_height())
         r.center = (x, y)
         fiender.append({"rect": r, "hp": 3})
+
+def level_up():
+    global level
+    global liv
+    global shoot_power
+    level += 1
+    upgradering = random.choice(["extra_liv", "shoot_power"])
+    if upgradering == "extra_liv":
+        liv += 1
+    if upgradering == "shoot_power":
+        shoot_power += 1
 
 missiler = []  # each missile: {"rect": Rect, "x_hastighet": float, "y_hastighet": float, "angle": float}
 
@@ -119,7 +131,7 @@ while running:
         for m in list(missiler):
             for f in list(fiender):
                 if m["rect"].colliderect(f["rect"]):
-                    f["hp"] -= 1
+                    f["hp"] -= shoot_power
                     if f["hp"] <= 0:
                         fiender.remove(f)
                         kill_count += 1
@@ -130,7 +142,7 @@ while running:
         
         if len(fiender) == 0:
             if kill_count > 14:
-                level += 1
+                level_up()
                 kill_count = 0
             spawn_enemies()
 
