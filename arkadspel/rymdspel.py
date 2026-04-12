@@ -15,30 +15,91 @@ fiende_bild = pygame.image.load("images/bear.png").convert_alpha()
 missil_bild = pygame.image.load("images/bullet.png").convert_alpha()
 bakgrund_bild = pygame.image.load("images/background.png").convert()
 
-# spelare
-spelare = pygame.Rect(300, 300, spelare_bild.get_width(), spelare_bild.get_height())
-spelare.center = (300, 300)
+font = pygame.font.Font(None, 40)
+stor_font = pygame.font.Font(None, 60)
 
-antal_fiender = 5
+
+class Spelare:
+    def __init__(self):
+        self.rect = pygame.Rect(300, 300, spelare_bild.get_width(), spelare_bild.get_height())
+        self.rect.center = (300, 300)
+
+    def draw(self):
+        screen.blit(spelare_bild, self.rect)
+
+
+class Fiende:
+    def __init__(self, base_hp, base_speed):
+        x = random.choice([random.randint(-200, 0), random.randint(600, 800)])
+        y = random.choice([random.randint(-200, 0), random.randint(600, 800)])
+        self.rect = pygame.Rect(x, y, fiende_bild.get_width(), fiende_bild.get_height())
+        self.rect.center = (x, y)
+
+        boost = random.choice(["speed", "hp"])
+        if boost == "speed":
+            self.hp = base_hp
+            self.speed = base_speed + 1
+        else:
+            self.hp = base_hp + 2
+            self.speed = base_speed
+
+    def move_toward(self, target):
+        if self.rect.centerx < target.rect.centerx:
+            self.rect.x += self.speed
+        if self.rect.centerx > target.rect.centerx:
+            self.rect.x -= self.speed
+        if self.rect.centery < target.rect.centery:
+            self.rect.y += self.speed
+        if self.rect.centery > target.rect.centery:
+            self.rect.y -= self.speed
+
+
+    def draw(self):
+        screen.blit(fiende_bild, self.rect)
+
+
+class Missil:
+    def __init__(self, start_pos, target_pos):
+        self.rect = missil_bild.get_rect(center=start_pos)
+        x_led = target_pos[0] - start_pos[0]
+        y_led = target_pos[1] - start_pos[1]
+        avstand = math.sqrt(x_led ** 2 + y_led ** 2)
+        hastighet = 3
+        self.x_hastighet = x_led / avstand * hastighet
+        self.y_hastighet = y_led / avstand * hastighet
+        self.angle = math.degrees(math.atan2(-y_led, x_led)) - 90
+
+    def update(self):
+        self.rect.x += self.x_hastighet
+        self.rect.y += self.y_hastighet
+
+    def utanfor_skarm(self):
+        return self.rect.x < 0 or self.rect.x > WIDTH or self.rect.y < 0 or self.rect.y > HEIGHT
+
+    def draw(self):
+        roterad = pygame.transform.rotate(missil_bild, self.angle)
+        screen.blit(roterad, roterad.get_rect(center=self.rect.center))
+
+
+# spelvariabler
+spelare = Spelare()
+fiender = []
+missiler = []
 liv = 3
-lage = "spel"
 xp = 0
 kill_count = 0
 level = 1
 shoot_power = 1
 enemy_speed = 1
-
-# skapa fiender
-fiender = []
+antal_fiender = 5
+lage = "spel"
 
 
 def spawn_enemies(hp):
     for i in range(antal_fiender):
-        x = random.choice([random.randint(-200, 0), random.randint(600, 800)])
-        y = random.choice([random.randint(-200, 0), random.randint(600, 800)])
-        r = pygame.Rect(x, y, fiende_bild.get_width(), fiende_bild.get_height())
-        r.center = (x, y)
-        fiender.append({"rect": r, "hp": hp})
+        fiender.append(Fiende(hp, enemy_speed))
+
+
 
 def level_up():
     global level, liv, shoot_power, enemy_speed
@@ -49,108 +110,85 @@ def level_up():
     if upgradering == "shoot_power":
         shoot_power += 1
     enemy_speed += 1
-
     return 3 + level
 
-missiler = []  # each missile: {"rect": Rect, "x_hastighet": float, "y_hastighet": float, "angle": float}
-
-font = pygame.font.Font(None, 40)
-stor_font = pygame.font.Font(None, 60)
-spawn_enemies(3)
 
 def restart():
-    global liv, lage, fiender, missiler
+    global liv, lage, fiender, missiler, xp, kill_count, level, shoot_power, enemy_speed
     liv = 3
     lage = "spel"
-    spelare.center = (300, 300)
+    xp = 0
+    kill_count = 0
+    level = 1
+    shoot_power = 1
+    enemy_speed = 1
+    spelare.rect.center = (300, 300)
     missiler = []
     fiender = []
     spawn_enemies(3)
 
-# game loop
-running = True
-while running:
-    # 1. handle input
+
+def handle_input():
+    global running, lage
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
 
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1 and lage == "spel":
-                mx, my = event.pos
-                x_led = mx - spelare.centerx
-                y_led = my - spelare.centery
-                avstand = math.sqrt(x_led ** 2 + y_led ** 2)
-                if avstand > 0:
-                    hastighet = 3
-                    missil_rect = missil_bild.get_rect(center=spelare.center)
-                    angle = math.degrees(math.atan2(-y_led, x_led)) - 90
-                    missiler.append({
-                        "rect": missil_rect,
-                        "x_hastighet": x_led / avstand * hastighet,
-                        "y_hastighet": y_led / avstand * hastighet,
-                        "angle": angle
-                    })
+                missiler.append(Missil(spelare.rect.center, event.pos))
 
         if event.type == pygame.KEYDOWN:
             if lage == "slut" and event.key == pygame.K_SPACE:
                 restart()
 
-    # 2. update
-    if lage == "spel":
-        # fiender rör sig mot spelaren
-        for f in fiender:
-            if f["rect"].centerx < spelare.centerx:
-                f["rect"].x += enemy_speed
-            if f["rect"].centerx > spelare.centerx:
-                f["rect"].x -= enemy_speed
-            if f["rect"].centery < spelare.centery:
-                f["rect"].y += enemy_speed
-            if f["rect"].centery > spelare.centery:
-                f["rect"].y -= enemy_speed
 
-        # fiender-spelare kollision
+def update():
+    global lage, kill_count, xp, liv
+    if lage != "spel":
+        return
+
+    # fiender rör sig mot spelaren
+    for f in fiender:
+        f.move_toward(spelare)
+
+    # fiender-spelare kollision
+    for f in list(fiender):
+        if f.rect.colliderect(spelare.rect):
+            fiender.remove(f)
+            liv -= 1
+            if liv <= 0:
+                lage = "slut"
+
+    # flytta missiler
+    for m in list(missiler):
+        m.update()
+        if m.utanfor_skarm():
+            missiler.remove(m)
+
+    # missil-fiender kollision
+    for m in list(missiler):
         for f in list(fiender):
-            if f["rect"].colliderect(spelare):
-                fiender.remove(f)
-                liv -= 1
-                if liv <= 0:
-                    lage = "slut"
+            if m.rect.colliderect(f.rect):
+                f.hp -= shoot_power
+                if f.hp <= 0:
+                    fiender.remove(f)
+                    kill_count += 1
+                    xp += 100
+                missiler.remove(m)
+                break
 
-        # flytta missiler
-        i = 0
-        while i < len(missiler):
-            m = missiler[i]
-            m["rect"].x += m["x_hastighet"]
-            m["rect"].y += m["y_hastighet"]
-
-            if m["rect"].x < 0 or m["rect"].x > WIDTH or m["rect"].y < 0 or m["rect"].y > HEIGHT:
-                missiler.pop(i)
-            else:
-                i += 1
-
-        # missil-fiender kollision
-        for m in list(missiler):
-            for f in list(fiender):
-                if m["rect"].colliderect(f["rect"]):
-                    f["hp"] -= shoot_power
-                    if f["hp"] <= 0:
-                        fiender.remove(f)
-                        kill_count += 1
-                        xp += 100
-                    missiler.remove(m)
-                    
-                    break
-
-        if len(fiender) == 0:
-            new_enemy_hp = 3
-            if kill_count > 14:
-                new_enemy_hp = level_up()
-                kill_count = 0
-            spawn_enemies(new_enemy_hp)
+    # ny våg
+    if len(fiender) == 0:
+        new_enemy_hp = 3
+        if kill_count > 14:
+            new_enemy_hp = level_up()
+            kill_count = 0
+        spawn_enemies(new_enemy_hp)
 
 
-    # 3. draw
+
+def draw():
     screen.blit(bakgrund_bild, (0, 0))
 
     if lage == "slut":
@@ -159,20 +197,25 @@ while running:
         screen.blit(text1, text1.get_rect(center=(300, 250)))
         screen.blit(text2, text2.get_rect(center=(300, 320)))
     else:
-        screen.blit(spelare_bild, spelare)
+        spelare.draw()
         for f in fiender:
-            screen.blit(fiende_bild, f["rect"])
+            f.draw()
         for m in missiler:
-            roterad = pygame.transform.rotate(missil_bild, m["angle"])
-            screen.blit(roterad, roterad.get_rect(center=m["rect"].center))
-        liv_text = font.render("Liv: " + str(liv), True, (255, 255, 255))
-        screen.blit(liv_text, (10, 10))
-        xp_text = font.render("XP: " + str(xp), True, (255, 255, 255))
-        screen.blit(xp_text, (250, 10))
-        level_text = font.render("Level: " + str(level), True, (255, 255, 255))
-        screen.blit(level_text, (10, 570))
+            m.draw()
+        screen.blit(font.render("Liv: " + str(liv), True, (255, 255, 255)), (10, 10))
+        screen.blit(font.render("XP: " + str(xp), True, (255, 255, 255)), (250, 10))
+        screen.blit(font.render("Level: " + str(level), True, (255, 255, 255)), (10, 570))
 
+
+# starta spelet
+spawn_enemies(3)
+running = True
+while running:
+    handle_input()
+    update()
+    draw()
     pygame.display.flip()
     clock.tick(60)
 
 pygame.quit()
+ 
