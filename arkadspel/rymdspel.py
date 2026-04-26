@@ -38,9 +38,11 @@ class Fiende:
         boost = random.choice(["speed", "hp"])
         if boost == "speed":
             self.hp = base_hp
+            self.max_hp = base_hp
             self.speed = base_speed + 1
         else:
             self.hp = base_hp + 2
+            self.max_hp = base_hp + 2
             self.speed = base_speed
 
     def move_toward(self, target):
@@ -53,10 +55,10 @@ class Fiende:
         if self.rect.centery > target.rect.centery:
             self.rect.y -= self.speed
 
-
     def draw(self):
         screen.blit(fiende_bild, self.rect)
-
+        pygame.draw.rect(screen, (255, 255, 255), (self.rect.x, self.rect.y - 10, 50, 15))
+        pygame.draw.rect(screen, (144, 238, 144), (self.rect.x, self.rect.y - 10, 50 * (self.hp / self.max_hp), 15))
 
 class Missil:
     def __init__(self, start_pos, target_pos):
@@ -100,16 +102,17 @@ def spawn_enemies(hp):
         fiender.append(Fiende(hp, enemy_speed))
 
 
-
 def level_up():
+
     global level, liv, shoot_power, enemy_speed
     level += 1
     upgradering = random.choice(["extra_liv", "shoot_power"])
     if upgradering == "extra_liv":
         liv += 1
+        enemy_speed += 1
     if upgradering == "shoot_power":
         shoot_power += 1
-    enemy_speed += 1
+
     return 3 + level
 
 
@@ -187,7 +190,6 @@ def update():
         spawn_enemies(new_enemy_hp)
 
 
-
 def draw():
     screen.blit(bakgrund_bild, (0, 0))
 
@@ -215,7 +217,6 @@ while running:
     update()
     draw()
     pygame.display.flip()
-    clock.tick(60)
+    clock.tick(30)
 
 pygame.quit()
- 
