@@ -84,9 +84,26 @@ class Missil:
         roterad = pygame.transform.rotate(missil_bild, self.angle)
         screen.blit(roterad, roterad.get_rect(center=self.rect.center))
 
+class Loadout:
+    def __init__(self):
+        self.potions = []
+
+    def add_potion(self, potion):
+        self.potions.append(potion)
+
+    def get_potion(self):
+        if len(self.potions) > 0:
+            potion = self.potions.pop(0)
+            # apply potion effect here later
+            return potion
+        return None
 
 # spelvariabler
 spelare = Spelare()
+loadout = Loadout()
+loadout.add_potion("health")
+loadout.add_potion("health")
+loadout.add_potion("health")
 fiender = []
 missiler = []
 liv = 3
@@ -164,6 +181,10 @@ def handle_input():
                     spawn_enemies(3)
             if lage == "slut" and event.key == pygame.K_SPACE:
                 restart()
+            if lage == "spel" and event.key == pygame.K_SPACE:
+                potion = loadout.get_potion()
+                if potion == "health":
+                    liv += 1
 
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1 and lage == "spel":
