@@ -10,9 +10,10 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 clock = pygame.time.Clock()
 
 # ladda bilder
-spelare_bild = pygame.image.load("images/ball.png").convert_alpha()
+spelare_bild = pygame.image.load("images/spelare.png").convert_alpha()
 fiende_bild = pygame.image.load("images/fiende.png").convert_alpha()
 fiende_bild = pygame.transform.scale(fiende_bild, (50, 50))
+spelare_bild = pygame.transform.scale(spelare_bild, (50, 50))
 missil_bild = pygame.image.load("images/bullet.png").convert_alpha()
 bakgrund_bild = pygame.image.load("images/background.png").convert()
 
@@ -95,7 +96,8 @@ level = 1
 shoot_power = 1
 enemy_speed = 1
 antal_fiender = 5
-lage = "spel"
+lage = "meny"
+vald_svarighetsgrad = None
 
 
 def spawn_enemies(hp):
@@ -120,7 +122,7 @@ def level_up():
 def restart():
     global liv, lage, fiender, missiler, xp, kill_count, level, shoot_power, enemy_speed
     liv = 3
-    lage = "spel"
+    lage = "meny"
     xp = 0
     kill_count = 0
     level = 1
@@ -133,18 +135,39 @@ def restart():
 
 
 def handle_input():
-    global running, lage
+    global running, lage, vald_svarighetsgrad, liv, enemy_speed
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
 
+        if event.type == pygame.KEYDOWN:
+            if lage == "meny":
+                if event.key == pygame.K_1:
+                    vald_svarighetsgrad = "easy"
+                    lage = "spel"
+                    liv = 5
+                    spawn_enemies(3)
+                if event.key == pygame.K_2:
+                    vald_svarighetsgrad = "medium"
+                    lage = "spel"
+                    spawn_enemies(3)
+                if event.key == pygame.K_3:
+                    vald_svarighetsgrad = "hard"
+                    lage = "spel"
+                    enemy_speed = 2
+                    spawn_enemies(3)
+                if event.key == pygame.K_4:
+                    vald_svarighetsgrad = "insane"
+                    lage = "spel"
+                    liv = 1
+                    enemy_speed = 2
+                    spawn_enemies(3)
+            if lage == "slut" and event.key == pygame.K_SPACE:
+                restart()
+
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1 and lage == "spel":
                 missiler.append(Missil(spelare.rect.center, event.pos))
-
-        if event.type == pygame.KEYDOWN:
-            if lage == "slut" and event.key == pygame.K_SPACE:
-                restart()
 
 
 def update():
@@ -194,7 +217,14 @@ def update():
 def draw():
     screen.blit(bakgrund_bild, (0, 0))
 
-    if lage == "slut":
+    if lage == "meny":
+        screen.blit(stor_font.render("Välj svårighetsgrad", True, (255, 255, 255)), stor_font.render("Välj "
+                                                                                                     "svårighetsgrad", True, (255, 255, 255)).get_rect(center=(300, 150)))
+        screen.blit(font.render("1 - Easy", True, (0, 255, 0)), font.render("1 - Easy", True, (0, 255, 0)).get_rect(center=(300, 250)))
+        screen.blit(font.render("2 - Medium", True, (255, 255, 0)), font.render("2 - Medium", True, (255, 255, 0)).get_rect(center=(300, 300)))
+        screen.blit(font.render("3 - Hard", True, (255, 165, 0)), font.render("3 - Hard", True, (255, 165, 0)).get_rect(center=(300, 350)))
+        screen.blit(font.render("4 - Insane", True, (255, 0, 0)), font.render("4 - Insane", True, (255, 0, 0)).get_rect(center=(300, 400)))
+    elif lage == "slut":
         text1 = stor_font.render("Game Over!", True, (255, 0, 0))
         text2 = font.render("Tryck mellanslag för att starta om", True, (255, 255, 255))
         screen.blit(text1, text1.get_rect(center=(300, 250)))
@@ -211,7 +241,6 @@ def draw():
 
 
 # starta spelet
-spawn_enemies(3)
 running = True
 while running:
     handle_input()
