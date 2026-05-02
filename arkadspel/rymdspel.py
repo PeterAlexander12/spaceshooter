@@ -11,7 +11,8 @@ clock = pygame.time.Clock()
 
 # ladda bilder
 spelare_bild = pygame.image.load("images/ball.png").convert_alpha()
-fiende_bild = pygame.image.load("images/bear.png").convert_alpha()
+fiende_bild = pygame.image.load("images/fiende.png").convert_alpha()
+fiende_bild = pygame.transform.scale(fiende_bild, (50, 50))
 missil_bild = pygame.image.load("images/bullet.png").convert_alpha()
 bakgrund_bild = pygame.image.load("images/background.png").convert()
 
