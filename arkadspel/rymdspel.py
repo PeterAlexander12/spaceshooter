@@ -15,8 +15,8 @@ fiende_bild = pygame.image.load("images/fiende.png").convert_alpha()
 fiende_bild = pygame.transform.scale(fiende_bild, (50, 50))
 potion_bild = pygame.image.load("images/Red_potion.png").convert_alpha()
 potion_bild = pygame.transform.scale(potion_bild, (30, 30))
-bomb_bild = pygame.image.load("images/Bomb.png").convert_alpha()
-bomb_bild = pygame.transform.scale(bomb_bild, (30, 30))
+explosion_bild = pygame.image.load("images/nuclear_explosion.png").convert_alpha()
+bomb_bild = pygame.transform.scale(explosion_bild, (30, 30))
 spelare_bild = pygame.transform.scale(spelare_bild, (50, 50))
 missil_bild = pygame.image.load("images/bullet.png").convert_alpha()
 bakgrund_bild = pygame.image.load("images/background.png").convert()
@@ -119,6 +119,7 @@ loadout.add_potion("health")
 loadout.add_potion("health")
 loadout.add_bomb()
 loadout.add_bomb()
+explosion_size = 0
 fiender = []
 missiler = []
 liv = 3
@@ -167,7 +168,7 @@ def restart():
 
 
 def handle_input():
-    global running, lage, vald_svarighetsgrad, liv, enemy_speed
+    global running, lage, vald_svarighetsgrad, liv, enemy_speed, explosion_size
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -208,10 +209,15 @@ def handle_input():
                 if loadout.use_bomb():
                     fiender.clear()
                     missiler.clear()
+                    explosion_size = 10
 
 
 def update():
-    global lage, kill_count, xp, liv
+    global lage, kill_count, xp, liv, explosion_size
+    if explosion_size > 0:
+        explosion_size += 30
+        if explosion_size > WIDTH * 1.5:
+            explosion_size = 0
     if lage != "spel":
         return
 
@@ -282,6 +288,9 @@ def draw():
             screen.blit(potion_bild, (10 + i * 40, 530))
         for i in range(len(loadout.bombs)):
             screen.blit(bomb_bild, (10 + i * 40, 490))
+        if explosion_size > 0:
+            scaled = pygame.transform.scale(explosion_bild, (explosion_size, explosion_size))
+            screen.blit(scaled, scaled.get_rect(center=(WIDTH // 2, HEIGHT // 2)))
 
 
 # starta spelet
