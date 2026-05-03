@@ -15,6 +15,8 @@ fiende_bild = pygame.image.load("images/fiende.png").convert_alpha()
 fiende_bild = pygame.transform.scale(fiende_bild, (50, 50))
 potion_bild = pygame.image.load("images/Red_potion.png").convert_alpha()
 potion_bild = pygame.transform.scale(potion_bild, (30, 30))
+bomb_bild = pygame.image.load("images/Bomb.png").convert_alpha()
+bomb_bild = pygame.transform.scale(bomb_bild, (30, 30))
 spelare_bild = pygame.transform.scale(spelare_bild, (50, 50))
 missil_bild = pygame.image.load("images/bullet.png").convert_alpha()
 bakgrund_bild = pygame.image.load("images/background.png").convert()
@@ -89,6 +91,7 @@ class Missil:
 class Loadout:
     def __init__(self):
         self.potions = []
+        self.bombs = []
 
     def add_potion(self, potion):
         self.potions.append(potion)
@@ -96,9 +99,17 @@ class Loadout:
     def get_potion(self):
         if len(self.potions) > 0:
             potion = self.potions.pop(0)
-            # apply potion effect here later
             return potion
         return None
+
+    def add_bomb(self):
+        self.bombs.append("bomb")
+
+    def use_bomb(self):
+        if len(self.bombs) > 0:
+            self.bombs.pop(0)
+            return True
+        return False
 
 # spelvariabler
 spelare = Spelare()
@@ -106,6 +117,8 @@ loadout = Loadout()
 loadout.add_potion("health")
 loadout.add_potion("health")
 loadout.add_potion("health")
+loadout.add_bomb()
+loadout.add_bomb()
 fiender = []
 missiler = []
 liv = 3
@@ -191,6 +204,10 @@ def handle_input():
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1 and lage == "spel":
                 missiler.append(Missil(spelare.rect.center, event.pos))
+            if event.button == 3 and lage == "spel":
+                if loadout.use_bomb():
+                    fiender.clear()
+                    missiler.clear()
 
 
 def update():
@@ -262,7 +279,9 @@ def draw():
         screen.blit(font.render("XP: " + str(xp), True, (255, 255, 255)), (250, 10))
         screen.blit(font.render("Level: " + str(level), True, (255, 255, 255)), (10, 570))
         for i in range(len(loadout.potions)):
-            screen.blit(potion_bild, (10 + i * 55, 530))
+            screen.blit(potion_bild, (10 + i * 40, 530))
+        for i in range(len(loadout.bombs)):
+            screen.blit(bomb_bild, (10 + i * 40, 490))
 
 
 # starta spelet
