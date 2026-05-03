@@ -13,6 +13,8 @@ clock = pygame.time.Clock()
 spelare_bild = pygame.image.load("images/spelare.png").convert_alpha()
 fiende_bild = pygame.image.load("images/fiende.png").convert_alpha()
 fiende_bild = pygame.transform.scale(fiende_bild, (50, 50))
+potion_bild = pygame.image.load("images/Green_potion_no_bg.png").convert_alpha()
+potion_bild = pygame.transform.scale(potion_bild, (50, 50))
 spelare_bild = pygame.transform.scale(spelare_bild, (50, 50))
 missil_bild = pygame.image.load("images/bullet.png").convert_alpha()
 bakgrund_bild = pygame.image.load("images/background.png").convert()
@@ -259,6 +261,8 @@ def draw():
         screen.blit(font.render("Liv: " + str(liv), True, (255, 255, 255)), (10, 10))
         screen.blit(font.render("XP: " + str(xp), True, (255, 255, 255)), (250, 10))
         screen.blit(font.render("Level: " + str(level), True, (255, 255, 255)), (10, 570))
+        for i in range(len(loadout.potions)):
+            screen.blit(potion_bild, (10 + i * 55, 530))
 
 
 # starta spelet
