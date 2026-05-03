@@ -168,7 +168,7 @@ def restart():
 
 
 def handle_input():
-    global running, lage, vald_svarighetsgrad, liv, enemy_speed, explosion_size
+    global running, lage, vald_svarighetsgrad, liv, enemy_speed, explosion_size, antal_fiender
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -184,17 +184,20 @@ def handle_input():
                     vald_svarighetsgrad = "medium"
                     lage = "spel"
                     spawn_enemies(3)
+                    antal_fiender += 1
                 if event.key == pygame.K_3:
                     vald_svarighetsgrad = "hard"
                     lage = "spel"
                     enemy_speed = 2
                     spawn_enemies(3)
+                    antal_fiender += 2
                 if event.key == pygame.K_4:
                     vald_svarighetsgrad = "insane"
                     lage = "spel"
                     liv = 1
                     enemy_speed = 2
                     spawn_enemies(3)
+                    antal_fiender += 3
             if lage == "slut" and event.key == pygame.K_SPACE:
                 restart()
             if lage == "spel" and event.key == pygame.K_SPACE:
