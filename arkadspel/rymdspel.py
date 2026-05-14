@@ -195,11 +195,23 @@ def handle_input():
                     vald_svarighetsgrad = "insane"
                     lage = "spel"
                     liv = 1
-                    enemy_speed = 2
+                    enemy_speed = 3
                     spawn_enemies(3)
                     antal_fiender += 3
+                if event.key == pygame.K_s:
+                    lage = "shop"
+
+            if lage == "shop":
+                if event.key == pygame.K_2:
+                    loadout.add_potion("health")
+                if event.key == pygame.K_1:
+                    loadout.add_bomb()
+                if event.key == pygame.K_ESCAPE:
+                    lage = "meny"
+
             if lage == "slut" and event.key == pygame.K_SPACE:
                 restart()
+
             if lage == "spel" and event.key == pygame.K_SPACE:
                 potion = loadout.get_potion()
                 if potion == "health":
@@ -273,6 +285,21 @@ def draw():
         screen.blit(font.render("2 - Medium", True, (255, 255, 0)), font.render("2 - Medium", True, (255, 255, 0)).get_rect(center=(300, 300)))
         screen.blit(font.render("3 - Hard", True, (255, 165, 0)), font.render("3 - Hard", True, (255, 165, 0)).get_rect(center=(300, 350)))
         screen.blit(font.render("4 - Insane", True, (255, 0, 0)), font.render("4 - Insane", True, (255, 0, 0)).get_rect(center=(300, 400)))
+    elif lage == "shop":
+        t_Title = stor_font.render("shop", True, (0, 255, 0))
+        t_Bomb = font.render("1 - Bomb", True, (255, 255, 255))
+        t_Potion = font.render("2 - Potion", True, (255, 255, 255))
+        t_Leave_shop = font.render("Esc - Leave shop", True, (178, 34, 34))
+        t_Bomb_count = font.render("You have " + str(len(loadout.bombs)) + " bombs!", True, (255, 255, 255))
+        t_Potion_count = font.render("You have " + str(len(loadout.potions)) + " potions!", True, (255, 255, 255))
+
+        screen.blit(t_Title, t_Title.get_rect(center=(200, 200)))
+        screen.blit(t_Bomb, (100, 250))
+        screen.blit(t_Potion, (100, 300))
+        screen.blit(t_Leave_shop, t_Leave_shop.get_rect(center=(120, 30)))
+        screen.blit(t_Bomb_count, (300, 250))
+        screen.blit(t_Potion_count, (300, 300))
+
     elif lage == "slut":
         text1 = stor_font.render("Game Over!", True, (255, 0, 0))
         text2 = font.render("Tryck mellanslag för att starta om", True, (255, 255, 255))
@@ -294,6 +321,7 @@ def draw():
         if explosion_size > 0:
             scaled = pygame.transform.scale(explosion_bild, (explosion_size, explosion_size))
             screen.blit(scaled, scaled.get_rect(center=(WIDTH // 2, HEIGHT // 2)))
+
 
 
 # starta spelet
