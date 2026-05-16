@@ -2,6 +2,8 @@ import pygame
 import random
 import math
 
+from pygame.cursors import sizer_x_strings
+
 pygame.init()
 
 WIDTH = 600
@@ -20,6 +22,7 @@ bomb_bild = pygame.transform.scale(explosion_bild, (30, 30))
 spelare_bild = pygame.transform.scale(spelare_bild, (50, 50))
 missil_bild = pygame.image.load("images/bullet.png").convert_alpha()
 bakgrund_bild = pygame.image.load("images/background.png").convert()
+Shop_bild = pygame.image.load("images/shop.png").convert_alpha()
 
 font = pygame.font.Font(None, 40)
 stor_font = pygame.font.Font(None, 60)
@@ -124,6 +127,8 @@ fiender = []
 missiler = []
 liv = 3
 xp = 0
+coins = 0
+bonus_coins = 100
 kill_count = 0
 level = 1
 shoot_power = 1
@@ -139,9 +144,21 @@ def spawn_enemies(hp):
 
 
 def level_up():
-
-    global level, liv, shoot_power, enemy_speed
+    global level, liv, shoot_power, enemy_speed, coins, bonus_coins
     level += 1
+
+    if vald_svarighetsgrad == "easy":
+        coins += bonus_coins * level
+    if vald_svarighetsgrad == "medium":
+        bonus_coins = 200
+        coins += bonus_coins * level
+    if vald_svarighetsgrad == "hard":
+        bonus_coins = 300
+        coins += bonus_coins * level
+    if vald_svarighetsgrad == "insane":
+        bonus_coins = 400
+        coins += bonus_coins * level
+
     upgradering = random.choice(["extra_liv", "shoot_power"])
     if upgradering == "extra_liv":
         liv += 1
@@ -202,10 +219,15 @@ def handle_input():
                     lage = "shop"
 
             if lage == "shop":
+                global coins
                 if event.key == pygame.K_2:
-                    loadout.add_potion("health")
+                    if coins > 499:
+                        loadout.add_potion("health")
+                        coins -= 500
                 if event.key == pygame.K_1:
-                    loadout.add_bomb()
+                    if coins > 4999:
+                        loadout.add_bomb()
+                        coins -= 5000
                 if event.key == pygame.K_ESCAPE:
                     lage = "meny"
 
@@ -285,6 +307,7 @@ def draw():
         screen.blit(font.render("2 - Medium", True, (255, 255, 0)), font.render("2 - Medium", True, (255, 255, 0)).get_rect(center=(300, 300)))
         screen.blit(font.render("3 - Hard", True, (255, 165, 0)), font.render("3 - Hard", True, (255, 165, 0)).get_rect(center=(300, 350)))
         screen.blit(font.render("4 - Insane", True, (255, 0, 0)), font.render("4 - Insane", True, (255, 0, 0)).get_rect(center=(300, 400)))
+        screen.blit(stor_font.render("S - Shop", True, (0, 255, 0)), stor_font.render("S - Shop", True, (0, 255, 0)).get_rect(center=(290, 70)))
     elif lage == "shop":
         t_Title = stor_font.render("shop", True, (0, 255, 0))
         t_Bomb = font.render("1 - Bomb", True, (255, 255, 255))
@@ -293,7 +316,7 @@ def draw():
         t_Bomb_count = font.render("You have " + str(len(loadout.bombs)) + " bombs!", True, (255, 255, 255))
         t_Potion_count = font.render("You have " + str(len(loadout.potions)) + " potions!", True, (255, 255, 255))
 
-        screen.blit(t_Title, t_Title.get_rect(center=(200, 200)))
+        screen.blit(t_Title, t_Title.get_rect(center=(250, 200)))
         screen.blit(t_Bomb, (100, 250))
         screen.blit(t_Potion, (100, 300))
         screen.blit(t_Leave_shop, t_Leave_shop.get_rect(center=(120, 30)))
