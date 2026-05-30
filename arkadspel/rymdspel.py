@@ -23,9 +23,12 @@ spelare_bild = pygame.transform.scale(spelare_bild, (50, 50))
 missil_bild = pygame.image.load("images/bullet.png").convert_alpha()
 bakgrund_bild = pygame.image.load("images/background.png").convert()
 Shop_bild = pygame.image.load("images/shop.png").convert_alpha()
+Shop_bild = pygame.transform.scale(Shop_bild, (80, 80))
+Backpack_bild = pygame.image.load("images/backpack.png").convert_alpha()
+Backpack_bild = pygame.transform.scale(Backpack_bild, (100, 100))
 
 font = pygame.font.Font(None, 40)
-stor_font = pygame.font.Font(None, 60)
+stor_font = pygame.font.Font(None, 65)
 
 
 class Spelare:
@@ -129,6 +132,8 @@ liv = 3
 xp = 0
 coins = 0
 bonus_coins = 100
+bomb_price = 5000
+potion_price = 300
 kill_count = 0
 level = 1
 shoot_power = 1
@@ -215,8 +220,13 @@ def handle_input():
                     enemy_speed = 3
                     spawn_enemies(3)
                     antal_fiender += 3
+
+                if event.key == pygame.K_ESCAPE:
+                    lage = "meny"
                 if event.key == pygame.K_s:
                     lage = "shop"
+                if event.key == pygame.K_e:
+                    lage == "Backpack"
 
             if lage == "shop":
                 global coins
@@ -307,19 +317,29 @@ def draw():
         screen.blit(font.render("2 - Medium", True, (255, 255, 0)), font.render("2 - Medium", True, (255, 255, 0)).get_rect(center=(300, 300)))
         screen.blit(font.render("3 - Hard", True, (255, 165, 0)), font.render("3 - Hard", True, (255, 165, 0)).get_rect(center=(300, 350)))
         screen.blit(font.render("4 - Insane", True, (255, 0, 0)), font.render("4 - Insane", True, (255, 0, 0)).get_rect(center=(300, 400)))
-        screen.blit(stor_font.render("S - Shop", True, (0, 255, 0)), stor_font.render("S - Shop", True, (0, 255, 0)).get_rect(center=(290, 70)))
+        screen.blit(Shop_bild, Shop_bild.get_rect(center=(225, 50)))
+        screen.blit(stor_font.render("S", True, (0, 255, 0)), stor_font.render("S", True, (0, 255, 0)).get_rect(center=(225, 110)))
+        screen.blit(Backpack_bild, Backpack_bild.get_rect(center=(400, 50)))
+        screen.blit(stor_font.render("E", True, (0, 255, 0)),stor_font.render("E", True, (0, 255, 0)).get_rect(center=(395, 110)))
+
     elif lage == "shop":
         t_Title = stor_font.render("shop", True, (0, 255, 0))
         t_Bomb = font.render("1 - Bomb", True, (255, 255, 255))
         t_Potion = font.render("2 - Potion", True, (255, 255, 255))
         t_Leave_shop = font.render("Esc - Leave shop", True, (178, 34, 34))
-        t_Bomb_count = font.render("You have " + str(len(loadout.bombs)) + " bombs!", True, (255, 255, 255))
-        t_Potion_count = font.render("You have " + str(len(loadout.potions)) + " potions!", True, (255, 255, 255))
+
+        t_bomb_price = font.render(str(bomb_price) + " coins", True, (255, 255, 255))
 
         screen.blit(t_Title, t_Title.get_rect(center=(250, 200)))
         screen.blit(t_Bomb, (100, 250))
         screen.blit(t_Potion, (100, 300))
         screen.blit(t_Leave_shop, t_Leave_shop.get_rect(center=(120, 30)))
+        screen.blit(t_bomb_price, t_bomb_price.get_rect(center=(400, 265)))
+
+    elif lage == "Backpack":
+        t_Bomb_count = font.render("You have " + str(len(loadout.bombs)) + " bombs!", True, (255, 255, 255))
+        t_Potion_count = font.render("You have " + str(len(loadout.potions)) + " potions!", True, (255, 255, 255))
+
         screen.blit(t_Bomb_count, (300, 250))
         screen.blit(t_Potion_count, (300, 300))
 
