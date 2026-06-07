@@ -42,11 +42,6 @@ from Loadout import Loadout
 # game variables
 Player = Player(screen, player_pic)
 loadout = Loadout()
-loadout.add_potion("health")
-loadout.add_potion("health")
-loadout.add_potion("health")
-loadout.add_bomb()
-loadout.add_bomb()
 explosion_size = 0
 enemies = []
 missiles = []
@@ -72,13 +67,13 @@ bomb_cooldown = 0
 with open("Coins.txt", "r") as f:
     coins = int(f.read())
 
-Bombs_file = open("Bombs.txt", "r+")
-Total_Bombs = int(Bombs_file.read())
-Bombs_file.close()
+with open("Bombs.txt", "r") as f:
+    for i in range(int(f.read())):
+        loadout.add_bomb()
 
-Potions_file = open("Potions.txt", "r+")
-Total_potions = int(Potions_file.read())
-Potions_file.close()
+with open("Potions.txt", "r") as f:
+    for i in range(int(f.read())):
+        loadout.add_potion("health")
 
 def spawn_enemies(hp):
     for i in range(number_of_enemies):
