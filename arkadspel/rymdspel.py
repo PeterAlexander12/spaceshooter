@@ -46,7 +46,6 @@ explosion_size = 0
 enemies = []
 missiles = []
 Life = 3
-xp = 0
 bonus_coins = 10
 bomb_price = 5000
 potion_price = 300
@@ -57,9 +56,11 @@ enemy_speed = 1
 number_of_enemies = 5
 mode = "menu"
 degree_of_difficulty = None
-# coin message
+# coin
 coin_message = ""
 coin_message_timer = 0
+coins_this_run = 0
+
 # cooldown
 potion_cooldown = 0
 bomb_cooldown = 0
@@ -89,20 +90,24 @@ def save_game():
 
 
 def level_up():
-    global level, Life, shoot_power, enemy_speed, coins, bonus_coins, coin_message, coin_message_timer
+    global level, Life, shoot_power, enemy_speed, coins, bonus_coins, coin_message, coin_message_timer, coins_this_run
     level += 1
 
     if degree_of_difficulty == "easy":
         coins += bonus_coins * level
+        coins_this_run += bonus_coins * level
     if degree_of_difficulty == "medium":
         bonus_coins = 20
         coins += bonus_coins * level
+        coins_this_run += bonus_coins * level
     if degree_of_difficulty == "hard":
         bonus_coins = 30
         coins += bonus_coins * level
+        coins_this_run += bonus_coins * level
     if degree_of_difficulty == "insane":
         bonus_coins = 50
         coins += bonus_coins * level
+        coins_this_run += bonus_coins * level
 
     coin_message = "+" + str(bonus_coins * level) + " coins!"
     coin_message_timer = 90
@@ -118,10 +123,9 @@ def level_up():
 
 
 def restart():
-    global Life, mode, enemies, missiles, xp, kill_count, level, shoot_power, enemy_speed
+    global Life, mode, enemies, missiles, kill_count, level, shoot_power, enemy_speed, coins_this_run
     Life = 3
     mode = "menu"
-    xp = 0
     kill_count = 0
     level = 1
     shoot_power = 1
@@ -129,6 +133,7 @@ def restart():
     Player.rect.center = (300, 300)
     missiles = []
     enemies = []
+    coins_this_run = 0
     spawn_enemies(3)
 
 
@@ -261,7 +266,6 @@ def update():
                 if f.hp <= 0:
                     enemies.remove(f)
                     kill_count += 1
-                    xp += 100
                 missiles.remove(m)
                 break
 
@@ -326,7 +330,7 @@ def draw():
         for m in missiles:
             m.draw()
         screen.blit(font.render("Life: " + str(Life), True, (255, 255, 255)), (10, 10))
-        screen.blit(font.render("XP: " + str(xp), True, (255, 255, 255)), (250, 10))
+        screen.blit(font.render("Coins this round: " + str(coins_this_run), True, (255, 255, 255)), (250, 10))
         screen.blit(font.render("Level: " + str(level), True, (255, 255, 255)), (10, 570))
         for i in range(len(loadout.potions)):
             screen.blit(potion_bild, (10 + i * 40, 530))
