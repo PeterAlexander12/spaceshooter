@@ -203,10 +203,12 @@ def handle_input():
                     if coins > 499:
                         loadout.add_potion("health")
                         coins -= 500
+                        save_game()
                 if event.key == pygame.K_1:
                     if coins > 4999:
                         loadout.add_bomb()
                         coins -= 5000
+                        save_game()
                 if event.key == pygame.K_ESCAPE:
                     mode = "menu"
 
@@ -219,7 +221,7 @@ def handle_input():
             if event.button == 1 and mode == "game":
                 missiles.append(Missil(Player.rect.center, event.pos))
             if event.button == 3 and mode == "game":
-                if bomb_cooldown > 0:
+                if bomb_cooldown == 0:
                     if loadout.use_bomb():
                         enemies.clear()
                         explosion_size = 10
