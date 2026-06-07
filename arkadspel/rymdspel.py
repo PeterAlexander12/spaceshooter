@@ -1,4 +1,4 @@
-import pygame
+import pygame, sys
 import random
 import math
 
@@ -12,14 +12,14 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 clock = pygame.time.Clock()
 
 # ladda bilder
-spelare_bild = pygame.image.load("images/spelare.png").convert_alpha()
-fiende_bild = pygame.image.load("images/fiende.png").convert_alpha()
-fiende_bild = pygame.transform.scale(fiende_bild, (50, 50))
+player_pic = pygame.image.load("images/spelare.png").convert_alpha()
+enemy_bild = pygame.image.load("images/fiende.png").convert_alpha()
+enemy_bild = pygame.transform.scale(enemy_bild, (50, 50))
 potion_bild = pygame.image.load("images/Red_potion.png").convert_alpha()
 potion_bild = pygame.transform.scale(potion_bild, (30, 30))
 explosion_bild = pygame.image.load("images/nuclear_explosion.png").convert_alpha()
 bomb_bild = pygame.transform.scale(explosion_bild, (30, 30))
-spelare_bild = pygame.transform.scale(spelare_bild, (50, 50))
+player_pic = pygame.transform.scale(player_pic, (50, 50))
 missil_bild = pygame.image.load("images/bullet.png").convert_alpha()
 bakgrund_bild = pygame.image.load("images/background.png").convert()
 Shop_bild = pygame.image.load("images/shop.png").convert_alpha()
@@ -31,94 +31,16 @@ font = pygame.font.Font(None, 40)
 stor_font = pygame.font.Font(None, 65)
 
 
-class Spelare:
-    def __init__(self):
-        self.rect = pygame.Rect(300, 300, spelare_bild.get_width(), spelare_bild.get_height())
-        self.rect.center = (300, 300)
+from Player import Player
 
-    def draw(self):
-        screen.blit(spelare_bild, self.rect)
+from Enemy import Enemy
 
+from Missil import Missil
 
-class Fiende:
-    def __init__(self, base_hp, base_speed):
-        x = random.choice([random.randint(-200, 0), random.randint(600, 800)])
-        y = random.choice([random.randint(-200, 0), random.randint(600, 800)])
-        self.rect = pygame.Rect(x, y, fiende_bild.get_width(), fiende_bild.get_height())
-        self.rect.center = (x, y)
+from Loadout import Loadout
 
-        boost = random.choice(["speed", "hp"])
-        if boost == "speed":
-            self.hp = base_hp
-            self.max_hp = base_hp
-            self.speed = base_speed + 1
-        else:
-            self.hp = base_hp + 2
-            self.max_hp = base_hp + 2
-            self.speed = base_speed
-
-    def move_toward(self, target):
-        if self.rect.centerx < target.rect.centerx:
-            self.rect.x += self.speed
-        if self.rect.centerx > target.rect.centerx:
-            self.rect.x -= self.speed
-        if self.rect.centery < target.rect.centery:
-            self.rect.y += self.speed
-        if self.rect.centery > target.rect.centery:
-            self.rect.y -= self.speed
-
-    def draw(self):
-        screen.blit(fiende_bild, self.rect)
-        pygame.draw.rect(screen, (255, 255, 255), (self.rect.x, self.rect.y - 10, 50, 15))
-        pygame.draw.rect(screen, (144, 238, 144), (self.rect.x, self.rect.y - 10, 50 * (self.hp / self.max_hp), 15))
-
-class Missil:
-    def __init__(self, start_pos, target_pos):
-        self.rect = missil_bild.get_rect(center=start_pos)
-        x_led = target_pos[0] - start_pos[0]
-        y_led = target_pos[1] - start_pos[1]
-        avstand = math.sqrt(x_led ** 2 + y_led ** 2)
-        hastighet = 3
-        self.x_hastighet = x_led / avstand * hastighet
-        self.y_hastighet = y_led / avstand * hastighet
-        self.angle = math.degrees(math.atan2(-y_led, x_led)) - 90
-
-    def update(self):
-        self.rect.x += self.x_hastighet
-        self.rect.y += self.y_hastighet
-
-    def utanfor_skarm(self):
-        return self.rect.x < 0 or self.rect.x > WIDTH or self.rect.y < 0 or self.rect.y > HEIGHT
-
-    def draw(self):
-        roterad = pygame.transform.rotate(missil_bild, self.angle)
-        screen.blit(roterad, roterad.get_rect(center=self.rect.center))
-
-class Loadout:
-    def __init__(self):
-        self.potions = []
-        self.bombs = []
-
-    def add_potion(self, potion):
-        self.potions.append(potion)
-
-    def get_potion(self):
-        if len(self.potions) > 0:
-            potion = self.potions.pop(0)
-            return potion
-        return None
-
-    def add_bomb(self):
-        self.bombs.append("bomb")
-
-    def use_bomb(self):
-        if len(self.bombs) > 0:
-            self.bombs.pop(0)
-            return True
-        return False
-
-# spelvariabler
-spelare = Spelare()
+# game variables
+Player = Player(screen, player_pic)
 loadout = Loadout()
 loadout.add_potion("health")
 loadout.add_potion("health")
@@ -126,109 +48,150 @@ loadout.add_potion("health")
 loadout.add_bomb()
 loadout.add_bomb()
 explosion_size = 0
-fiender = []
-missiler = []
-liv = 3
+enemies = []
+missiles = []
+Life = 3
 xp = 0
 coins = 0
-bonus_coins = 100
+bonus_coins = 10
 bomb_price = 5000
 potion_price = 300
 kill_count = 0
 level = 1
 shoot_power = 1
 enemy_speed = 1
-antal_fiender = 5
-lage = "meny"
-vald_svarighetsgrad = None
+number_of_enemies = 5
+mode = "menu"
+degree_of_difficulty = None
+# coin message
+coin_message = ""
+coin_message_timer = 0
+# cooldown
+potion_cooldown = 0
+bomb_cooldown = 0
 
+Coins_file = open("Coins.txt", "r+")
+Total_coins = int(Coins_file.read())
+Coins_file.close()
+
+Bombs_file = open("Bombs.txt", "r+")
+Total_Bombs = int(Bombs_file.read())
+Bombs_file.close()
+
+Potions_file = open("Potions.txt", "r+")
+Total_potions = int(Potions_file.read())
+Potions_file.close()
 
 def spawn_enemies(hp):
-    for i in range(antal_fiender):
-        fiender.append(Fiende(hp, enemy_speed))
+    for i in range(number_of_enemies):
+        enemies.append(Enemy(hp, enemy_speed))
 
 
 def level_up():
-    global level, liv, shoot_power, enemy_speed, coins, bonus_coins
+    global level, Life, shoot_power, enemy_speed, coins, bonus_coins, coin_message, coin_message_timer
     level += 1
 
-    if vald_svarighetsgrad == "easy":
+    if degree_of_difficulty == "easy":
         coins += bonus_coins * level
-    if vald_svarighetsgrad == "medium":
-        bonus_coins = 200
+    if degree_of_difficulty == "medium":
+        bonus_coins = 20
         coins += bonus_coins * level
-    if vald_svarighetsgrad == "hard":
-        bonus_coins = 300
+    if degree_of_difficulty == "hard":
+        bonus_coins = 30
         coins += bonus_coins * level
-    if vald_svarighetsgrad == "insane":
-        bonus_coins = 400
+    if degree_of_difficulty == "insane":
+        bonus_coins = 50
         coins += bonus_coins * level
 
-    upgradering = random.choice(["extra_liv", "shoot_power"])
-    if upgradering == "extra_liv":
-        liv += 1
+    coin_message = "+" + str(bonus_coins * level) + " coins!"
+    coin_message_timer = 90
+
+    upgrade = random.choice(["extra_Life", "shoot_power"])
+    if upgrade == "extra_Life":
+        Life += 1
         enemy_speed += 1
-    if upgradering == "shoot_power":
+    if upgrade == "shoot_power":
         shoot_power += 1
 
     return 3 + level
 
 
 def restart():
-    global liv, lage, fiender, missiler, xp, kill_count, level, shoot_power, enemy_speed
-    liv = 3
-    lage = "meny"
+    global Life, mode, enemies, missiles, xp, kill_count, level, shoot_power, enemy_speed
+    Life = 3
+    mode = "menu"
     xp = 0
     kill_count = 0
     level = 1
     shoot_power = 1
     enemy_speed = 1
-    spelare.rect.center = (300, 300)
-    missiler = []
-    fiender = []
+    Player.rect.center = (300, 300)
+    missiles = []
+    enemies = []
     spawn_enemies(3)
 
 
+
+
 def handle_input():
-    global running, lage, vald_svarighetsgrad, liv, enemy_speed, explosion_size, antal_fiender
+    global running, mode, degree_of_difficulty, Life, enemy_speed, explosion_size, number_of_enemies, potion_cooldown, bomb_cooldown
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
 
         if event.type == pygame.KEYDOWN:
-            if lage == "meny":
+            if mode == "menu":
                 if event.key == pygame.K_1:
-                    vald_svarighetsgrad = "easy"
-                    lage = "spel"
-                    liv = 5
+                    degree_of_difficulty = "easy"
+                    mode = "game"
+                    Life = 5
                     spawn_enemies(3)
+                    number_of_enemies -= 1
                 if event.key == pygame.K_2:
-                    vald_svarighetsgrad = "medium"
-                    lage = "spel"
+                    degree_of_difficulty = "medium"
+                    mode = "game"
                     spawn_enemies(3)
-                    antal_fiender += 1
+                    number_of_enemies += 1
                 if event.key == pygame.K_3:
-                    vald_svarighetsgrad = "hard"
-                    lage = "spel"
+                    degree_of_difficulty = "hard"
+                    mode = "game"
                     enemy_speed = 2
                     spawn_enemies(3)
-                    antal_fiender += 2
+                    number_of_enemies += 2
+                    Life = 2
                 if event.key == pygame.K_4:
-                    vald_svarighetsgrad = "insane"
-                    lage = "spel"
-                    liv = 1
+                    degree_of_difficulty = "insane"
+                    mode = "game"
+                    Life = 1
                     enemy_speed = 3
                     spawn_enemies(3)
-                    antal_fiender += 3
+                    number_of_enemies += 3
 
                 if event.key == pygame.K_ESCAPE:
-                    lage = "meny"
+                    mode = "menu"
                 if event.key == pygame.K_s:
-                    lage = "shop"
+                    mode = "shop"
                 if event.key == pygame.K_e:
-                    lage == "Backpack"
+                    mode = "Backpack"
 
-            if lage == "shop":
+            if mode == "game":
+
+                if event.key == pygame.K_SPACE:
+                    if potion_cooldown == 0:
+                        potion = loadout.get_potion()
+                        if potion == "health":
+                            Life += 1
+                        potion_cooldown = 150
+
+                if event.key == pygame.K_ESCAPE:
+                    mode = "menu"
+                    enemies.clear()
+
+            if mode == "Backpack":
+                if event.key == pygame.K_ESCAPE:
+                    mode = "menu"
+
+            if mode == "shop":
                 global coins
                 if event.key == pygame.K_2:
                     if coins > 499:
@@ -239,69 +202,71 @@ def handle_input():
                         loadout.add_bomb()
                         coins -= 5000
                 if event.key == pygame.K_ESCAPE:
-                    lage = "meny"
+                    mode = "menu"
 
-            if lage == "slut" and event.key == pygame.K_SPACE:
+            if mode == "slut" and event.key == pygame.K_SPACE:
                 restart()
 
-            if lage == "spel" and event.key == pygame.K_SPACE:
-                potion = loadout.get_potion()
-                if potion == "health":
-                    liv += 1
+
 
         if event.type == pygame.MOUSEBUTTONDOWN:
-            if event.button == 1 and lage == "spel":
-                missiler.append(Missil(spelare.rect.center, event.pos))
-            if event.button == 3 and lage == "spel":
-                if loadout.use_bomb():
-                    fiender.clear()
-                    missiler.clear()
-                    explosion_size = 10
-
+            if event.button == 1 and mode == "game":
+                missiles.append(Missil(Player.rect.center, event.pos))
+            if event.button == 3 and mode == "game":
+                if bomb_cooldown > 0:
+                    if loadout.use_bomb():
+                        enemies.clear()
+                        explosion_size = 10
+                        bomb_cooldown = 600
 
 def update():
-    global lage, kill_count, xp, liv, explosion_size
+    global mode, kill_count, xp, Life, explosion_size, coin_message_timer, potion_cooldown
     if explosion_size > 0:
         explosion_size += 30
         if explosion_size > WIDTH * 1.5:
             explosion_size = 0
-    if lage != "spel":
+
+    if coin_message_timer > 0:
+        coin_message_timer -= 1
+    if potion_cooldown > 0:
+        potion_cooldown -= 1
+    if mode != "game":
         return
 
-    # fiender rör sig mot spelaren
-    for f in fiender:
-        f.move_toward(spelare)
+    # enemies move towards the player
+    for f in enemies:
+        f.move_toward(Player)
 
-    # fiender-spelare kollision
-    for f in list(fiender):
-        if f.rect.colliderect(spelare.rect):
-            fiender.remove(f)
-            liv -= 1
-            if liv <= 0:
-                lage = "slut"
+    # enemies-player collision
+    for f in list(enemies):
+        if f.rect.colliderect(Player.rect):
+            enemies.remove(f)
+            Life -= 1
+            if Life <= 0:
+                mode = "slut"
 
-    # flytta missiler
-    for m in list(missiler):
+    # move missile
+    for m in list(missiles):
         m.update()
         if m.utanfor_skarm():
-            missiler.remove(m)
+            missiles.remove(m)
 
-    # missil-fiender kollision
-    for m in list(missiler):
-        for f in list(fiender):
+    # missile-enemies collision
+    for m in list(missiles):
+        for f in list(enemies):
             if m.rect.colliderect(f.rect):
                 f.hp -= shoot_power
                 if f.hp <= 0:
-                    fiender.remove(f)
+                    enemies.remove(f)
                     kill_count += 1
                     xp += 100
-                missiler.remove(m)
+                missiles.remove(m)
                 break
 
-    # ny våg
-    if len(fiender) == 0:
+    # new wave
+    if len(enemies) == 0:
         new_enemy_hp = 3
-        if kill_count > 14:
+        if kill_count > 1:
             new_enemy_hp = level_up()
             kill_count = 0
         spawn_enemies(new_enemy_hp)
@@ -310,7 +275,7 @@ def update():
 def draw():
     screen.blit(bakgrund_bild, (0, 0))
 
-    if lage == "meny":
+    if mode == "menu":
         screen.blit(stor_font.render("Välj svårighetsgrad", True, (255, 255, 255)), stor_font.render("Välj "
                                                                                                      "svårighetsgrad", True, (255, 255, 255)).get_rect(center=(300, 150)))
         screen.blit(font.render("1 - Easy", True, (0, 255, 0)), font.render("1 - Easy", True, (0, 255, 0)).get_rect(center=(300, 250)))
@@ -322,7 +287,7 @@ def draw():
         screen.blit(Backpack_bild, Backpack_bild.get_rect(center=(400, 50)))
         screen.blit(stor_font.render("E", True, (0, 255, 0)),stor_font.render("E", True, (0, 255, 0)).get_rect(center=(395, 110)))
 
-    elif lage == "shop":
+    elif mode == "shop":
         t_Title = stor_font.render("shop", True, (0, 255, 0))
         t_Bomb = font.render("1 - Bomb", True, (255, 255, 255))
         t_Potion = font.render("2 - Potion", True, (255, 255, 255))
@@ -336,25 +301,29 @@ def draw():
         screen.blit(t_Leave_shop, t_Leave_shop.get_rect(center=(120, 30)))
         screen.blit(t_bomb_price, t_bomb_price.get_rect(center=(400, 265)))
 
-    elif lage == "Backpack":
+    elif mode == "Backpack":
         t_Bomb_count = font.render("You have " + str(len(loadout.bombs)) + " bombs!", True, (255, 255, 255))
         t_Potion_count = font.render("You have " + str(len(loadout.potions)) + " potions!", True, (255, 255, 255))
+        t_Leave_backpack = font.render("Esc - Leave backpack", True, (178, 34, 34))
+        t_coin_count = font.render("You have " + str(Total_coins) + " coins!", True, (255, 215, 0))
 
         screen.blit(t_Bomb_count, (300, 250))
         screen.blit(t_Potion_count, (300, 300))
+        screen.blit(t_Leave_backpack, t_Leave_backpack.get_rect(center=(150, 30)))
+        screen.blit(t_coin_count, (150, 550))
 
-    elif lage == "slut":
+    elif mode == "slut":
         text1 = stor_font.render("Game Over!", True, (255, 0, 0))
-        text2 = font.render("Tryck mellanslag för att starta om", True, (255, 255, 255))
+        text2 = font.render("Press space too go to the menu ", True, (255, 255, 255))
         screen.blit(text1, text1.get_rect(center=(300, 250)))
         screen.blit(text2, text2.get_rect(center=(300, 320)))
     else:
-        spelare.draw()
-        for f in fiender:
+        Player.draw()
+        for f in enemies:
             f.draw()
-        for m in missiler:
+        for m in missiles:
             m.draw()
-        screen.blit(font.render("Liv: " + str(liv), True, (255, 255, 255)), (10, 10))
+        screen.blit(font.render("Life: " + str(Life), True, (255, 255, 255)), (10, 10))
         screen.blit(font.render("XP: " + str(xp), True, (255, 255, 255)), (250, 10))
         screen.blit(font.render("Level: " + str(level), True, (255, 255, 255)), (10, 570))
         for i in range(len(loadout.potions)):
@@ -365,9 +334,14 @@ def draw():
             scaled = pygame.transform.scale(explosion_bild, (explosion_size, explosion_size))
             screen.blit(scaled, scaled.get_rect(center=(WIDTH // 2, HEIGHT // 2)))
 
+        # draw coin message while timer is running
+        if coin_message_timer > 0:
+            t_coin = font.render(coin_message, True, (255, 215, 0))
+            screen.blit(t_coin, t_coin.get_rect(center=(WIDTH // 2, 80)))
 
 
-# starta spelet
+
+# start game
 running = True
 while running:
     handle_input()
@@ -375,5 +349,3 @@ while running:
     draw()
     pygame.display.flip()
     clock.tick(30)
-
-pygame.quit()
