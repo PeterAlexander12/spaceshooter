@@ -52,7 +52,6 @@ enemies = []
 missiles = []
 Life = 3
 xp = 0
-coins = 0
 bonus_coins = 10
 bomb_price = 5000
 potion_price = 300
@@ -70,9 +69,8 @@ coin_message_timer = 0
 potion_cooldown = 0
 bomb_cooldown = 0
 
-Coins_file = open("Coins.txt", "r+")
-Total_coins = int(Coins_file.read())
-Coins_file.close()
+with open("Coins.txt", "r") as f:
+    coins = int(f.read())
 
 Bombs_file = open("Bombs.txt", "r+")
 Total_Bombs = int(Bombs_file.read())
@@ -85,6 +83,14 @@ Potions_file.close()
 def spawn_enemies(hp):
     for i in range(number_of_enemies):
         enemies.append(Enemy(hp, enemy_speed))
+
+def save_game():
+    with open("Coins.txt", "w") as f:
+        f.write(str(coins))
+    with open("Bombs.txt", "w") as f:
+        f.write(str(len(loadout.bombs)))
+    with open("Potions.txt", "w") as f:
+        f.write(str(len(loadout.potions)))
 
 
 def level_up():
@@ -244,6 +250,7 @@ def update():
             Life -= 1
             if Life <= 0:
                 mode = "slut"
+                save_game()
 
     # move missile
     for m in list(missiles):
@@ -305,7 +312,7 @@ def draw():
         t_Bomb_count = font.render("You have " + str(len(loadout.bombs)) + " bombs!", True, (255, 255, 255))
         t_Potion_count = font.render("You have " + str(len(loadout.potions)) + " potions!", True, (255, 255, 255))
         t_Leave_backpack = font.render("Esc - Leave backpack", True, (178, 34, 34))
-        t_coin_count = font.render("You have " + str(Total_coins) + " coins!", True, (255, 215, 0))
+        t_coin_count = font.render("You have " + str(coins) + " coins!", True, (255, 215, 0))
 
         screen.blit(t_Bomb_count, (300, 250))
         screen.blit(t_Potion_count, (300, 300))
