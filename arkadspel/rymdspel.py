@@ -11,39 +11,45 @@ HEIGHT = 600
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 clock = pygame.time.Clock()
 
-# ladda bilder
+# load pictures
 player_pic = pygame.image.load("images/spelare.png").convert_alpha()
-enemy_bild = pygame.image.load("images/fiende.png").convert_alpha()
-enemy_bild = pygame.transform.scale(enemy_bild, (50, 50))
-potion_bild = pygame.image.load("images/Red_potion.png").convert_alpha()
-potion_bild = pygame.transform.scale(potion_bild, (30, 30))
-explosion_bild = pygame.image.load("images/nuclear_explosion.png").convert_alpha()
-bomb_bild = pygame.transform.scale(explosion_bild, (30, 30))
+enemy_pic = pygame.image.load("images/fiende.png").convert_alpha()
+enemy_pic = pygame.transform.scale(enemy_pic, (50, 50))
+potion_pic = pygame.image.load("images/Red_potion.png").convert_alpha()
+potion_pic = pygame.transform.scale(potion_pic, (30, 30))
+explosion_pic = pygame.image.load("images/nuclear_explosion.png").convert_alpha()
+bomb_pic = pygame.transform.scale(explosion_pic, (30, 30))
 player_pic = pygame.transform.scale(player_pic, (50, 50))
-missil_bild = pygame.image.load("images/bullet.png").convert_alpha()
-bakgrund_bild = pygame.image.load("images/background.png").convert()
-Shop_bild = pygame.image.load("images/shop.png").convert_alpha()
-Shop_bild = pygame.transform.scale(Shop_bild, (80, 80))
-Backpack_bild = pygame.image.load("images/backpack.png").convert_alpha()
-Backpack_bild = pygame.transform.scale(Backpack_bild, (100, 100))
+missil_pic = pygame.image.load("images/bullet.png").convert_alpha()
+background_pic = pygame.image.load("images/background.png").convert()
+Shop_pic = pygame.image.load("images/shop.png").convert_alpha()
+Shop_pic = pygame.transform.scale(Shop_pic, (80, 80))
+Backpack_pic = pygame.image.load("images/backpack.png").convert_alpha()
+Backpack_pic = pygame.transform.scale(Backpack_pic, (100, 100))
+StrengthPotion_pic = pygame.image.load("images/strength_potion.png").convert_alpha()
+StrengthPotion_pic = pygame.transform.scale(StrengthPotion_pic, (30, 30))
 
 font = pygame.font.Font(None, 40)
 stor_font = pygame.font.Font(None, 65)
 
 
-from Player import Player
+from player import Player
 
-from Enemy import Enemy
+from enemy import Enemy
 
-from Missil import Missil
+from missil import Missil
 
-from Loadout import Loadout
+from loadout import Loadout
 
 # game variables
 Player = Player(screen, player_pic)
 loadout = Loadout()
+loadout.add_potion("health")
+loadout.add_potion("health")
+loadout.add_potion("health")
+loadout.add_bomb()
+loadout.add_bomb()
 explosion_size = 0
-enemies = []
 missiles = []
 Life = 3
 bonus_coins = 10
@@ -51,46 +57,62 @@ bomb_price = 5000
 potion_price = 300
 kill_count = 0
 level = 1
+# enemies
+number_of_enemies = 5
+enemies = []
+# for upgrades
 shoot_power = 1
 enemy_speed = 1
-number_of_enemies = 5
+# Block
+enemyBlockChance = 1
+MaxDodgeChance = 20
+blocked_message = ""
+blocked_message_timer = 0
 mode = "menu"
 degree_of_difficulty = None
 # coin
 coin_message = ""
 coin_message_timer = 0
 coins_this_run = 0
-
 # cooldown
 potion_cooldown = 0
 bomb_cooldown = 0
 
-with open("Coins.txt", "r") as f:
+
+with open("coins.txt", "r") as f:
     coins = int(f.read())
 
-with open("Bombs.txt", "r") as f:
+with open("bombs.txt", "r") as f:
     for i in range(int(f.read())):
         loadout.add_bomb()
+    bombs = int(f.read())
 
-with open("Potions.txt", "r") as f:
+with open("health_Potion.txt", "r") as f:
     for i in range(int(f.read())):
         loadout.add_potion("health")
+    health_potions = int(f.read())
+
+with open("strength_Potion.txt", "r") as f:
+    for i in range(int(f.read())):
+        loadout.add_potion("strength")
 
 def spawn_enemies(hp):
     for i in range(number_of_enemies):
         enemies.append(Enemy(hp, enemy_speed))
 
 def save_game():
-    with open("Coins.txt", "w") as f:
+    with open("coins.txt", "w") as f:
         f.write(str(coins))
-    with open("Bombs.txt", "w") as f:
-        f.write(str(len(loadout.bombs)))
-    with open("Potions.txt", "w") as f:
-        f.write(str(len(loadout.potions)))
 
+    with open("health_Potion.txt", "w") as f:
+        f.write(str(loadout.potions))
+    with open("strength_Potion.txt", "w") as f:
+        f.write(str(loadout.potions))
+    with open("bombs.txt", "w") as f:
+        f.write(str(loadout.bombs))
 
 def level_up():
-    global level, Life, shoot_power, enemy_speed, coins, bonus_coins, coin_message, coin_message_timer, coins_this_run
+    global level, Life, shoot_power, enemy_speed, coins, bonus_coins, coin_message, coin_message_timer, coins_this_run, enemyBlockChance
     level += 1
 
     if degree_of_difficulty == "easy":
@@ -115,9 +137,14 @@ def level_up():
     upgrade = random.choice(["extra_Life", "shoot_power"])
     if upgrade == "extra_Life":
         Life += 1
-        enemy_speed += 1
     if upgrade == "shoot_power":
         shoot_power += 1
+
+    enemy_upgrade = random.choice(["enemy_dodge", "enemy_speed"])
+    if enemy_upgrade == "enemy_dodge":
+        enemyBlockChance = min(MaxDodgeChance, enemyBlockChance + 1)
+    if enemy_upgrade == "enemy_speed":
+        enemy_speed += 1
 
     return 3 + level
 
@@ -228,7 +255,7 @@ def handle_input():
                         bomb_cooldown = 600
 
 def update():
-    global mode, kill_count, xp, Life, explosion_size, coin_message_timer, potion_cooldown
+    global mode, kill_count, Life, explosion_size, coin_message_timer, potion_cooldown, blocked_message_timer
     if explosion_size > 0:
         explosion_size += 30
         if explosion_size > WIDTH * 1.5:
@@ -264,6 +291,13 @@ def update():
     for m in list(missiles):
         for f in list(enemies):
             if m.rect.colliderect(f.rect):
+                # roll to see if enemy dodges
+                if random.randint(1, MaxDodgeChance) <= enemyBlockChance:
+                    # enemy dodged and the missile disapear
+                    blocked_message_timer = 15
+                    missiles.remove(m)
+                    break
+                # enemy didn´t dodge so it takes damage
                 f.hp -= shoot_power
                 if f.hp <= 0:
                     enemies.remove(f)
@@ -281,18 +315,17 @@ def update():
 
 
 def draw():
-    screen.blit(bakgrund_bild, (0, 0))
+    screen.blit(background_pic, (0, 0))
 
     if mode == "menu":
-        screen.blit(stor_font.render("Välj svårighetsgrad", True, (255, 255, 255)), stor_font.render("Välj "
-                                                                                                     "svårighetsgrad", True, (255, 255, 255)).get_rect(center=(300, 150)))
+        screen.blit(stor_font.render("Choose difficulty", True, (255, 255, 255)), stor_font.render("Choose " "svårighetsgrad", True, (255, 255, 255)).get_rect(center=(370, 150)))
         screen.blit(font.render("1 - Easy", True, (0, 255, 0)), font.render("1 - Easy", True, (0, 255, 0)).get_rect(center=(300, 250)))
         screen.blit(font.render("2 - Medium", True, (255, 255, 0)), font.render("2 - Medium", True, (255, 255, 0)).get_rect(center=(300, 300)))
         screen.blit(font.render("3 - Hard", True, (255, 165, 0)), font.render("3 - Hard", True, (255, 165, 0)).get_rect(center=(300, 350)))
         screen.blit(font.render("4 - Insane", True, (255, 0, 0)), font.render("4 - Insane", True, (255, 0, 0)).get_rect(center=(300, 400)))
-        screen.blit(Shop_bild, Shop_bild.get_rect(center=(225, 50)))
+        screen.blit(Shop_pic, Shop_pic.get_rect(center=(225, 50)))
         screen.blit(stor_font.render("S", True, (0, 255, 0)), stor_font.render("S", True, (0, 255, 0)).get_rect(center=(225, 110)))
-        screen.blit(Backpack_bild, Backpack_bild.get_rect(center=(400, 50)))
+        screen.blit(Backpack_pic, Backpack_pic.get_rect(center=(400, 50)))
         screen.blit(stor_font.render("E", True, (0, 255, 0)),stor_font.render("E", True, (0, 255, 0)).get_rect(center=(395, 110)))
 
     elif mode == "shop":
@@ -302,12 +335,14 @@ def draw():
         t_Leave_shop = font.render("Esc - Leave shop", True, (178, 34, 34))
 
         t_bomb_price = font.render(str(bomb_price) + " coins", True, (255, 255, 255))
+        t_potion_price = font.render(str(potion_price) + " coins", True, (255, 255, 255))
 
         screen.blit(t_Title, t_Title.get_rect(center=(250, 200)))
         screen.blit(t_Bomb, (100, 250))
         screen.blit(t_Potion, (100, 300))
         screen.blit(t_Leave_shop, t_Leave_shop.get_rect(center=(120, 30)))
         screen.blit(t_bomb_price, t_bomb_price.get_rect(center=(400, 265)))
+        screen.blit(t_potion_price, t_potion_price.get_rect(center=(400, 315)))
 
     elif mode == "Backpack":
         t_Bomb_count = font.render("You have " + str(len(loadout.bombs)) + " bombs!", True, (255, 255, 255))
@@ -315,8 +350,8 @@ def draw():
         t_Leave_backpack = font.render("Esc - Leave backpack", True, (178, 34, 34))
         t_coin_count = font.render("You have " + str(coins) + " coins!", True, (255, 215, 0))
 
-        screen.blit(t_Bomb_count, (300, 250))
-        screen.blit(t_Potion_count, (300, 300))
+        screen.blit(t_Bomb_count, (200, 250))
+        screen.blit(t_Potion_count, (200, 300))
         screen.blit(t_Leave_backpack, t_Leave_backpack.get_rect(center=(150, 30)))
         screen.blit(t_coin_count, (150, 550))
 
@@ -332,20 +367,24 @@ def draw():
         for m in missiles:
             m.draw()
         screen.blit(font.render("Life: " + str(Life), True, (255, 255, 255)), (10, 10))
-        screen.blit(font.render("Coins this round: " + str(coins_this_run), True, (255, 255, 255)), (250, 10))
+        screen.blit(font.render("Coins this run: " + str(coins_this_run), True, (255, 215, 0)), (200, 10))
         screen.blit(font.render("Level: " + str(level), True, (255, 255, 255)), (10, 570))
         for i in range(len(loadout.potions)):
-            screen.blit(potion_bild, (10 + i * 40, 530))
+            screen.blit(potion_pic, (10 + i * 40, 530))
         for i in range(len(loadout.bombs)):
-            screen.blit(bomb_bild, (10 + i * 40, 490))
+            screen.blit(bomb_pic, (10 + i * 40, 490))
         if explosion_size > 0:
-            scaled = pygame.transform.scale(explosion_bild, (explosion_size, explosion_size))
+            scaled = pygame.transform.scale(explosion_pic, (explosion_size, explosion_size))
             screen.blit(scaled, scaled.get_rect(center=(WIDTH // 2, HEIGHT // 2)))
 
         # draw coin message while timer is running
         if coin_message_timer > 0:
             t_coin = font.render(coin_message, True, (255, 215, 0))
             screen.blit(t_coin, t_coin.get_rect(center=(WIDTH // 2, 80)))
+        # draw blocked message while timer is running
+        #if blocked_message_timer > 0:
+        #t_blocked = font.render(blocked_message, True, (255, 255, 255))
+        #screen.blit(t_blocked, t_blocked.get_rect())
 
 
 
