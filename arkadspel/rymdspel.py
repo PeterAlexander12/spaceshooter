@@ -33,13 +33,13 @@ font = pygame.font.Font(None, 40)
 stor_font = pygame.font.Font(None, 65)
 
 
-from Player import Player
+from player import Player
 
-from Enemy import Enemy
+from enemy import Enemy
 
-from Missil import Missil
+from missil import Missil
 
-from Loadout import Loadout
+from loadout import Loadout
 
 # game variables
 Player = Player(screen, player_pic)
@@ -84,17 +84,19 @@ with open("coins.txt", "r") as f:
 
 with open("bombs.txt", "r") as f:
     bombs = int(f.read())
-    for i in range(bombs):
+    for i in range(int(bombs)):
         loadout.add_bomb()
 
 with open("health_Potion.txt", "r") as f:
     health_potions = int(f.read())
-    for i in range(health_potions):
+    for i in range(int(health_potions)):
         loadout.add_potion("health")
 
 with open("strength_Potion.txt", "r") as f:
-    for i in range(int(f.read())):
+    strength_potions = int(f.read())
+    for i in range(int(strength_potions)):
         loadout.add_potion("strength")
+
 
 def spawn_enemies(hp):
     for i in range(number_of_enemies):
