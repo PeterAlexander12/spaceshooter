@@ -1,7 +1,7 @@
 import pygame
 
 DEFAULT_KEYBINDS = {
-    "use_potion": pygame.K_SPACE,
+    "use_health_potion": pygame.K_SPACE,
     "open_shop": pygame.K_s,
     "open_backpack": pygame.K_e,
     "use_bomb": 3,

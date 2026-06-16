@@ -46,9 +46,9 @@ from keybinds import load_keybinds, save_keybinds, bind_name
 # game variables
 Player = Player(screen, player_pic)
 loadout = Loadout()
-loadout.add_potion("health")
-loadout.add_potion("health")
-loadout.add_potion("health")
+loadout.add_potion("health_potion")
+loadout.add_potion("health_potion")
+loadout.add_potion("health_potion")
 loadout.add_bomb()
 loadout.add_bomb()
 explosion_size = 0
@@ -193,10 +193,10 @@ def handle_input():
 
             if mode == "game":
 
-                if event.key == keybinds["use_potion"]:
+                if event.key == keybinds["use_health_potion"]:
                     if potion_cooldown == 0:
                         potion = loadout.get_potion()
-                        if potion == "health":
+                        if potion == "health_potion":
                             Life += 1
                         potion_cooldown = 150
 
@@ -219,7 +219,7 @@ def handle_input():
                 global coins
                 if event.key == pygame.K_2:
                     if coins > 499:
-                        loadout.add_potion("health")
+                        loadout.add_potion("health_potion")
                         coins -= 500
                         save_game(coins, loadout)
                 if event.key == pygame.K_1:
@@ -233,7 +233,7 @@ def handle_input():
             if mode == "keybinds":
                 if keybind_selecting is None:
                     if event.key == pygame.K_1:
-                        keybind_selecting = "use_potion"
+                        keybind_selecting = "use_health_potion"
                     if event.key == pygame.K_2:
                         keybind_selecting = "open_shop"
                     if event.key == pygame.K_3:
@@ -345,7 +345,7 @@ def draw():
     elif mode == "shop":
         t_Title = stor_font.render("shop", True, (0, 255, 0))
         t_Bomb = font.render("1 - Bomb", True, (255, 255, 255))
-        t_Potion = font.render("2 - Potion", True, (255, 255, 255))
+        t_Potion = font.render("2 - Health Potion", True, (255, 255, 255))
         t_Leave_shop = font.render("Esc - Leave shop", True, (178, 34, 34))
 
         t_bomb_price = font.render(str(bomb_price) + " coins", True, (255, 255, 255))
@@ -371,7 +371,7 @@ def draw():
 
     elif mode == "keybinds":
         screen.blit(stor_font.render("Key Settings", True, (0, 255, 0)), stor_font.render("Key Settings", True, (0, 255, 0)).get_rect(center=(300, 150)))
-        screen.blit(font.render("1 - Use Potion:    " + bind_name(keybinds["use_potion"]), True, (255, 255, 255)), (100, 250))
+        screen.blit(font.render("1 - Use Health Potion: " + bind_name(keybinds["use_health_potion"]), True, (255, 255, 255)), (100, 250))
         screen.blit(font.render("2 - Open Shop:     " + bind_name(keybinds["open_shop"]), True, (255, 255, 255)), (100, 300))
         screen.blit(font.render("3 - Open Backpack: " + bind_name(keybinds["open_backpack"]), True, (255, 255, 255)), (100, 350))
         screen.blit(font.render("4 - Use Bomb:      " + bind_name(keybinds["use_bomb"]), True, (255, 255, 255)), (100, 400))
