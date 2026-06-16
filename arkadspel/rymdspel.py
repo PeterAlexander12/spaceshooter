@@ -207,12 +207,12 @@ def handle_input():
                     if coins > 499:
                         loadout.add_potion("health")
                         coins -= 500
-                        save_game()
+                        save_game(coins, loadout)
                 if event.key == pygame.K_1:
                     if coins > 4999:
                         loadout.add_bomb()
                         coins -= 5000
-                        save_game()
+                        save_game(coins, loadout)
                 if event.key == pygame.K_ESCAPE:
                     mode = "menu"
 
@@ -256,7 +256,7 @@ def update():
             Life -= 1
             if Life <= 0:
                 mode = "slut"
-                save_game()
+                save_game(coins, loadout)
 
     # move missile
     for m in list(missiles):
