@@ -8,6 +8,19 @@ DEFAULT_KEYBINDS = {
     
 }
 
+MOUSE_NAMES = {
+    1: "left click", 
+    2: "middle click", 
+    3: "right click", 
+    4: "scroll up", 
+    5: "scroll down"
+}
+
+def bind_name(value):
+    if value in MOUSE_NAMES:
+        return MOUSE_NAMES[value]
+    return pygame.key.name(value)
+
 def save_keybinds(keybinds):
     with open("keybinds.txt", "w") as f:
         for action, key in keybinds.items():

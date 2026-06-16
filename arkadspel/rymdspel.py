@@ -41,7 +41,7 @@ from missil import Missil
 
 from loadout import Loadout
 from save import save_game, load_game
-from keybinds import load_keybinds, save_keybinds
+from keybinds import load_keybinds, save_keybinds, bind_name
 
 # game variables
 Player = Player(screen, player_pic)
@@ -198,6 +198,13 @@ def handle_input():
                             Life += 1
                         potion_cooldown = 150
 
+                if event.key == keybinds["use_bomb"]:
+                    if bomb_cooldown == 0:
+                        if loadout.use_bomb():
+                            enemies.clear()
+                            explosion_size = 10
+                            bomb_cooldown = 600
+
                 if event.key == pygame.K_ESCAPE:
                     mode = "menu"
                     enemies.clear()
@@ -229,6 +236,8 @@ def handle_input():
                         keybind_selecting = "open_shop"
                     if event.key == pygame.K_3:
                         keybind_selecting = "open_backpack"
+                    if event.key == pygame.K_4:
+                        keybind_selecting = "use_bomb"
                     if event.key == pygame.K_ESCAPE:
                         save_keybinds(keybinds)
                         mode = "menu"
@@ -242,9 +251,12 @@ def handle_input():
 
 
         if event.type == pygame.MOUSEBUTTONDOWN:
+            if mode == "keybinds" and keybind_selecting is not None:
+                keybinds[keybind_selecting] = event.button
+                keybind_selecting = None
             if event.button == 1 and mode == "game":
                 missiles.append(Missil(Player.rect.center, event.pos))
-            if event.button == 3 and mode == "game":
+            if event.button == keybinds["use_bomb"] and mode == "game":
                 if bomb_cooldown == 0:
                     if loadout.use_bomb():
                         enemies.clear()
@@ -357,10 +369,11 @@ def draw():
 
     elif mode == "keybinds":
         screen.blit(stor_font.render("Key Settings", True, (0, 255, 0)), stor_font.render("Key Settings", True, (0, 255, 0)).get_rect(center=(300, 150)))
-        screen.blit(font.render("1 - Use Potion:    " + pygame.key.name(keybinds["use_potion"]), True, (255, 255, 255)), (100, 250))
-        screen.blit(font.render("2 - Open Shop:     " + pygame.key.name(keybinds["open_shop"]), True, (255, 255, 255)), (100, 300))
-        screen.blit(font.render("3 - Open Backpack: " + pygame.key.name(keybinds["open_backpack"]), True, (255, 255, 255)), (100, 350))
-        screen.blit(font.render("Esc - Save and go back", True, (178, 34, 34)), (100, 450))
+        screen.blit(font.render("1 - Use Potion:    " + bind_name(keybinds["use_potion"]), True, (255, 255, 255)), (100, 250))
+        screen.blit(font.render("2 - Open Shop:     " + bind_name(keybinds["open_shop"]), True, (255, 255, 255)), (100, 300))
+        screen.blit(font.render("3 - Open Backpack: " + bind_name(keybinds["open_backpack"]), True, (255, 255, 255)), (100, 350))
+        screen.blit(font.render("4 - Use Bomb:      " + bind_name(keybinds["use_bomb"]), True, (255, 255, 255)), (100, 400))
+        screen.blit(font.render("Esc - Save and go back", True, (178, 34, 34)), (100, 470))
         if keybind_selecting:
             t_waiting = font.render("Press any key for: " + keybind_selecting, True, (255, 215, 0))
             screen.blit(t_waiting, t_waiting.get_rect(center=(300, 530)))
