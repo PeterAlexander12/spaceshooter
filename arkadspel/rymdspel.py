@@ -40,6 +40,7 @@ from enemy import Enemy
 from missil import Missil
 
 from loadout import Loadout
+from save import save_game, load_game
 
 # game variables
 Player = Player(screen, player_pic)
@@ -79,39 +80,13 @@ potion_cooldown = 0
 bomb_cooldown = 0
 
 
-with open("coins.txt", "r") as f:
-    coins = int(f.read())
-
-with open("bombs.txt", "r") as f:
-    bombs = int(f.read())
-    for i in range(int(bombs)):
-        loadout.add_bomb()
-
-with open("health_Potion.txt", "r") as f:
-    health_potions = int(f.read())
-    for i in range(int(health_potions)):
-        loadout.add_potion("health")
-
-with open("strength_Potion.txt", "r") as f:
-    strength_potions = int(f.read())
-    for i in range(int(strength_potions)):
-        loadout.add_potion("strength")
+coins = load_game(loadout)
 
 
 def spawn_enemies(hp):
     for i in range(number_of_enemies):
         enemies.append(Enemy(hp, enemy_speed))
 
-def save_game():
-    with open("coins.txt", "w") as f:
-        f.write(str(coins))
-
-    with open("health_Potion.txt", "w") as f:
-        f.write(str(sum(1 for p in loadout.potions if p == "health")))
-    with open("strength_Potion.txt", "w") as f:
-        f.write(str(sum(1 for p in loadout.potions if p == "strength")))
-    with open("bombs.txt", "w") as f:
-        f.write(str(len(loadout.bombs)))
 
 def level_up():
     global level, Life, shoot_power, enemy_speed, coins, bonus_coins, coin_message, coin_message_timer, coins_this_run, enemyBlockChance
