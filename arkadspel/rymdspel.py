@@ -107,11 +107,11 @@ def save_game():
         f.write(str(coins))
 
     with open("health_Potion.txt", "w") as f:
-        f.write(str(loadout.potions))
+        f.write(str(sum(1 for p in loadout.potions if p == "health")))
     with open("strength_Potion.txt", "w") as f:
-        f.write(str(loadout.potions))
+        f.write(str(sum(1 for p in loadout.potions if p == "strength")))
     with open("bombs.txt", "w") as f:
-        f.write(str(loadout.bombs))
+        f.write(str(len(loadout.bombs)))
 
 def level_up():
     global level, Life, shoot_power, enemy_speed, coins, bonus_coins, coin_message, coin_message_timer, coins_this_run, enemyBlockChance
