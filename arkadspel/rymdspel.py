@@ -41,6 +41,7 @@ from missil import Missil
 
 from loadout import Loadout
 from save import save_game, load_game
+from keybinds import load_keybinds, save_keybinds
 
 # game variables
 Player = Player(screen, player_pic)
@@ -78,6 +79,8 @@ coins_this_run = 0
 # cooldown
 potion_cooldown = 0
 bomb_cooldown = 0
+keybinds = load_keybinds()
+keybind_selecting = None
 
 
 coins = load_game(loadout)
@@ -144,7 +147,7 @@ def restart():
 
 
 def handle_input():
-    global running, mode, degree_of_difficulty, Life, enemy_speed, explosion_size, number_of_enemies, potion_cooldown, bomb_cooldown
+    global running, mode, degree_of_difficulty, Life, enemy_speed, explosion_size, number_of_enemies, potion_cooldown, bomb_cooldown, keybind_selecting
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -179,14 +182,16 @@ def handle_input():
 
                 if event.key == pygame.K_ESCAPE:
                     mode = "menu"
-                if event.key == pygame.K_s:
+                if event.key == keybinds["open_shop"]:
                     mode = "shop"
-                if event.key == pygame.K_e:
+                if event.key == keybinds["open_backpack"]:
                     mode = "Backpack"
+                if event.key == pygame.K_k:
+                    mode = "keybinds"
 
             if mode == "game":
 
-                if event.key == pygame.K_SPACE:
+                if event.key == keybinds["use_potion"]:
                     if potion_cooldown == 0:
                         potion = loadout.get_potion()
                         if potion == "health":
@@ -215,6 +220,21 @@ def handle_input():
                         save_game(coins, loadout)
                 if event.key == pygame.K_ESCAPE:
                     mode = "menu"
+
+            if mode == "keybinds":
+                if keybind_selecting is None:
+                    if event.key == pygame.K_1:
+                        keybind_selecting = "use_potion"
+                    if event.key == pygame.K_2:
+                        keybind_selecting = "open_shop"
+                    if event.key == pygame.K_3:
+                        keybind_selecting = "open_backpack"
+                    if event.key == pygame.K_ESCAPE:
+                        save_keybinds(keybinds)
+                        mode = "menu"
+                else:
+                    keybinds[keybind_selecting] = event.key
+                    keybind_selecting = None
 
             if mode == "slut" and event.key == pygame.K_SPACE:
                 restart()
@@ -301,9 +321,12 @@ def draw():
         screen.blit(font.render("3 - Hard", True, (255, 165, 0)), font.render("3 - Hard", True, (255, 165, 0)).get_rect(center=(300, 350)))
         screen.blit(font.render("4 - Insane", True, (255, 0, 0)), font.render("4 - Insane", True, (255, 0, 0)).get_rect(center=(300, 400)))
         screen.blit(Shop_pic, Shop_pic.get_rect(center=(225, 50)))
-        screen.blit(stor_font.render("S", True, (0, 255, 0)), stor_font.render("S", True, (0, 255, 0)).get_rect(center=(225, 110)))
+        key_shop = pygame.key.name(keybinds["open_shop"]).upper()
+        key_backpack = pygame.key.name(keybinds["open_backpack"]).upper()
+        screen.blit(stor_font.render(key_shop, True, (0, 255, 0)), stor_font.render(key_shop, True, (0, 255, 0)).get_rect(center=(225, 110)))
         screen.blit(Backpack_pic, Backpack_pic.get_rect(center=(400, 50)))
-        screen.blit(stor_font.render("E", True, (0, 255, 0)),stor_font.render("E", True, (0, 255, 0)).get_rect(center=(395, 110)))
+        screen.blit(stor_font.render(key_backpack, True, (0, 255, 0)), stor_font.render(key_backpack, True, (0, 255, 0)).get_rect(center=(395, 110)))
+        screen.blit(font.render("K - Key Settings", True, (200, 200, 200)), font.render("K - Key Settings", True, (200, 200, 200)).get_rect(center=(300, 460)))
 
     elif mode == "shop":
         t_Title = stor_font.render("shop", True, (0, 255, 0))
@@ -331,6 +354,16 @@ def draw():
         screen.blit(t_Potion_count, (200, 300))
         screen.blit(t_Leave_backpack, t_Leave_backpack.get_rect(center=(150, 30)))
         screen.blit(t_coin_count, (150, 550))
+
+    elif mode == "keybinds":
+        screen.blit(stor_font.render("Key Settings", True, (0, 255, 0)), stor_font.render("Key Settings", True, (0, 255, 0)).get_rect(center=(300, 150)))
+        screen.blit(font.render("1 - Use Potion:    " + pygame.key.name(keybinds["use_potion"]), True, (255, 255, 255)), (100, 250))
+        screen.blit(font.render("2 - Open Shop:     " + pygame.key.name(keybinds["open_shop"]), True, (255, 255, 255)), (100, 300))
+        screen.blit(font.render("3 - Open Backpack: " + pygame.key.name(keybinds["open_backpack"]), True, (255, 255, 255)), (100, 350))
+        screen.blit(font.render("Esc - Save and go back", True, (178, 34, 34)), (100, 450))
+        if keybind_selecting:
+            t_waiting = font.render("Press any key for: " + keybind_selecting, True, (255, 215, 0))
+            screen.blit(t_waiting, t_waiting.get_rect(center=(300, 530)))
 
     elif mode == "slut":
         text1 = stor_font.render("Game Over!", True, (255, 0, 0))

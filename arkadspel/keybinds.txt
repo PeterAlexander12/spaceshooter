@@ -1,0 +1,3 @@
+use_potion:112
+open_shop:115
+open_backpack:101
