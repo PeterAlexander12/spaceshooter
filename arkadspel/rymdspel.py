@@ -130,7 +130,7 @@ def level_up():
 
 
 def restart():
-    global Life, mode, enemies, missiles, kill_count, level, shoot_power, enemy_speed, coins_this_run
+    global Life, mode, enemies, missiles, kill_count, level, shoot_power, enemy_speed, coins_this_run, bomb_cooldown, potion_cooldown
     Life = 3
     mode = "menu"
     kill_count = 0
@@ -142,6 +142,8 @@ def restart():
     enemies = []
     coins_this_run = 0
     spawn_enemies(3)
+    bomb_cooldown = 0
+    potion_cooldown = 0
 
 
 
