@@ -1,4 +1,5 @@
 import pygame
+from save import save_keybinds, load_keybinds as _load_keybinds
 
 DEFAULT_KEYBINDS = {
     "use_health_potion": pygame.K_SPACE,
@@ -21,19 +22,5 @@ def bind_name(value):
         return MOUSE_NAMES[value]
     return pygame.key.name(value)
 
-def save_keybinds(keybinds):
-    with open("keybinds.txt", "w") as f:
-        for action, key in keybinds.items():
-            f.write(action + ":" + str(key) + "\n")
-
 def load_keybinds():
-    keybinds = dict(DEFAULT_KEYBINDS)
-    try:
-        with open("keybinds.txt", "r") as f:
-            for line in f:
-                parts = line.strip().split(":")
-                if len(parts) == 2 and parts[0] in keybinds:
-                    keybinds[parts[0]] = int(parts[1])
-    except FileNotFoundError:
-        pass
-    return keybinds
+    return _load_keybinds(DEFAULT_KEYBINDS)
