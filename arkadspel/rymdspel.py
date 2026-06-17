@@ -1,8 +1,5 @@
 import pygame, sys
 import random
-import math
-
-from pygame.cursors import sizer_x_strings
 
 pygame.init()
 
@@ -46,11 +43,6 @@ from keybinds import load_keybinds, save_keybinds, bind_name
 # game variables
 Player = Player(screen, player_pic)
 loadout = Loadout()
-loadout.add_potion("health")
-loadout.add_potion("health")
-loadout.add_potion("health")
-loadout.add_bomb()
-loadout.add_bomb()
 explosion_size = 0
 missiles = []
 Life = 3
