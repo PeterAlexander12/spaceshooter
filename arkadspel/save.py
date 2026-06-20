@@ -31,8 +31,8 @@ def save_game(coins, loadout):
                 bombs = ?
         """, (
             coins,
-            sum(1 for p in loadout.potions if p == "health_potion"),
-            sum(1 for p in loadout.potions if p == "strength"),
+            sum(1 for p in loadout.health_potions if p == "health_potion"),
+            sum(1 for p in loadout.health_potions if p == "strength"),
             len(loadout.bombs)
         ))
 
