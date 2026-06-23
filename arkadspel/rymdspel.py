@@ -1,6 +1,6 @@
 import pygame, sys
 import random
-
+# hej
 pygame.init()
 
 WIDTH = 600
