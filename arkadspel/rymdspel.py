@@ -339,18 +339,22 @@ def draw():
     elif mode == "shop":
         t_Title = stor_font.render("shop", True, (0, 255, 0))
         t_Bomb = font.render("1 - Bomb", True, (255, 255, 255))
-        t_Potion = font.render("2 - Health Potion", True, (255, 255, 255))
+        t_health_Potion = font.render("2 - Health Potion", True, (255, 255, 255))
         t_Leave_shop = font.render("Esc - Leave shop", True, (178, 34, 34))
+        t_strength_Potion = font.render("2 - Strength Potion", True, (255, 255, 255))
 
         t_bomb_price = font.render(str(bomb_price) + " coins", True, (255, 255, 255))
-        t_potion_price = font.render(str(health_potion_price) + " coins", True, (255, 255, 255))
+        t_health_potion_price = font.render(str(health_potion_price) + " coins", True, (255, 255, 255))
+        t_strength_potion_price = font.render(str(health_potion_price) + " coins", True, (255, 255, 255))
 
         screen.blit(t_Title, t_Title.get_rect(center=(250, 200)))
         screen.blit(t_Bomb, (100, 250))
-        screen.blit(t_Potion, (100, 300))
+        screen.blit(t_health_Potion, (100, 300))
+        screen.blit(t_strength_Potion, (100, 350))
         screen.blit(t_Leave_shop, t_Leave_shop.get_rect(center=(120, 30)))
         screen.blit(t_bomb_price, t_bomb_price.get_rect(center=(400, 265)))
-        screen.blit(t_potion_price, t_potion_price.get_rect(center=(400, 315)))
+        screen.blit(t_health_potion_price, t_health_potion_price.get_rect(center=(400, 315)))
+        screen.blit(t_strength_potion_price, t_strength_potion_price.get_rect(center=(430, 365)))
 
     elif mode == "Backpack":
         t_Bomb_count = font.render("You have " + str(len(loadout.bombs)) + " bombs!", True, (255, 255, 255))
