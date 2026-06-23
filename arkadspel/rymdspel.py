@@ -48,7 +48,8 @@ missiles = []
 Life = 3
 bonus_coins = 10
 bomb_price = 5000
-potion_price = 300
+health_potion_price = 300
+strength_potion_price = 400
 kill_count = 0
 level = 1
 # enemies
@@ -213,7 +214,7 @@ def handle_input():
                 if event.key == pygame.K_2:
                     if coins > 499:
                         loadout.add_potion("health_potion")
-                        coins -= 500
+                        coins -= health_potion_price
                         save_game(coins, loadout)
                 if event.key == pygame.K_1:
                     if coins > 4999:
@@ -342,7 +343,7 @@ def draw():
         t_Leave_shop = font.render("Esc - Leave shop", True, (178, 34, 34))
 
         t_bomb_price = font.render(str(bomb_price) + " coins", True, (255, 255, 255))
-        t_potion_price = font.render(str(potion_price) + " coins", True, (255, 255, 255))
+        t_potion_price = font.render(str(health_potion_price) + " coins", True, (255, 255, 255))
 
         screen.blit(t_Title, t_Title.get_rect(center=(250, 200)))
         screen.blit(t_Bomb, (100, 250))
