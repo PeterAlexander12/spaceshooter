@@ -1,14 +1,14 @@
 class Loadout:
     def __init__(self):
-        self.potions = []
+        self.health_potions = []
         self.bombs = []
 
     def add_potion(self, potion):
-        self.potions.append(potion)
+        self.health_potions.append(potion)
 
     def get_potion(self):
-        if len(self.potions) > 0:
-            potion = self.potions.pop(0)
+        if len(self.health_potions) > 0:
+            potion = self.health_potions.pop(0)
             return potion
         return None
 

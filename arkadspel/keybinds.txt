@@ -1,4 +1,4 @@
-use_potion:112
+use_health_potion:32
 open_shop:115
 open_backpack:101
 use_bomb:98

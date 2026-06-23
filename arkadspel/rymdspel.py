@@ -141,9 +141,10 @@ def restart():
 
 
 def handle_input():
-    global running, mode, degree_of_difficulty, Life, enemy_speed, explosion_size, number_of_enemies, potion_cooldown, bomb_cooldown, keybind_selecting
+    global running, mode, degree_of_difficulty, Life, enemy_speed, explosion_size, number_of_enemies, potion_cooldown, bomb_cooldown, keybind_selecting, coins
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
+            save_game(coins, loadout)
             running = False
 
         if event.type == pygame.KEYDOWN:
@@ -200,6 +201,7 @@ def handle_input():
                             bomb_cooldown = 600
 
                 if event.key == pygame.K_ESCAPE:
+                    save_game(coins, loadout)
                     mode = "menu"
                     enemies.clear()
 
@@ -208,7 +210,6 @@ def handle_input():
                     mode = "menu"
 
             if mode == "shop":
-                global coins
                 if event.key == pygame.K_2:
                     if coins > 499:
                         loadout.add_potion("health_potion")
@@ -352,7 +353,7 @@ def draw():
 
     elif mode == "Backpack":
         t_Bomb_count = font.render("You have " + str(len(loadout.bombs)) + " bombs!", True, (255, 255, 255))
-        t_Potion_count = font.render("You have " + str(len(loadout.potions)) + " potions!", True, (255, 255, 255))
+        t_Potion_count = font.render("You have " + str(len(loadout.health_potions)) + " potions!", True, (255, 255, 255))
         t_Leave_backpack = font.render("Esc - Leave backpack", True, (178, 34, 34))
         t_coin_count = font.render("You have " + str(coins) + " coins!", True, (255, 215, 0))
 
@@ -386,7 +387,7 @@ def draw():
         screen.blit(font.render("Life: " + str(Life), True, (255, 255, 255)), (10, 10))
         screen.blit(font.render("Coins this run: " + str(coins_this_run), True, (255, 215, 0)), (200, 10))
         screen.blit(font.render("Level: " + str(level), True, (255, 255, 255)), (10, 570))
-        for i in range(len(loadout.potions)):
+        for i in range(len(loadout.health_potions)):
             screen.blit(potion_pic, (10 + i * 40, 530))
         for i in range(len(loadout.bombs)):
             screen.blit(bomb_pic, (10 + i * 40, 490))
