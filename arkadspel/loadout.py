@@ -6,6 +6,9 @@ class Loadout:
     def add_potion(self, potion):
         self.health_potions.append(potion)
 
+    def add_health_potion(self):
+        self.health_potions.append("health_potion")
+
     def get_potion(self):
         if len(self.health_potions) > 0:
             potion = self.health_potions.pop(0)
