@@ -163,13 +163,12 @@ def handle_input():
                     degree_of_difficulty = "medium"
                     mode = "game"
                     spawn_enemies(3)
-                    number_of_enemies += 1
                 if event.key == pygame.K_3:
                     degree_of_difficulty = "hard"
                     mode = "game"
                     enemy_speed = 2
                     spawn_enemies(3)
-                    number_of_enemies += 2
+                    number_of_enemies += 1
                     Life = 2
                 if event.key == pygame.K_4:
                     degree_of_difficulty = "insane"
@@ -177,7 +176,7 @@ def handle_input():
                     Life = 1
                     enemy_speed = 3
                     spawn_enemies(3)
-                    number_of_enemies += 3
+                    number_of_enemies += 2
 
                 if event.key == pygame.K_ESCAPE:
                     mode = "menu"
@@ -207,7 +206,7 @@ def handle_input():
                 if event.key == pygame.K_ESCAPE:
                     save_game(coins, loadout)
                     mode = "menu"
-                    enemies.clear()
+                    restart()
 
             if mode == "Backpack":
                 if event.key == pygame.K_ESCAPE:
