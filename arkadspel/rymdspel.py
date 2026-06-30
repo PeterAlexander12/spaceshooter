@@ -23,8 +23,8 @@ Shop_pic = pygame.image.load("images/shop.png").convert_alpha()
 Shop_pic = pygame.transform.scale(Shop_pic, (80, 80))
 Backpack_pic = pygame.image.load("images/backpack.png").convert_alpha()
 Backpack_pic = pygame.transform.scale(Backpack_pic, (100, 100))
-StrengthPotion_pic = pygame.image.load("images/strength_potion.png").convert_alpha()
-StrengthPotion_pic = pygame.transform.scale(StrengthPotion_pic, (30, 30))
+Strength_potion_pic = pygame.image.load("images/strength_potion.png").convert_alpha()
+Strength_potion_pic = pygame.transform.scale(Strength_potion_pic, (30, 30))
 
 font = pygame.font.Font(None, 40)
 stor_font = pygame.font.Font(None, 65)
@@ -48,9 +48,11 @@ Life = 3
 #shop
 bomb_price = 5000
 health_potion_price = 300
-strenght_potion_price = 300
+strength_potion_price = 400
 shop_message = ""
 shop_message_timer = 0
+# potions
+strength_potion_timer = 0
 #level
 kill_count = 0
 level = 1
@@ -73,7 +75,8 @@ coin_message = ""
 coin_message_timer = 0
 coins_this_run = 0
 # cooldown
-potion_cooldown = 0
+health_potion_cooldown = 0
+strength_potion_cooldown = 0
 bomb_cooldown = 0
 keybinds = load_keybinds()
 keybind_selecting = None
@@ -126,7 +129,7 @@ def level_up():
 
 
 def restart():
-    global Life, mode, enemies, missiles, kill_count, level, shoot_power, enemy_speed, coins_this_run, bomb_cooldown, potion_cooldown
+    global Life, mode, enemies, missiles, kill_count, level, shoot_power, enemy_speed, coins_this_run, bomb_cooldown, health_potion_cooldown, strength_potion_cooldown
     Life = 3
     mode = "menu"
     kill_count = 0
@@ -139,13 +142,14 @@ def restart():
     coins_this_run = 0
     spawn_enemies(3)
     bomb_cooldown = 0
-    potion_cooldown = 0
+    health_potion_cooldown = 0
+    strength_potion_cooldown = 0
 
 
 
 
 def handle_input():
-    global running, mode, degree_of_difficulty, Life, enemy_speed, explosion_size, number_of_enemies, potion_cooldown, bomb_cooldown, keybind_selecting, coins, shop_message, shop_message_timer
+    global running, mode, degree_of_difficulty, Life, enemy_speed, explosion_size, number_of_enemies, health_potion_cooldown, strength_potion_cooldown, bomb_cooldown, keybind_selecting, coins, shop_message, shop_message_timer, shoot_power
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             save_game(coins, loadout)
@@ -190,11 +194,18 @@ def handle_input():
             if mode == "game":
 
                 if event.key == keybinds["use_health_potion"]:
-                    if potion_cooldown == 0:
-                        potion = loadout.get_potion()
+                    if health_potion_cooldown == 0:
+                        potion = loadout.get_health_potion()
                         if potion == "health_potion":
                             Life += 1
-                        potion_cooldown = 150
+                        health_potion_cooldown = 150
+
+                if event.key == keybinds["use_strength_potion"]:
+                    if strength_potion_cooldown == 0:
+                        potion = loadout.get_strength_potion()
+                        if potion == "strength_potion":
+                            shoot_power += 1
+                        strength_potion_cooldown = 150
 
                 if event.key == keybinds["use_bomb"]:
                     if bomb_cooldown == 0:
@@ -228,6 +239,13 @@ def handle_input():
                         coins -= 5000
                         save_game(coins, loadout)
                         shop_message = "You bought a bomb"
+                if event.key == pygame.K_3:
+                    if coins > 299:
+                        loadout.add_strength_potion()
+                        coins -= 300
+                        save_game(coins, loadout)
+                        shop_message = "You bought a strength potion"
+                        coins -= 300
                     else:
                         shop_message = "You brokey! You don't have enough coins"
                     shop_message_timer = 30
@@ -240,10 +258,12 @@ def handle_input():
                     if event.key == pygame.K_1:
                         keybind_selecting = "use_health_potion"
                     if event.key == pygame.K_2:
-                        keybind_selecting = "open_shop"
+                        keybind_selecting = "use_strength_potion"
                     if event.key == pygame.K_3:
-                        keybind_selecting = "open_backpack"
+                        keybind_selecting = "open_shop"
                     if event.key == pygame.K_4:
+                        keybind_selecting = "open_backpack"
+                    if event.key == pygame.K_5:
                         keybind_selecting = "use_bomb"
                     if event.key == pygame.K_ESCAPE:
                         save_keybinds(keybinds)
@@ -271,7 +291,7 @@ def handle_input():
                         bomb_cooldown = 600
 
 def update():
-    global mode, kill_count, Life, explosion_size, coin_message_timer, potion_cooldown, blocked_message_timer, shop_message_timer
+    global mode, kill_count, Life, explosion_size, coin_message_timer, health_potion_cooldown, strength_potion_cooldown, blocked_message_timer, shop_message_timer
     if explosion_size > 0:
         explosion_size += 30
         if explosion_size > WIDTH * 1.5:
@@ -282,8 +302,10 @@ def update():
     if shop_message_timer > 0:
         shop_message_timer -= 1
 
-    if potion_cooldown > 0:
-        potion_cooldown -= 1
+    if health_potion_cooldown > 0:
+        health_potion_cooldown -= 1
+    if strength_potion_cooldown > 0:
+        strength_potion_cooldown -= 1
     if mode != "game":
         return
 
@@ -355,41 +377,44 @@ def draw():
         t_Bomb = font.render("1 - Bomb", True, (255, 255, 255))
         t_Health_potion = font.render("2 - Health Potion", True, (255, 255, 255))
         t_Leave_shop = font.render("Esc - Leave shop", True, (178, 34, 34))
-        t_Strenght_potion = font.render("3 - Strength Potion", True, (255, 255, 255))
+        t_Strength_potion = font.render("3 - Strength Potion", True, (255, 255, 255))
 
         t_bomb_price = font.render(str(bomb_price) + " coins", True, (255, 255, 255))
         t_health_potion_price = font.render(str(health_potion_price) + " coins", True, (255, 255, 255))
-        t_strenght_potion_price = font.render(str(strenght_potion_price) + " coins", True, (255, 255, 255))
+        t_strength_potion_price = font.render(str(strength_potion_price) + " coins", True, (255, 255, 255))
 
         screen.blit(t_Title, t_Title.get_rect(center=(250, 200)))
         screen.blit(t_Bomb, (100, 250))
         screen.blit(t_Health_potion, (100, 300))
-        screen.blit(t_Strenght_potion, (100, 350))
+        screen.blit(t_Strength_potion, (100, 350))
         screen.blit(t_Leave_shop, t_Leave_shop.get_rect(center=(120, 30)))
         screen.blit(t_bomb_price, t_bomb_price.get_rect(center=(400, 265)))
         screen.blit(t_health_potion_price, t_health_potion_price.get_rect(center=(400, 315)))
-        screen.blit(t_strenght_potion_price, t_strenght_potion_price.get_rect(center=(430, 365)))
+        screen.blit(t_strength_potion_price, t_strength_potion_price.get_rect(center=(430, 365)))
         if shop_message_timer > 0:
             t_shop_message = font.render(shop_message, True, (255, 215, 0))
             screen.blit(t_shop_message, t_shop_message.get_rect(center=(WIDTH // 2, 80)))
 
     elif mode == "Backpack":
         t_Bomb_count = font.render("You have " + str(len(loadout.bombs)) + " bombs!", True, (255, 255, 255))
-        t_Potion_count = font.render("You have " + str(len(loadout.health_potions)) + " potions!", True, (255, 255, 255))
+        t_Health_potion_count = font.render("You have " + str(len(loadout.health_potions)) + " health potions!", True, (255, 255, 255))
+        t_Strength_potion_count = font.render("You have " + str(len(loadout.strength_potions)) + " strength potions!", True,(255, 255, 255))
         t_Leave_backpack = font.render("Esc - Leave backpack", True, (178, 34, 34))
         t_coin_count = font.render("You have " + str(coins) + " coins!", True, (255, 215, 0))
 
         screen.blit(t_Bomb_count, (200, 250))
-        screen.blit(t_Potion_count, (200, 300))
+        screen.blit(t_Health_potion_count, (200, 300))
+        screen.blit(t_Strength_potion_count, (200, 350))
         screen.blit(t_Leave_backpack, t_Leave_backpack.get_rect(center=(150, 30)))
         screen.blit(t_coin_count, (150, 550))
 
     elif mode == "keybinds":
         screen.blit(stor_font.render("Key Settings", True, (0, 255, 0)), stor_font.render("Key Settings", True, (0, 255, 0)).get_rect(center=(300, 150)))
         screen.blit(font.render("1 - Use Health Potion: " + bind_name(keybinds["use_health_potion"]), True, (255, 255, 255)), (100, 250))
-        screen.blit(font.render("2 - Open Shop:     " + bind_name(keybinds["open_shop"]), True, (255, 255, 255)), (100, 300))
-        screen.blit(font.render("3 - Open Backpack: " + bind_name(keybinds["open_backpack"]), True, (255, 255, 255)), (100, 350))
-        screen.blit(font.render("4 - Use Bomb:      " + bind_name(keybinds["use_bomb"]), True, (255, 255, 255)), (100, 400))
+        screen.blit(font.render("2 - Use Strength Potion: " + bind_name(keybinds["use_strength_potion"]), True, (255, 255, 255)),(100, 300))
+        screen.blit(font.render("3 - Open Shop:     " + bind_name(keybinds["open_shop"]), True, (255, 255, 255)), (100, 350))
+        screen.blit(font.render("4 - Open Backpack: " + bind_name(keybinds["open_backpack"]), True, (255, 255, 255)), (100, 400))
+        screen.blit(font.render("5 - Use Bomb:      " + bind_name(keybinds["use_bomb"]), True, (255, 255, 255)), (100, 450))
         screen.blit(font.render("Esc - Save and go back", True, (178, 34, 34)), (100, 470))
         if keybind_selecting:
             t_waiting = font.render("Press any key for: " + keybind_selecting, True, (255, 215, 0))

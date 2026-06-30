@@ -3,6 +3,7 @@ from save import save_keybinds, load_keybinds as _load_keybinds
 
 DEFAULT_KEYBINDS = {
     "use_health_potion": pygame.K_SPACE,
+    "use_strength_potion": pygame.K_z,
     "open_shop": pygame.K_s,
     "open_backpack": pygame.K_e,
     "use_bomb": 3,
