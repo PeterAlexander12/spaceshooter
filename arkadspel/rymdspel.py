@@ -53,6 +53,8 @@ shop_message = ""
 shop_message_timer = 0
 # potions
 strength_potion_timer = 0
+potion_message_timer = 0
+potion_message = ""
 #level
 kill_count = 0
 level = 1
@@ -149,7 +151,7 @@ def restart():
 
 
 def handle_input():
-    global running, mode, degree_of_difficulty, Life, enemy_speed, explosion_size, number_of_enemies, health_potion_cooldown, strength_potion_cooldown, bomb_cooldown, keybind_selecting, coins, shop_message, shop_message_timer, shoot_power
+    global running, mode, degree_of_difficulty, Life, enemy_speed, explosion_size, number_of_enemies, health_potion_cooldown, strength_potion_cooldown, bomb_cooldown, keybind_selecting, coins, shop_message, shop_message_timer, shoot_power, potion_message_timer, potion_message
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             save_game(coins, loadout)
@@ -195,17 +197,19 @@ def handle_input():
 
                 if event.key == keybinds["use_health_potion"]:
                     if health_potion_cooldown == 0:
-                        potion = loadout.get_health_potion()
-                        if potion == "health_potion":
-                            Life += 1
+                        loadout.get_health_potion()
+                        potion_message = "You drank a Health Potion!"
+                        Life += 1
                         health_potion_cooldown = 150
+                        potion_message_timer = 30
 
                 if event.key == keybinds["use_strength_potion"]:
                     if strength_potion_cooldown == 0:
-                        potion = loadout.get_strength_potion()
-                        if potion == "strength_potion":
-                            shoot_power += 1
+                        loadout.get_strength_potion()
+                        potion_message = "You drank a Strength Potion!"
+                        shoot_power += 1
                         strength_potion_cooldown = 150
+                        potion_message_timer = 30
 
                 if event.key == keybinds["use_bomb"]:
                     if bomb_cooldown == 0:
@@ -290,7 +294,7 @@ def handle_input():
                         bomb_cooldown = 600
 
 def update():
-    global mode, kill_count, Life, explosion_size, coin_message_timer, health_potion_cooldown, strength_potion_cooldown, bomb_cooldown, blocked_message_timer, shop_message_timer
+    global mode, kill_count, Life, explosion_size, coin_message_timer, health_potion_cooldown, strength_potion_cooldown, bomb_cooldown, blocked_message_timer, shop_message_timer, potion_message_timer
     if explosion_size > 0:
         explosion_size += 30
         if explosion_size > WIDTH * 1.5:
@@ -300,6 +304,8 @@ def update():
         coin_message_timer -= 1
     if shop_message_timer > 0:
         shop_message_timer -= 1
+    if potion_message_timer > 0:
+        potion_message_timer -= 1
 
     if health_potion_cooldown > 0:
         health_potion_cooldown -= 1
@@ -435,10 +441,16 @@ def draw():
         screen.blit(font.render("Life: " + str(Life), True, (255, 255, 255)), (10, 10))
         screen.blit(font.render("Coins this run: " + str(coins_this_run), True, (255, 215, 0)), (200, 10))
         screen.blit(font.render("Level: " + str(level), True, (255, 255, 255)), (10, 570))
+        if potion_message_timer > 0:
+            t_potion_message = font.render(potion_message, True, (255, 215, 0))
+            screen.blit(t_potion_message, t_potion_message.get_rect(center=(WIDTH // 2, 50)))
         for i in range(len(loadout.health_potions)):
             screen.blit(potion_pic, (10 + i * 40, 530))
+        for i in range(len(loadout.strength_potions)):
+            screen.blit(Strength_potion_pic, (10 + i * 40, 490))
+
         for i in range(len(loadout.bombs)):
-            screen.blit(bomb_pic, (10 + i * 40, 490))
+            screen.blit(bomb_pic, (10 + i * 40, 450))
         if explosion_size > 0:
             scaled = pygame.transform.scale(explosion_pic, (explosion_size, explosion_size))
             screen.blit(scaled, scaled.get_rect(center=(WIDTH // 2, HEIGHT // 2)))
