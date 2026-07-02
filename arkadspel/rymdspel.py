@@ -36,8 +36,8 @@ from enemy import Enemy
 
 from missil import Missil
 from loadout import Loadout
-from save import save_game, load_game, save_keybinds
-from keybinds import load_keybinds, bind_name
+from save import save_game, load_game, save_keybinds, get_profiles, create_profile
+from keybinds import load_keybinds, bind_name, DEFAULT_KEYBINDS
 
 # game variables
 Player = Player(screen, player_pic)
@@ -69,7 +69,11 @@ enemyBlockChance = 1
 MaxDodgeChance = 20
 blocked_message = ""
 blocked_message_timer = 0
-mode = "menu"
+# Login
+mode = "Login"
+Current_profile_id = None
+login_input = ""
+# difficulty
 degree_of_difficulty = None
 # coin
 bonus_coins = 10
@@ -80,7 +84,7 @@ coins_this_run = 0
 health_potion_cooldown = 0
 strength_potion_cooldown = 0
 bomb_cooldown = 0
-keybinds = load_keybinds()
+keybinds = dict(DEFAULT_KEYBINDS)
 keybind_selecting = None
 
 
@@ -367,6 +371,17 @@ def draw():
 
     if mode == "Login":
         screen.blit(stor_font.render("C to create account, L to login", True, (255, 255, 255)), stor_font.render("C to create account, " "L to login", True, (255, 255, 255)).get_rect(center=(370, 150)))
+        profiles = get_profiles()
+        for i, (profile_id, name) in enumerate(profiles):
+            screen.blit(font.render(str(i + 1) + " - " + name, True, (255, 255, 255)),
+                        font.render(str(i + 1) + " - " + name, True, (255, 255, 255)).get_rect(
+                            center=(300, 200 + i * 50)))
+        screen.blit(font.render("N - New profile", True, (255, 215, 0)),
+                    font.render("N - New profile", True, (255, 215, 0)).get_rect(
+                        center=(300, 200 + len(profiles) * 50)))
+        if login_input != "":
+            screen.blit(font.render("Name: " + login_input, True, (0, 255, 200)),
+                        font.render("Name: " + login_input, True, (0, 255, 200)).get_rect(center=(300, 500)))
 
     if mode == "menu":
         screen.blit(stor_font.render("Choose difficulty", True, (255, 255, 255)), stor_font.render("Choose " "svårighetsgrad", True, (255, 255, 255)).get_rect(center=(370, 150)))
