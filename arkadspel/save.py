@@ -5,21 +5,42 @@ DB = "save.db"
 def _init_db():
     with sqlite3.connect(DB) as con:
         con.execute("""
+            CREATE TABLE IF NOT EXISTS profiles (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT UNIQUE
+            )
+        """)
+        con.execute("""
             CREATE TABLE IF NOT EXISTS game_save (
+                profile_id INTEGER PRIMARY KEY,
                 coins INTEGER,
                 health_potions INTEGER,
                 strength_potions INTEGER,
                 bombs INTEGER
             )
         """)
-        if con.execute("SELECT COUNT(*) FROM game_save").fetchone()[0] == 0:
-            con.execute("INSERT INTO game_save VALUES (0, 0, 0, 0)")
         con.execute("""
             CREATE TABLE IF NOT EXISTS keybinds (
-                action TEXT PRIMARY KEY,
-                value INTEGER
+                profile_id INTEGER,
+                action TEXT,
+                value INTEGER,
+                PRIMARY KEY (profile_id, action)
             )
         """)
+
+def get_profiles():
+    _init_db()
+    with sqlite3.connect(DB) as con:
+        rows = con.execute("SELECT id, name FROM profiles").fetchall()
+    return rows
+
+def create_profile(name):
+    _init_db()
+    with sqlite3.connect(DB) as con:
+        con.execute("INSERT INTO profiles (name) VALUES (?)", (name,))
+        profile_id = con.execute("SELECT id FROM profiles WHERE name = ?", (name,)).fetchone()[0]
+        con.execute("INSERT INTO game_save (profile_id, coins, health_potions, strength_potions, bombs) VALUES (?, 0, 0, 0, 0)", (profile_id,))
+    return profile_id
 
 def save_game(coins, loadout):
     with sqlite3.connect(DB) as con:
