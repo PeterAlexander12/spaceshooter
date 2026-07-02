@@ -23,5 +23,5 @@ def bind_name(value):
         return MOUSE_NAMES[value]
     return pygame.key.name(value)
 
-def load_keybinds():
-    return _load_keybinds(DEFAULT_KEYBINDS)
+def load_keybinds(profile_id):
+    return _load_keybinds(DEFAULT_KEYBINDS, profile_id)

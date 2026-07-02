@@ -42,7 +42,7 @@ def create_profile(name):
         con.execute("INSERT INTO game_save (profile_id, coins, health_potions, strength_potions, bombs) VALUES (?, 0, 0, 0, 0)", (profile_id,))
     return profile_id
 
-def save_game(coins, loadout):
+def save_game(coins, loadout, profile_id):
     with sqlite3.connect(DB) as con:
         con.execute("""
             UPDATE game_save SET
@@ -50,32 +50,34 @@ def save_game(coins, loadout):
                 health_potions = ?,
                 strength_potions = ?,
                 bombs = ?
+                WHERE profile_id = ?
         """, (
             coins,
             len(loadout.health_potions),
             len(loadout.strength_potions),
-            len(loadout.bombs)
+            len(loadout.bombs),
+            profile_id
         ))
 
-def save_keybinds(keybinds):
+def save_keybinds(keybinds, profile_id):
     with sqlite3.connect(DB) as con:
         for action, value in keybinds.items():
-            con.execute("INSERT OR REPLACE INTO keybinds (action, value) VALUES (?, ?)", (action, value))
+            con.execute("INSERT OR REPLACE INTO keybinds (profile_id, action, value) VALUES (?, ?, ?)", (profile_id, action, value))
 
-def load_keybinds(defaults):
+def load_keybinds(defaults, profile_id):
     _init_db()
     with sqlite3.connect(DB) as con:
-        rows = con.execute("SELECT action, value FROM keybinds").fetchall()
+        rows = con.execute("SELECT action, value FROM keybinds, WHERE profile_id = ?", profile_id).fetchall()
     keybinds = dict(defaults)
     for action, value in rows:
         if action in keybinds:
             keybinds[action] = value
     return keybinds
 
-def load_game(loadout):
+def load_game(loadout, profile_id):
     _init_db()
     with sqlite3.connect(DB) as con:
-        row = con.execute("SELECT coins, health_potions, strength_potions, bombs FROM game_save").fetchone()
+        row = con.execute("SELECT coins, health_potions, strength_potions, bombs FROM game_save, WHERE profile_id = ?", profile_id).fetchone()
     coins, health_potions, strength_potions, bombs = row
     for _ in range(health_potions):
         loadout.add_health_potion()
