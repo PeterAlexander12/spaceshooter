@@ -31,8 +31,8 @@ def save_game(coins, loadout):
                 bombs = ?
         """, (
             coins,
-            sum(1 for p in loadout.health_potions if p == "health_potion"),
-            sum(1 for p in loadout.health_potions if p == "strength"),
+            len(loadout.health_potions),
+            len(loadout.strength_potions),
             len(loadout.bombs)
         ))
 
@@ -57,9 +57,9 @@ def load_game(loadout):
         row = con.execute("SELECT coins, health_potions, strength_potions, bombs FROM game_save").fetchone()
     coins, health_potions, strength_potions, bombs = row
     for _ in range(health_potions):
-        loadout.add_potion("health_potion")
+        loadout.add_health_potion()
     for _ in range(strength_potions):
-        loadout.add_potion("strength")
+        loadout.add_strength_potion()
     for _ in range(bombs):
         loadout.add_bomb()
     return coins

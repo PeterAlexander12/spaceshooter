@@ -14,7 +14,7 @@ class Loadout:
         return None
 
     def add_strength_potion(self):
-        self.strength_potions.append("health_potion")
+        self.strength_potions.append("strength_potion")
 
     def get_strength_potion(self):
         if len(self.strength_potions) > 0:

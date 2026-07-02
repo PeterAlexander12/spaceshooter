@@ -245,7 +245,6 @@ def handle_input():
                         coins -= 300
                         save_game(coins, loadout)
                         shop_message = "You bought a strength potion"
-                        coins -= 300
                     else:
                         shop_message = "You brokey! You don't have enough coins"
                     shop_message_timer = 30
@@ -291,7 +290,7 @@ def handle_input():
                         bomb_cooldown = 600
 
 def update():
-    global mode, kill_count, Life, explosion_size, coin_message_timer, health_potion_cooldown, strength_potion_cooldown, blocked_message_timer, shop_message_timer
+    global mode, kill_count, Life, explosion_size, coin_message_timer, health_potion_cooldown, strength_potion_cooldown, bomb_cooldown, blocked_message_timer, shop_message_timer
     if explosion_size > 0:
         explosion_size += 30
         if explosion_size > WIDTH * 1.5:
@@ -306,6 +305,8 @@ def update():
         health_potion_cooldown -= 1
     if strength_potion_cooldown > 0:
         strength_potion_cooldown -= 1
+    if bomb_cooldown > 0:
+        bomb_cooldown -= 1
     if mode != "game":
         return
 
