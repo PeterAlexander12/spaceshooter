@@ -365,6 +365,9 @@ def update():
 def draw():
     screen.blit(background_pic, (0, 0))
 
+    if mode == "Login":
+        screen.blit(stor_font.render("C to create account, L to login", True, (255, 255, 255)), stor_font.render("C to create account, " "L to login", True, (255, 255, 255)).get_rect(center=(370, 150)))
+
     if mode == "menu":
         screen.blit(stor_font.render("Choose difficulty", True, (255, 255, 255)), stor_font.render("Choose " "svårighetsgrad", True, (255, 255, 255)).get_rect(center=(370, 150)))
         screen.blit(font.render("1 - Easy", True, (0, 255, 0)), font.render("1 - Easy", True, (0, 255, 0)).get_rect(center=(300, 250)))
