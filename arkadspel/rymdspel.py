@@ -392,6 +392,7 @@ def update():
         spawn_enemies(new_enemy_hp)
 
 
+
 def draw():
     screen.blit(background_pic, (0, 0))
 
