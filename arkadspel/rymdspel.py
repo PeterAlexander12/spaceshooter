@@ -189,7 +189,7 @@ def handle_input():
                     else:
                         login_input += event.unicode
 
-            if mode == "menu":
+            elif mode == "menu":
                 if event.key == pygame.K_1:
                     degree_of_difficulty = "easy"
                     mode = "game"
@@ -411,7 +411,7 @@ def draw():
             screen.blit(font.render("Enter to confirm, Esc to cancel", True, (178, 34, 34)),
                         font.render("Enter to confirm, Esc to cancel", True, (178, 34, 34)).get_rect(center=(300, 545)))
 
-    if mode == "menu":
+    elif mode == "menu":
         screen.blit(stor_font.render("Choose difficulty", True, (255, 255, 255)), stor_font.render("Choose " "svårighetsgrad", True, (255, 255, 255)).get_rect(center=(370, 150)))
         screen.blit(font.render("1 - Easy", True, (0, 255, 0)), font.render("1 - Easy", True, (0, 255, 0)).get_rect(center=(300, 250)))
         screen.blit(font.render("2 - Medium", True, (255, 255, 0)), font.render("2 - Medium", True, (255, 255, 0)).get_rect(center=(300, 300)))
