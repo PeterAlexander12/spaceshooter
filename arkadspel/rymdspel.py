@@ -67,8 +67,6 @@ enemy_speed = 1
 # Dodge
 enemyBlockChance = 1
 MaxDodgeChance = 20
-blocked_message = ""
-blocked_message_timer = 0
 # Login
 mode = "Login"
 Current_profile_id = None
@@ -327,7 +325,7 @@ def handle_input():
                         bomb_cooldown = 600
 
 def update():
-    global mode, kill_count, Life, explosion_size, coin_message_timer, health_potion_cooldown, strength_potion_cooldown, bomb_cooldown, blocked_message_timer, shop_message_timer, potion_message_timer
+    global mode, kill_count, Life, explosion_size, coin_message_timer, health_potion_cooldown, strength_potion_cooldown, bomb_cooldown, shop_message_timer, potion_message_timer
     if explosion_size > 0:
         explosion_size += 30
         if explosion_size > WIDTH * 1.5:
@@ -375,7 +373,6 @@ def update():
                 # roll to see if enemy dodges
                 if random.randint(1, MaxDodgeChance) <= enemyBlockChance:
                     # enemy dodged and the missile disapear
-                    blocked_message_timer = 15
                     missiles.remove(m)
                     break
                 # enemy didn´t dodge so it takes damage
@@ -508,10 +505,6 @@ def draw():
         if coin_message_timer > 0:
             t_coin = font.render(coin_message, True, (255, 215, 0))
             screen.blit(t_coin, t_coin.get_rect(center=(WIDTH // 2, 80)))
-        # draw blocked message while timer is running
-        #if blocked_message_timer > 0:
-        #t_blocked = font.render(blocked_message, True, (255, 255, 255))
-        #screen.blit(t_blocked, t_blocked.get_rect())
 
 
 
