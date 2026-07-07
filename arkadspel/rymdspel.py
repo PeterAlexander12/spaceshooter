@@ -36,7 +36,7 @@ from enemy import Enemy
 
 from missil import Missil
 from loadout import Loadout
-from save import save_game, load_game, save_keybinds, get_profiles, create_profile
+from save import save_game, load_game, save_keybinds, get_profiles, create_profile, load_scores, save_score
 from keybinds import load_keybinds, bind_name, DEFAULT_KEYBINDS
 
 # game variables
@@ -224,6 +224,9 @@ def handle_input():
                 if event.key == pygame.K_k:
                     mode = "keybinds"
 
+                if event.key == pygame.K_l:
+                    mode = "leaderboard"
+
             if mode == "game":
 
                 if event.key == keybinds["use_health_potion"]:
@@ -253,6 +256,10 @@ def handle_input():
                     save_game(coins, loadout, Current_profile_id)
                     mode = "menu"
                     restart()
+
+            if mode == "leaderboard":
+                if event.key == pygame.K_ESCAPE:
+                    mode = "menu"
 
             if mode == "Backpack":
                 if event.key == pygame.K_ESCAPE:
@@ -425,6 +432,15 @@ def draw():
         screen.blit(Backpack_pic, Backpack_pic.get_rect(center=(400, 50)))
         screen.blit(stor_font.render(key_backpack, True, (0, 255, 0)), stor_font.render(key_backpack, True, (0, 255, 0)).get_rect(center=(395, 110)))
         screen.blit(font.render("K - Key Settings", True, (200, 200, 200)), font.render("K - Key Settings", True, (200, 200, 200)).get_rect(center=(300, 460)))
+
+    elif mode == "leaderboard":
+        screen.fill((0, 0, 0))
+        screen.blit(stor_font.render("Leaderboard", True, (255, 255, 255)), stor_font.render("Leaderboard ", True, (255, 255, 255)).get_rect(center=(300, 100)))
+        scores = load_scores(Current_profile_id)
+        y = 1
+        for i, entry in enumerate(scores):
+            screen.blit(font.render(str(i + 1) + ". " + str(entry[0]) + "coins", True, (255, 255, 255)),(20, y))
+            y += 20
 
     elif mode == "shop":
         t_Title = stor_font.render("shop", True, (0, 255, 0))
