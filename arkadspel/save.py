@@ -27,6 +27,16 @@ def _init_db():
                 PRIMARY KEY (profile_id, action)
             )
         """)
+        con.execute("""
+            CREATE TABLE IF NOT EXISTS leaderboard (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                profile_id INTEGER,
+                score_coins INTEGER,
+                score_level INTEGER,
+                difficulty TEXT,
+                date TEXT
+            )
+        """)
 
 def get_profiles():
     _init_db()
