@@ -84,6 +84,23 @@ def load_keybinds(defaults, profile_id):
             keybinds[action] = value
     return keybinds
 
+def save_score(profile_id, coins, level, difficulty, date):
+    with sqlite3.connect(DB) as con:
+        con.execute("""
+            INSERT INTO leaderboard (profile_id, score_coins, score_level, difficulty, date)
+            VALUES (?, ?, ?, ?, ?)
+        """, (profile_id, coins, level, difficulty, date))
+
+def load_scores(profile_id):
+    with sqlite3.connect(DB) as con:
+        rows = con.execute("""
+            SELECT score_coins, score_level, difficulty, date
+            FROM leaderboard
+            WHERE profile_id = ?
+            ORDER BY difficulty, score_coins DESC
+        """, (profile_id,)).fetchall()
+    return rows
+
 def load_game(loadout, profile_id):
     _init_db()
     with sqlite3.connect(DB) as con:
