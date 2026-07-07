@@ -460,7 +460,6 @@ def draw():
         screen.blit(t_Strength_potion_count, (200, 350))
         screen.blit(t_Leave_backpack, t_Leave_backpack.get_rect(center=(150, 30)))
         screen.blit(t_coin_count, (150, 550))
-        
 
     elif mode == "keybinds":
         screen.blit(stor_font.render("Key Settings", True, (0, 255, 0)), stor_font.render("Key Settings", True, (0, 255, 0)).get_rect(center=(300, 150)))
