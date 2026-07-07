@@ -73,6 +73,7 @@ blocked_message_timer = 0
 mode = "Login"
 Current_profile_id = None
 login_input = ""
+creating_profile = False
 # difficulty
 degree_of_difficulty = None
 # coin
@@ -88,7 +89,7 @@ keybinds = dict(DEFAULT_KEYBINDS)
 keybind_selecting = None
 
 
-coins = load_game(loadout)
+coins = 0
 
 
 def spawn_enemies(hp):
@@ -155,13 +156,41 @@ def restart():
 
 
 def handle_input():
-    global running, mode, degree_of_difficulty, Life, enemy_speed, explosion_size, number_of_enemies, health_potion_cooldown, strength_potion_cooldown, bomb_cooldown, keybind_selecting, coins, shop_message, shop_message_timer, shoot_power, potion_message_timer, potion_message
+    global running, mode, degree_of_difficulty, Life, enemy_speed, explosion_size, number_of_enemies, health_potion_cooldown, strength_potion_cooldown, bomb_cooldown, keybind_selecting, coins, shop_message, shop_message_timer, shoot_power, potion_message_timer, potion_message, Current_profile_id, login_input, creating_profile, keybinds
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            save_game(coins, loadout)
+            save_game(coins, loadout, Current_profile_id)
             running = False
 
         if event.type == pygame.KEYDOWN:
+            if mode == "Login":
+                if not creating_profile:
+                    profiles = get_profiles()
+                    for i, (pid, name) in enumerate(profiles):
+                        if event.key == pygame.K_1 + i:
+                            Current_profile_id = pid
+                            coins = load_game(loadout, Current_profile_id)
+                            keybinds = load_keybinds(Current_profile_id)
+                            mode = "menu"
+                    if event.key == pygame.K_n:
+                        creating_profile = True
+                else:
+                    if event.key == pygame.K_RETURN:
+                        if login_input.strip():
+                            Current_profile_id = create_profile(login_input.strip())
+                            coins = load_game(loadout, Current_profile_id)
+                            keybinds = load_keybinds(Current_profile_id)
+                            login_input = ""
+                            creating_profile = False
+                            mode = "menu"
+                    elif event.key == pygame.K_BACKSPACE:
+                        login_input = login_input[:-1]
+                    elif event.key == pygame.K_ESCAPE:
+                        login_input = ""
+                        creating_profile = False
+                    else:
+                        login_input += event.unicode
+
             if mode == "menu":
                 if event.key == pygame.K_1:
                     degree_of_difficulty = "easy"
@@ -223,7 +252,7 @@ def handle_input():
                             bomb_cooldown = 600
 
                 if event.key == pygame.K_ESCAPE:
-                    save_game(coins, loadout)
+                    save_game(coins, loadout, Current_profile_id)
                     mode = "menu"
                     restart()
 
@@ -236,7 +265,7 @@ def handle_input():
                     if coins > 299:
                         loadout.add_health_potion()
                         coins -= 300
-                        save_game(coins, loadout)
+                        save_game(coins, loadout, Current_profile_id)
                         shop_message = "You bought a health potion"
                     else:
                         shop_message = "You brokey! You don´t have enough coins!"
@@ -245,13 +274,13 @@ def handle_input():
                     if coins > 4999:
                         loadout.add_bomb()
                         coins -= 5000
-                        save_game(coins, loadout)
+                        save_game(coins, loadout, Current_profile_id)
                         shop_message = "You bought a bomb"
                 if event.key == pygame.K_3:
                     if coins > 299:
                         loadout.add_strength_potion()
                         coins -= 300
-                        save_game(coins, loadout)
+                        save_game(coins, loadout, Current_profile_id)
                         shop_message = "You bought a strength potion"
                     else:
                         shop_message = "You brokey! You don't have enough coins"
@@ -273,7 +302,7 @@ def handle_input():
                     if event.key == pygame.K_5:
                         keybind_selecting = "use_bomb"
                     if event.key == pygame.K_ESCAPE:
-                        save_keybinds(keybinds)
+                        save_keybinds(keybinds, Current_profile_id)
                         mode = "menu"
                 else:
                     keybinds[keybind_selecting] = event.key
@@ -331,7 +360,7 @@ def update():
             Life -= 1
             if Life <= 0:
                 mode = "slut"
-                save_game(coins, loadout)
+                save_game(coins, loadout, Current_profile_id)
 
     # move missile
     for m in list(missiles):
@@ -370,7 +399,7 @@ def draw():
     screen.blit(background_pic, (0, 0))
 
     if mode == "Login":
-        screen.blit(stor_font.render("C to create account, L to login", True, (255, 255, 255)), stor_font.render("C to create account, " "L to login", True, (255, 255, 255)).get_rect(center=(370, 150)))
+        screen.blit(stor_font.render("Select Profile", True, (0, 255, 0)), stor_font.render("Select Profile", True, (0, 255, 0)).get_rect(center=(300, 100)))
         profiles = get_profiles()
         for i, (profile_id, name) in enumerate(profiles):
             screen.blit(font.render(str(i + 1) + " - " + name, True, (255, 255, 255)),
@@ -379,9 +408,11 @@ def draw():
         screen.blit(font.render("N - New profile", True, (255, 215, 0)),
                     font.render("N - New profile", True, (255, 215, 0)).get_rect(
                         center=(300, 200 + len(profiles) * 50)))
-        if login_input != "":
+        if creating_profile:
             screen.blit(font.render("Name: " + login_input, True, (0, 255, 200)),
                         font.render("Name: " + login_input, True, (0, 255, 200)).get_rect(center=(300, 500)))
+            screen.blit(font.render("Enter to confirm, Esc to cancel", True, (178, 34, 34)),
+                        font.render("Enter to confirm, Esc to cancel", True, (178, 34, 34)).get_rect(center=(300, 545)))
 
     if mode == "menu":
         screen.blit(stor_font.render("Choose difficulty", True, (255, 255, 255)), stor_font.render("Choose " "svårighetsgrad", True, (255, 255, 255)).get_rect(center=(370, 150)))
