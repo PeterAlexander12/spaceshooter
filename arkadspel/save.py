@@ -67,7 +67,7 @@ def save_keybinds(keybinds, profile_id):
 def load_keybinds(defaults, profile_id):
     _init_db()
     with sqlite3.connect(DB) as con:
-        rows = con.execute("SELECT action, value FROM keybinds, WHERE profile_id = ?", profile_id).fetchall()
+        rows = con.execute("SELECT action, value FROM keybinds WHERE profile_id = ?", (profile_id,)).fetchall()
     keybinds = dict(defaults)
     for action, value in rows:
         if action in keybinds:
@@ -77,7 +77,7 @@ def load_keybinds(defaults, profile_id):
 def load_game(loadout, profile_id):
     _init_db()
     with sqlite3.connect(DB) as con:
-        row = con.execute("SELECT coins, health_potions, strength_potions, bombs FROM game_save, WHERE profile_id = ?", profile_id).fetchone()
+        row = con.execute("SELECT coins, health_potions, strength_potions, bombs FROM game_save WHERE profile_id = ?", (profile_id,)).fetchone()
     coins, health_potions, strength_potions, bombs = row
     for _ in range(health_potions):
         loadout.add_health_potion()
