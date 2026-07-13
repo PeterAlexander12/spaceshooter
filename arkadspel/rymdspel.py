@@ -23,6 +23,8 @@ background_pic = pygame.image.load("images/background.png").convert()
 Shop_pic = pygame.image.load("images/shop.png").convert_alpha()
 Shop_pic = pygame.transform.scale(Shop_pic, (80, 80))
 cogwheel_pic = pygame.image.load("images/cogwheel.png").convert_alpha()
+cogwheel_pic = pygame.transform.scale(cogwheel_pic, (120, 120))
+cogwheel_rect = pygame.Rect(570, 30, 570, 30)
 Backpack_pic = pygame.image.load("images/backpack.png").convert_alpha()
 Backpack_pic = pygame.transform.scale(Backpack_pic, (100, 100))
 Strength_potion_pic = pygame.image.load("images/strength_potion.png").convert_alpha()
@@ -324,6 +326,10 @@ def handle_input():
             if mode == "keybinds" and keybind_selecting is not None:
                 keybinds[keybind_selecting] = event.button
                 keybind_selecting = None
+
+            if event.button == 1 and mode == "menu":
+                if cogwheel_pic.get_rect().collidepoint(event.pos):
+                    print("hej")
             if event.button == 1 and mode == "game":
                 missiles.append(Missil(Player.rect.center, event.pos))
             if event.button == keybinds["use_bomb"] and mode == "game":
@@ -429,6 +435,7 @@ def draw():
         screen.blit(font.render("3 - Hard", True, (255, 165, 0)), font.render("3 - Hard", True, (255, 165, 0)).get_rect(center=(300, 350)))
         screen.blit(font.render("4 - Insane", True, (255, 0, 0)), font.render("4 - Insane", True, (255, 0, 0)).get_rect(center=(300, 400)))
         screen.blit(Shop_pic, Shop_pic.get_rect(center=(225, 50)))
+        screen.blit(cogwheel_pic, cogwheel_rect)
         key_shop = pygame.key.name(keybinds["open_shop"]).upper()
         key_backpack = pygame.key.name(keybinds["open_backpack"]).upper()
         screen.blit(stor_font.render(key_shop, True, (0, 255, 0)), stor_font.render(key_shop, True, (0, 255, 0)).get_rect(center=(225, 110)))
