@@ -27,6 +27,16 @@ def _init_db():
                 PRIMARY KEY (profile_id, action)
             )
         """)
+        con.execute("""
+            CREATE TABLE IF NOT EXISTS leaderboard (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                profile_id INTEGER,
+                score_coins INTEGER,
+                score_level INTEGER,
+                difficulty TEXT,
+                date TEXT
+            )
+        """)
 
 def get_profiles():
     _init_db()
@@ -73,6 +83,23 @@ def load_keybinds(defaults, profile_id):
         if action in keybinds:
             keybinds[action] = value
     return keybinds
+
+def save_score(profile_id, coins, level, difficulty, date):
+    with sqlite3.connect(DB) as con:
+        con.execute("""
+            INSERT INTO leaderboard (profile_id, score_coins, score_level, difficulty, date)
+            VALUES (?, ?, ?, ?, ?)
+        """, (profile_id, coins, level, difficulty, date))
+
+def load_scores():
+    with sqlite3.connect(DB) as con:
+        rows = con.execute("""
+            SELECT p.name, l.score_coins
+            FROM leaderboard l
+            JOIN profiles p ON l.profile_id = p.id
+            ORDER BY l.score_coins DESC
+        """).fetchall()
+    return rows
 
 def load_game(loadout, profile_id):
     _init_db()

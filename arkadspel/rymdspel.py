@@ -1,5 +1,6 @@
 import pygame, sys
 import random
+import datetime
 
 pygame.init()
 
@@ -36,7 +37,7 @@ from enemy import Enemy
 
 from missil import Missil
 from loadout import Loadout
-from save import save_game, load_game, save_keybinds, get_profiles, create_profile
+from save import save_game, load_game, save_keybinds, get_profiles, create_profile, load_scores, save_score
 from keybinds import load_keybinds, bind_name, DEFAULT_KEYBINDS
 
 # game variables
@@ -224,6 +225,9 @@ def handle_input():
                 if event.key == pygame.K_k:
                     mode = "keybinds"
 
+                if event.key == pygame.K_l:
+                    mode = "leaderboard"
+
             if mode == "game":
 
                 if event.key == keybinds["use_health_potion"]:
@@ -253,6 +257,10 @@ def handle_input():
                     save_game(coins, loadout, Current_profile_id)
                     mode = "menu"
                     restart()
+
+            if mode == "leaderboard":
+                if event.key == pygame.K_ESCAPE:
+                    mode = "menu"
 
             if mode == "Backpack":
                 if event.key == pygame.K_ESCAPE:
@@ -359,6 +367,7 @@ def update():
             if Life <= 0:
                 mode = "slut"
                 save_game(coins, loadout, Current_profile_id)
+                save_score(Current_profile_id, coins_this_run, level, degree_of_difficulty, datetime.date.today().isoformat())
 
     # move missile
     for m in list(missiles):
@@ -390,6 +399,7 @@ def update():
             new_enemy_hp = level_up()
             kill_count = 0
         spawn_enemies(new_enemy_hp)
+
 
 
 def draw():
@@ -424,6 +434,17 @@ def draw():
         screen.blit(Backpack_pic, Backpack_pic.get_rect(center=(400, 50)))
         screen.blit(stor_font.render(key_backpack, True, (0, 255, 0)), stor_font.render(key_backpack, True, (0, 255, 0)).get_rect(center=(395, 110)))
         screen.blit(font.render("K - Key Settings", True, (200, 200, 200)), font.render("K - Key Settings", True, (200, 200, 200)).get_rect(center=(300, 460)))
+        screen.blit(font.render("L - Leaderboard", True, (200, 200, 200)), font.render("L - Leaderboard", True, (200, 200, 200)).get_rect(center=(300, 500)))
+
+    elif mode == "leaderboard":
+        screen.fill((0, 0, 0))
+        screen.blit(stor_font.render("Leaderboard", True, (255, 255, 255)), stor_font.render("Leaderboard", True, (255, 255, 255)).get_rect(center=(300, 50)))
+        screen.blit(font.render("Esc - Back", True, (178, 34, 34)), (10, 10))
+        scores = load_scores()
+        y = 120
+        for i, (name, score_coins) in enumerate(scores):
+            screen.blit(font.render(str(i + 1) + ". " + name + " - " + str(score_coins) + " coins", True, (255, 255, 255)), (20, y))
+            y += 35
 
     elif mode == "shop":
         t_Title = stor_font.render("shop", True, (0, 255, 0))
@@ -476,8 +497,14 @@ def draw():
     elif mode == "slut":
         text1 = stor_font.render("Game Over!", True, (255, 0, 0))
         text2 = font.render("Press space too go to the menu ", True, (255, 255, 255))
-        screen.blit(text1, text1.get_rect(center=(300, 250)))
-        screen.blit(text2, text2.get_rect(center=(300, 320)))
+        scores = load_scores()
+        rank = sum(1 for s in scores if s[1] > coins_this_run) + 1
+        t_score = font.render("Coins this run: " + str(coins_this_run), True, (255, 215, 0))
+        t_rank = font.render("Rank: #" + str(rank) + " of " + str(len(scores)), True, (255, 255, 255))
+        screen.blit(text1, text1.get_rect(center=(300, 180)))
+        screen.blit(t_score, t_score.get_rect(center=(300, 260)))
+        screen.blit(t_rank, t_rank.get_rect(center=(300, 300)))
+        screen.blit(text2, text2.get_rect(center=(300, 370)))
     else:
         Player.draw()
         for f in enemies:
