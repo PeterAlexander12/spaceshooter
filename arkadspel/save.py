@@ -91,14 +91,14 @@ def save_score(profile_id, coins, level, difficulty, date):
             VALUES (?, ?, ?, ?, ?)
         """, (profile_id, coins, level, difficulty, date))
 
-def load_scores(profile_id):
+def load_scores():
     with sqlite3.connect(DB) as con:
         rows = con.execute("""
-            SELECT score_coins, score_level, difficulty, date
-            FROM leaderboard
-            WHERE profile_id = ?
-            ORDER BY difficulty, score_coins DESC
-        """, (profile_id,)).fetchall()
+            SELECT p.name, l.score_coins
+            FROM leaderboard l
+            JOIN profiles p ON l.profile_id = p.id
+            ORDER BY l.score_coins DESC
+        """).fetchall()
     return rows
 
 def load_game(loadout, profile_id):

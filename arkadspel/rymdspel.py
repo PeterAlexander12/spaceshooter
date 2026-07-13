@@ -440,10 +440,10 @@ def draw():
         screen.fill((0, 0, 0))
         screen.blit(stor_font.render("Leaderboard", True, (255, 255, 255)), stor_font.render("Leaderboard", True, (255, 255, 255)).get_rect(center=(300, 50)))
         screen.blit(font.render("Esc - Back", True, (178, 34, 34)), (10, 10))
-        scores = load_scores(Current_profile_id)
+        scores = load_scores()
         y = 120
-        for i, entry in enumerate(scores):
-            screen.blit(font.render(str(i + 1) + ". " + str(entry[0]) + " coins", True, (255, 255, 255)), (20, y))
+        for i, (name, score_coins) in enumerate(scores):
+            screen.blit(font.render(str(i + 1) + ". " + name + " - " + str(score_coins) + " coins", True, (255, 255, 255)), (20, y))
             y += 35
 
     elif mode == "shop":
@@ -497,8 +497,8 @@ def draw():
     elif mode == "slut":
         text1 = stor_font.render("Game Over!", True, (255, 0, 0))
         text2 = font.render("Press space too go to the menu ", True, (255, 255, 255))
-        scores = load_scores(Current_profile_id)
-        rank = sum(1 for s in scores if s[0] > coins_this_run) + 1
+        scores = load_scores()
+        rank = sum(1 for s in scores if s[1] > coins_this_run) + 1
         t_score = font.render("Coins this run: " + str(coins_this_run), True, (255, 215, 0))
         t_rank = font.render("Rank: #" + str(rank) + " of " + str(len(scores)), True, (255, 255, 255))
         screen.blit(text1, text1.get_rect(center=(300, 180)))
