@@ -24,7 +24,7 @@ Shop_pic = pygame.image.load("images/shop.png").convert_alpha()
 Shop_pic = pygame.transform.scale(Shop_pic, (80, 80))
 cogwheel_pic = pygame.image.load("images/cogwheel.png").convert_alpha()
 cogwheel_pic = pygame.transform.scale(cogwheel_pic, (120, 120))
-cogwheel_rect = pygame.Rect(570, 30, 570, 30)
+cogwheel_rect = pygame.Rect(490, 10, 80, 80)
 Backpack_pic = pygame.image.load("images/backpack.png").convert_alpha()
 Backpack_pic = pygame.transform.scale(Backpack_pic, (100, 100))
 Strength_potion_pic = pygame.image.load("images/strength_potion.png").convert_alpha()
@@ -328,8 +328,8 @@ def handle_input():
                 keybind_selecting = None
 
             if event.button == 1 and mode == "menu":
-                if cogwheel_pic.get_rect().collidepoint(event.pos):
-                    print("hej")
+                if cogwheel_rect.collidepoint(event.pos):
+                    mode = "keybinds"
             if event.button == 1 and mode == "game":
                 missiles.append(Missil(Player.rect.center, event.pos))
             if event.button == keybinds["use_bomb"] and mode == "game":
