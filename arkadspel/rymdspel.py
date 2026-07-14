@@ -2,6 +2,8 @@ import pygame, sys
 import random
 import datetime
 
+from arkadspel.pointy_missile import pointy_missile_pic
+
 pygame.init()
 
 WIDTH = 600
@@ -30,6 +32,7 @@ from player import Player
 from enemy import Enemy
 
 from missil import Missil
+from pointy_missile import Pointy_Missile
 from loadout import Loadout
 from save import save_game, load_game, save_keybinds, get_profiles, create_profile, load_scores, save_score
 from keybinds import load_keybinds, bind_name, DEFAULT_KEYBINDS
@@ -298,7 +301,11 @@ def handle_input():
                     gamestate.Life = 1
                     spawn_enemies(3)
             if event.button == 1 and gamestate.mode == "game":
-                gamestate.missiles.append(Missil(Player.rect.center, event.pos))
+                if gamestate.level > 1:
+                    gamestate.missiles.append(Pointy_Missile(Player.rect.center, event.pos))
+                else:
+                    gamestate.missiles.append(Missil(Player.rect.center, event.pos))
+
             if event.button == gamestate.keybinds["use_bomb"] and gamestate.mode == "game":
                 if gamestate.bomb_cooldown == 0:
                     if gamestate.loadout.use_bomb():
@@ -358,7 +365,7 @@ def update():
                     gamestate.missiles.remove(m)
                     break
                 # enemy didn´t dodge so it takes damage
-                f.hp -= gamestate.shoot_power
+                f.hp -= gamestate.shoot_power * m.damage
                 if f.hp <= 0:
                     gamestate.enemies.remove(f)
                     gamestate.kill_count += 1

@@ -19,6 +19,7 @@ class Missil:
         self.x_hastighet = x_led / avstand * hastighet
         self.y_hastighet = y_led / avstand * hastighet
         self.angle = math.degrees(math.atan2(-y_led, x_led)) - 90
+        self.damage = 1
 
     def update(self):
         self.rect.x += self.x_hastighet
