@@ -354,7 +354,7 @@ def update():
             if m.rect.colliderect(f.rect):
                 # roll to see if enemy dodges
                 if random.randint(1, MaxDodgeChance) <= gamestate.enemyBlockChance:
-                    # enemy dodged and the missile disapear
+                    # enemy dodged and the missile disappear
                     gamestate.missiles.remove(m)
                     break
                 # enemy didn´t dodge so it takes damage
