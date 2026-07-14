@@ -168,19 +168,11 @@ def handle_input():
                     gamestate.number_of_enemies += 2
 
                 if event.key == pygame.K_ESCAPE:
-<<<<<<< HEAD
-                    mode = "menu"
-                if event.key == keybinds["open_shop"]:
-                    mode = "shop"
-                if event.key == keybinds["open_backpack"]:
-                    mode = "backpack"
-=======
                     gamestate.mode = "menu"
                 if event.key == gamestate.keybinds["open_shop"]:
                     gamestate.mode = "shop"
                 if event.key == gamestate.keybinds["open_backpack"]:
                     gamestate.mode = "backpack"
->>>>>>> peter-refactor
                 if event.key == pygame.K_k:
                     gamestate.mode = "keybinds"
                 if event.key == pygame.K_l:
@@ -219,11 +211,7 @@ def handle_input():
                 if event.key == pygame.K_ESCAPE:
                     gamestate.mode = "menu"
 
-<<<<<<< HEAD
-            if mode == "backpack":
-=======
             if gamestate.mode == "backpack":
->>>>>>> peter-refactor
                 if event.key == pygame.K_ESCAPE:
                     gamestate.mode = "menu"
 
@@ -285,40 +273,6 @@ def handle_input():
 
             if event.button == 1 and gamestate.mode == "menu":
                 if cogwheel_rect.collidepoint(event.pos):
-<<<<<<< HEAD
-                    mode = "keybinds"
-                if shop_rect.collidepoint(event.pos):
-                    mode = "shop"
-                if backpack_rect.collidepoint(event.pos):
-                    mode = "backpack"
-
-                if easy_rect.collidepoint(event.pos):
-                    degree_of_difficulty = "easy"
-                    mode = "game"
-                    Life = 5
-                if medium_rect.collidepoint(event.pos):
-                    degree_of_difficulty = "medium"
-                    mode = "game"
-                    Life = 3
-                if hard_rect.collidepoint(event.pos):
-                    degree_of_difficulty = "hard"
-                    mode = "game"
-                    Life = 2
-                if insane_rect.collidepoint(event.pos):
-                    degree_of_difficulty = "insane"
-                    mode = "game"
-                    Life = 1
-
-            if event.button == 1 and mode == "game":
-                missiles.append(Missil(Player.rect.center, event.pos))
-
-            if event.button == keybinds["use_bomb"] and mode == "game":
-                if bomb_cooldown == 0:
-                    if loadout.use_bomb():
-                        enemies.clear()
-                        explosion_size = 10
-                        bomb_cooldown = 600
-=======
                     gamestate.mode = "keybinds"
                 if shop_rect.collidepoint(event.pos):
                     gamestate.mode = "shop"
@@ -351,7 +305,6 @@ def handle_input():
                         gamestate.enemies.clear()
                         gamestate.explosion_size = 10
                         gamestate.bomb_cooldown = 600
->>>>>>> peter-refactor
 
 def update():
     if gamestate.explosion_size > 0:
@@ -436,23 +389,6 @@ def draw():
             ui.label_name_input.draw(screen)
             ui.label_enter_confirm.draw(screen)
 
-<<<<<<< HEAD
-    elif mode == "menu":
-        screen.blit(stor_font.render("Choose difficulty", True, (255, 255, 255)), stor_font.render("Choose " "difficulty", True, (255, 255, 255)).get_rect(center=(370, 150)))
-        screen.blit(easy, easy_rect)
-        screen.blit(medium, medium_rect)
-        screen.blit(hard, hard_rect)
-        screen.blit(insane, insane_rect)
-        screen.blit(shop_pic, shop_rect)
-        screen.blit(cogwheel_pic, cogwheel_rect)
-        key_shop = pygame.key.name(keybinds["open_shop"]).upper()
-        key_backpack = pygame.key.name(keybinds["open_backpack"]).upper()
-        screen.blit(stor_font.render(key_shop, True, (0, 255, 0)), stor_font.render(key_shop, True, (0, 255, 0)).get_rect(center=(225, 110)))
-        screen.blit(backpack_pic, backpack_rect)
-        screen.blit(stor_font.render(key_backpack, True, (0, 255, 0)), stor_font.render(key_backpack, True, (0, 255, 0)).get_rect(center=(395, 110)))
-        screen.blit(font.render("K - Key Settings", True, (200, 200, 200)), font.render("K - Key Settings", True, (200, 200, 200)).get_rect(center=(300, 460)))
-        screen.blit(font.render("L - Leaderboard", True, (200, 200, 200)), font.render("L - Leaderboard", True, (200, 200, 200)).get_rect(center=(300, 500)))
-=======
     elif gamestate.mode == "menu":
         ui.label_choose_difficulty.draw(screen)
         ui.label_easy.draw(screen)
@@ -468,7 +404,6 @@ def draw():
         ui.label_backpack_key.draw(screen)
         ui.label_key_settings_hint.draw(screen)
         ui.label_leaderboard_hint.draw(screen)
->>>>>>> peter-refactor
 
     elif gamestate.mode == "leaderboard":
         screen.fill((0, 0, 0))
@@ -521,38 +456,7 @@ def draw():
             ui.label_waiting.update("Press any key for: " + gamestate.keybind_selecting)
             ui.label_waiting.draw(screen)
 
-<<<<<<< HEAD
-    elif mode == "backpack":
-        t_Bomb_count = font.render("You have " + str(len(loadout.bombs)) + " bombs!", True, (255, 255, 255))
-        t_Health_potion_count = font.render("You have " + str(len(loadout.health_potions)) + " health potions!", True, (255, 255, 255))
-        t_Strength_potion_count = font.render("You have " + str(len(loadout.strength_potions)) + " strength potions!", True,(255, 255, 255))
-        t_Leave_backpack = font.render("Esc - Leave backpack", True, (178, 34, 34))
-        t_coin_count = font.render("You have " + str(coins) + " coins!", True, (255, 215, 0))
-
-        screen.blit(t_Bomb_count, (200, 250))
-        screen.blit(t_Health_potion_count, (200, 300))
-        screen.blit(t_Strength_potion_count, (200, 350))
-        screen.blit(t_Leave_backpack, t_Leave_backpack.get_rect(center=(150, 30)))
-        screen.blit(t_coin_count, (150, 550))
-
-    elif mode == "keybinds":
-        screen.blit(stor_font.render("Key Settings", True, (0, 255, 0)), stor_font.render("Key Settings", True, (0, 255, 0)).get_rect(center=(300, 150)))
-        screen.blit(font.render("1 - Use Health Potion: " + bind_name(keybinds["use_health_potion"]), True, (255, 255, 255)), (100, 250))
-        screen.blit(font.render("2 - Use Strength Potion: " + bind_name(keybinds["use_strength_potion"]), True, (255, 255, 255)),(100, 300))
-        screen.blit(font.render("3 - Open Shop:     " + bind_name(keybinds["open_shop"]), True, (255, 255, 255)), (100, 350))
-        screen.blit(font.render("4 - Open Backpack: " + bind_name(keybinds["open_backpack"]), True, (255, 255, 255)), (100, 400))
-        screen.blit(font.render("5 - Use Bomb:      " + bind_name(keybinds["use_bomb"]), True, (255, 255, 255)), (100, 450))
-        screen.blit(font.render("Esc - Save and go back", True, (178, 34, 34)), (100, 470))
-        if keybind_selecting:
-            t_waiting = font.render("Press any key for: " + keybind_selecting, True, (255, 215, 0))
-            screen.blit(t_waiting, t_waiting.get_rect(center=(300, 530)))
-
-    elif mode == "slut":
-        text1 = stor_font.render("Game Over!", True, (255, 0, 0))
-        text2 = font.render("Press space too go to the menu ", True, (255, 255, 255))
-=======
     elif gamestate.mode == "slut":
->>>>>>> peter-refactor
         scores = load_scores()
         rank = sum(1 for s in scores if s[1] > gamestate.coins_this_run) + 1
         ui.label_game_over.draw(screen)
