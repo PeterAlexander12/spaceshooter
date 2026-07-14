@@ -30,10 +30,6 @@ Backpack_pic = pygame.transform.scale(Backpack_pic, (100, 100))
 Strength_potion_pic = pygame.image.load("images/strength_potion.png").convert_alpha()
 Strength_potion_pic = pygame.transform.scale(Strength_potion_pic, (30, 30))
 
-font = pygame.font.Font(None, 40)
-stor_font = pygame.font.Font(None, 65)
-
-
 from player import Player
 
 from enemy import Enemy
@@ -42,6 +38,7 @@ from missil import Missil
 from loadout import Loadout
 from save import save_game, load_game, save_keybinds, get_profiles, create_profile, load_scores, save_score
 from keybinds import load_keybinds, bind_name, DEFAULT_KEYBINDS
+import ui
 
 # game variables
 Player = Player(screen, player_pic)
@@ -413,133 +410,120 @@ def draw():
     screen.blit(background_pic, (0, 0))
 
     if mode == "Login":
-        screen.blit(stor_font.render("Select Profile", True, (0, 255, 0)), stor_font.render("Select Profile", True, (0, 255, 0)).get_rect(center=(300, 100)))
+        ui.label_select_profile.draw(screen)
         profiles = get_profiles()
         for i, (profile_id, name) in enumerate(profiles):
-            screen.blit(font.render(str(i + 1) + " - " + name, True, (255, 255, 255)),
-                        font.render(str(i + 1) + " - " + name, True, (255, 255, 255)).get_rect(
-                            center=(300, 200 + i * 50)))
-        screen.blit(font.render("N - New profile", True, (255, 215, 0)),
-                    font.render("N - New profile", True, (255, 215, 0)).get_rect(
-                        center=(300, 200 + len(profiles) * 50)))
+            ui.render_text(screen, ui.font, str(i + 1) + " - " + name, (255, 255, 255), (300, 200 + i * 50))
+        ui.render_text(screen, ui.font, "N - New profile", (255, 215, 0), (300, 200 + len(profiles) * 50))
         if creating_profile:
-            screen.blit(font.render("Name: " + login_input, True, (0, 255, 200)),
-                        font.render("Name: " + login_input, True, (0, 255, 200)).get_rect(center=(300, 500)))
-            screen.blit(font.render("Enter to confirm, Esc to cancel", True, (178, 34, 34)),
-                        font.render("Enter to confirm, Esc to cancel", True, (178, 34, 34)).get_rect(center=(300, 545)))
+            ui.label_name_input.update("Name: " + login_input)
+            ui.label_name_input.draw(screen)
+            ui.label_enter_confirm.draw(screen)
 
     elif mode == "menu":
-        screen.blit(stor_font.render("Choose difficulty", True, (255, 255, 255)), stor_font.render("Choose " "svårighetsgrad", True, (255, 255, 255)).get_rect(center=(370, 150)))
-        screen.blit(font.render("1 - Easy", True, (0, 255, 0)), font.render("1 - Easy", True, (0, 255, 0)).get_rect(center=(300, 250)))
-        screen.blit(font.render("2 - Medium", True, (255, 255, 0)), font.render("2 - Medium", True, (255, 255, 0)).get_rect(center=(300, 300)))
-        screen.blit(font.render("3 - Hard", True, (255, 165, 0)), font.render("3 - Hard", True, (255, 165, 0)).get_rect(center=(300, 350)))
-        screen.blit(font.render("4 - Insane", True, (255, 0, 0)), font.render("4 - Insane", True, (255, 0, 0)).get_rect(center=(300, 400)))
+        ui.label_choose_difficulty.draw(screen)
+        ui.label_easy.draw(screen)
+        ui.label_medium.draw(screen)
+        ui.label_hard.draw(screen)
+        ui.label_insane.draw(screen)
         screen.blit(Shop_pic, Shop_pic.get_rect(center=(225, 50)))
         screen.blit(cogwheel_pic, cogwheel_rect)
-        key_shop = pygame.key.name(keybinds["open_shop"]).upper()
-        key_backpack = pygame.key.name(keybinds["open_backpack"]).upper()
-        screen.blit(stor_font.render(key_shop, True, (0, 255, 0)), stor_font.render(key_shop, True, (0, 255, 0)).get_rect(center=(225, 110)))
+        ui.label_shop_key.update(pygame.key.name(keybinds["open_shop"]).upper())
+        ui.label_shop_key.draw(screen)
         screen.blit(Backpack_pic, Backpack_pic.get_rect(center=(400, 50)))
-        screen.blit(stor_font.render(key_backpack, True, (0, 255, 0)), stor_font.render(key_backpack, True, (0, 255, 0)).get_rect(center=(395, 110)))
-        screen.blit(font.render("K - Key Settings", True, (200, 200, 200)), font.render("K - Key Settings", True, (200, 200, 200)).get_rect(center=(300, 460)))
-        screen.blit(font.render("L - Leaderboard", True, (200, 200, 200)), font.render("L - Leaderboard", True, (200, 200, 200)).get_rect(center=(300, 500)))
+        ui.label_backpack_key.update(pygame.key.name(keybinds["open_backpack"]).upper())
+        ui.label_backpack_key.draw(screen)
+        ui.label_key_settings_hint.draw(screen)
+        ui.label_leaderboard_hint.draw(screen)
 
     elif mode == "leaderboard":
         screen.fill((0, 0, 0))
-        screen.blit(stor_font.render("Leaderboard", True, (255, 255, 255)), stor_font.render("Leaderboard", True, (255, 255, 255)).get_rect(center=(300, 50)))
-        screen.blit(font.render("Esc - Back", True, (178, 34, 34)), (10, 10))
+        ui.label_leaderboard_title.draw(screen)
+        ui.label_esc_back.draw(screen)
         scores = load_scores()
         y = 120
         for i, (name, score_coins) in enumerate(scores):
-            screen.blit(font.render(str(i + 1) + ". " + name + " - " + str(score_coins) + " coins", True, (255, 255, 255)), (20, y))
+            ui.render_text(screen, ui.font, str(i + 1) + ". " + name + " - " + str(score_coins) + " coins", (255, 255, 255), (20, y), centered=False)
             y += 35
 
     elif mode == "shop":
-        t_Title = stor_font.render("shop", True, (0, 255, 0))
-        t_Bomb = font.render("1 - Bomb", True, (255, 255, 255))
-        t_Health_potion = font.render("2 - Health Potion", True, (255, 255, 255))
-        t_Leave_shop = font.render("Esc - Leave shop", True, (178, 34, 34))
-        t_Strength_potion = font.render("3 - Strength Potion", True, (255, 255, 255))
-
-        t_bomb_price = font.render(str(bomb_price) + " coins", True, (255, 255, 255))
-        t_health_potion_price = font.render(str(health_potion_price) + " coins", True, (255, 255, 255))
-        t_strength_potion_price = font.render(str(strength_potion_price) + " coins", True, (255, 255, 255))
-
-        screen.blit(t_Title, t_Title.get_rect(center=(250, 200)))
-        screen.blit(t_Bomb, (100, 250))
-        screen.blit(t_Health_potion, (100, 300))
-        screen.blit(t_Strength_potion, (100, 350))
-        screen.blit(t_Leave_shop, t_Leave_shop.get_rect(center=(120, 30)))
-        screen.blit(t_bomb_price, t_bomb_price.get_rect(center=(400, 265)))
-        screen.blit(t_health_potion_price, t_health_potion_price.get_rect(center=(400, 315)))
-        screen.blit(t_strength_potion_price, t_strength_potion_price.get_rect(center=(430, 365)))
+        ui.label_shop_title.draw(screen)
+        ui.label_bomb_item.draw(screen)
+        ui.label_health_item.draw(screen)
+        ui.label_strength_item.draw(screen)
+        ui.label_leave_shop.draw(screen)
+        ui.label_bomb_price.draw(screen)
+        ui.label_health_price.draw(screen)
+        ui.label_strength_price.draw(screen)
         if shop_message_timer > 0:
-            t_shop_message = font.render(shop_message, True, (255, 215, 0))
-            screen.blit(t_shop_message, t_shop_message.get_rect(center=(WIDTH // 2, 80)))
+            ui.label_shop_message.update(shop_message)
+            ui.label_shop_message.draw(screen)
 
     elif mode == "Backpack":
-        t_Bomb_count = font.render("You have " + str(len(loadout.bombs)) + " bombs!", True, (255, 255, 255))
-        t_Health_potion_count = font.render("You have " + str(len(loadout.health_potions)) + " health potions!", True, (255, 255, 255))
-        t_Strength_potion_count = font.render("You have " + str(len(loadout.strength_potions)) + " strength potions!", True,(255, 255, 255))
-        t_Leave_backpack = font.render("Esc - Leave backpack", True, (178, 34, 34))
-        t_coin_count = font.render("You have " + str(coins) + " coins!", True, (255, 215, 0))
-
-        screen.blit(t_Bomb_count, (200, 250))
-        screen.blit(t_Health_potion_count, (200, 300))
-        screen.blit(t_Strength_potion_count, (200, 350))
-        screen.blit(t_Leave_backpack, t_Leave_backpack.get_rect(center=(150, 30)))
-        screen.blit(t_coin_count, (150, 550))
+        ui.label_bomb_count.update("You have " + str(len(loadout.bombs)) + " bombs!")
+        ui.label_health_count.update("You have " + str(len(loadout.health_potions)) + " health potions!")
+        ui.label_strength_count.update("You have " + str(len(loadout.strength_potions)) + " strength potions!")
+        ui.label_coin_count.update("You have " + str(coins) + " coins!")
+        ui.label_bomb_count.draw(screen)
+        ui.label_health_count.draw(screen)
+        ui.label_strength_count.draw(screen)
+        ui.label_leave_backpack.draw(screen)
+        ui.label_coin_count.draw(screen)
 
     elif mode == "keybinds":
-        screen.blit(stor_font.render("Key Settings", True, (0, 255, 0)), stor_font.render("Key Settings", True, (0, 255, 0)).get_rect(center=(300, 150)))
-        screen.blit(font.render("1 - Use Health Potion: " + bind_name(keybinds["use_health_potion"]), True, (255, 255, 255)), (100, 250))
-        screen.blit(font.render("2 - Use Strength Potion: " + bind_name(keybinds["use_strength_potion"]), True, (255, 255, 255)),(100, 300))
-        screen.blit(font.render("3 - Open Shop:     " + bind_name(keybinds["open_shop"]), True, (255, 255, 255)), (100, 350))
-        screen.blit(font.render("4 - Open Backpack: " + bind_name(keybinds["open_backpack"]), True, (255, 255, 255)), (100, 400))
-        screen.blit(font.render("5 - Use Bomb:      " + bind_name(keybinds["use_bomb"]), True, (255, 255, 255)), (100, 450))
-        screen.blit(font.render("Esc - Save and go back", True, (178, 34, 34)), (100, 470))
+        ui.label_key_settings_title.draw(screen)
+        ui.label_bind_health.update("1 - Use Health Potion: " + bind_name(keybinds["use_health_potion"]))
+        ui.label_bind_strength.update("2 - Use Strength Potion: " + bind_name(keybinds["use_strength_potion"]))
+        ui.label_bind_shop.update("3 - Open Shop:     " + bind_name(keybinds["open_shop"]))
+        ui.label_bind_backpack.update("4 - Open Backpack: " + bind_name(keybinds["open_backpack"]))
+        ui.label_bind_bomb.update("5 - Use Bomb:      " + bind_name(keybinds["use_bomb"]))
+        ui.label_bind_health.draw(screen)
+        ui.label_bind_strength.draw(screen)
+        ui.label_bind_shop.draw(screen)
+        ui.label_bind_backpack.draw(screen)
+        ui.label_bind_bomb.draw(screen)
+        ui.label_save_back.draw(screen)
         if keybind_selecting:
-            t_waiting = font.render("Press any key for: " + keybind_selecting, True, (255, 215, 0))
-            screen.blit(t_waiting, t_waiting.get_rect(center=(300, 530)))
+            ui.label_waiting.update("Press any key for: " + keybind_selecting)
+            ui.label_waiting.draw(screen)
 
     elif mode == "slut":
-        text1 = stor_font.render("Game Over!", True, (255, 0, 0))
-        text2 = font.render("Press space too go to the menu ", True, (255, 255, 255))
         scores = load_scores()
         rank = sum(1 for s in scores if s[1] > coins_this_run) + 1
-        t_score = font.render("Coins this run: " + str(coins_this_run), True, (255, 215, 0))
-        t_rank = font.render("Rank: #" + str(rank) + " of " + str(len(scores)), True, (255, 255, 255))
-        screen.blit(text1, text1.get_rect(center=(300, 180)))
-        screen.blit(t_score, t_score.get_rect(center=(300, 260)))
-        screen.blit(t_rank, t_rank.get_rect(center=(300, 300)))
-        screen.blit(text2, text2.get_rect(center=(300, 370)))
+        ui.label_game_over.draw(screen)
+        ui.label_score.update("Coins this run: " + str(coins_this_run))
+        ui.label_score.draw(screen)
+        ui.label_rank.update("Rank: #" + str(rank) + " of " + str(len(scores)))
+        ui.label_rank.draw(screen)
+        ui.label_press_space.draw(screen)
+
     else:
         Player.draw()
         for f in enemies:
             f.draw()
         for m in missiles:
             m.draw()
-        screen.blit(font.render("Life: " + str(Life), True, (255, 255, 255)), (10, 10))
-        screen.blit(font.render("Coins this run: " + str(coins_this_run), True, (255, 215, 0)), (200, 10))
-        screen.blit(font.render("Level: " + str(level), True, (255, 255, 255)), (10, 570))
+        ui.label_life.update("Life: " + str(Life))
+        ui.label_coins_run.update("Coins this run: " + str(coins_this_run))
+        ui.label_level.update("Level: " + str(level))
+        ui.label_life.draw(screen)
+        ui.label_coins_run.draw(screen)
+        ui.label_level.draw(screen)
         if potion_message_timer > 0:
-            t_potion_message = font.render(potion_message, True, (255, 215, 0))
-            screen.blit(t_potion_message, t_potion_message.get_rect(center=(WIDTH // 2, 50)))
+            ui.label_potion_message.update(potion_message)
+            ui.label_potion_message.draw(screen)
         for i in range(len(loadout.health_potions)):
             screen.blit(potion_pic, (10 + i * 40, 530))
         for i in range(len(loadout.strength_potions)):
             screen.blit(Strength_potion_pic, (10 + i * 40, 490))
-
         for i in range(len(loadout.bombs)):
             screen.blit(bomb_pic, (10 + i * 40, 450))
         if explosion_size > 0:
             scaled = pygame.transform.scale(explosion_pic, (explosion_size, explosion_size))
             screen.blit(scaled, scaled.get_rect(center=(WIDTH // 2, HEIGHT // 2)))
-
-        # draw coin message while timer is running
         if coin_message_timer > 0:
-            t_coin = font.render(coin_message, True, (255, 215, 0))
-            screen.blit(t_coin, t_coin.get_rect(center=(WIDTH // 2, 80)))
+            ui.label_coin_message.update(coin_message)
+            ui.label_coin_message.draw(screen)
 
 
 
