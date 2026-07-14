@@ -17,10 +17,12 @@ explosion_pic = pygame.image.load("images/nuclear_explosion.png").convert_alpha(
 bomb_pic = pygame.transform.scale(explosion_pic, (30, 30))
 missil_pic = pygame.image.load("images/bullet.png").convert_alpha()
 background_pic = pygame.image.load("images/background.png").convert()
-Shop_pic = pygame.transform.scale(pygame.image.load("images/shop.png").convert_alpha(), (80, 80))
+shop_pic = pygame.transform.scale(pygame.image.load("images/shop.png").convert_alpha(), (80, 80))
+shop_rect = pygame.Rect(185, 10, 80, 80)
 cogwheel_pic = pygame.transform.scale(pygame.image.load("images/cogwheel.png").convert_alpha(), (120, 120))
 cogwheel_rect = pygame.Rect(490, 10, 80, 80)
-Backpack_pic = pygame.transform.scale(pygame.image.load("images/backpack.png").convert_alpha(), (100, 100))
+backpack_pic = pygame.transform.scale(pygame.image.load("images/backpack.png").convert_alpha(), (100, 100))
+backpack_rect = pygame.Rect(350, 5, 100, 100)
 Strength_potion_pic = pygame.transform.scale(pygame.image.load("images/strength_potion.png").convert_alpha(), (30, 30))
 
 from player import Player
@@ -170,7 +172,7 @@ def handle_input():
                 if event.key == gamestate.keybinds["open_shop"]:
                     gamestate.mode = "shop"
                 if event.key == gamestate.keybinds["open_backpack"]:
-                    gamestate.mode = "Backpack"
+                    gamestate.mode = "backpack"
                 if event.key == pygame.K_k:
                     gamestate.mode = "keybinds"
                 if event.key == pygame.K_l:
@@ -209,7 +211,7 @@ def handle_input():
                 if event.key == pygame.K_ESCAPE:
                     gamestate.mode = "menu"
 
-            if gamestate.mode == "Backpack":
+            if gamestate.mode == "backpack":
                 if event.key == pygame.K_ESCAPE:
                     gamestate.mode = "menu"
 
@@ -272,6 +274,29 @@ def handle_input():
             if event.button == 1 and gamestate.mode == "menu":
                 if cogwheel_rect.collidepoint(event.pos):
                     gamestate.mode = "keybinds"
+                if shop_rect.collidepoint(event.pos):
+                    gamestate.mode = "shop"
+                if backpack_rect.collidepoint(event.pos):
+                    gamestate.mode = "backpack"
+                if ui.label_easy.rect.collidepoint(event.pos):
+                    gamestate.degree_of_difficulty = "easy"
+                    gamestate.mode = "game"
+                    gamestate.Life = 5
+                    spawn_enemies(3)
+                if ui.label_medium.rect.collidepoint(event.pos):
+                    gamestate.degree_of_difficulty = "medium"
+                    gamestate.mode = "game"
+                    spawn_enemies(3)
+                if ui.label_hard.rect.collidepoint(event.pos):
+                    gamestate.degree_of_difficulty = "hard"
+                    gamestate.mode = "game"
+                    gamestate.Life = 2
+                    spawn_enemies(3)
+                if ui.label_insane.rect.collidepoint(event.pos):
+                    gamestate.degree_of_difficulty = "insane"
+                    gamestate.mode = "game"
+                    gamestate.Life = 1
+                    spawn_enemies(3)
             if event.button == 1 and gamestate.mode == "game":
                 gamestate.missiles.append(Missil(Player.rect.center, event.pos))
             if event.button == gamestate.keybinds["use_bomb"] and gamestate.mode == "game":
@@ -370,11 +395,11 @@ def draw():
         ui.label_medium.draw(screen)
         ui.label_hard.draw(screen)
         ui.label_insane.draw(screen)
-        screen.blit(Shop_pic, Shop_pic.get_rect(center=(225, 50)))
+        screen.blit(shop_pic, shop_rect)
         screen.blit(cogwheel_pic, cogwheel_rect)
         ui.label_shop_key.update(pygame.key.name(gamestate.keybinds["open_shop"]).upper())
         ui.label_shop_key.draw(screen)
-        screen.blit(Backpack_pic, Backpack_pic.get_rect(center=(400, 50)))
+        screen.blit(backpack_pic, backpack_rect)
         ui.label_backpack_key.update(pygame.key.name(gamestate.keybinds["open_backpack"]).upper())
         ui.label_backpack_key.draw(screen)
         ui.label_key_settings_hint.draw(screen)
@@ -403,7 +428,7 @@ def draw():
             ui.label_shop_message.update(gamestate.shop_message)
             ui.label_shop_message.draw(screen)
 
-    elif gamestate.mode == "Backpack":
+    elif gamestate.mode == "backpack":
         ui.label_bomb_count.update("You have " + str(len(gamestate.loadout.bombs)) + " bombs!")
         ui.label_health_count.update("You have " + str(len(gamestate.loadout.health_potions)) + " health potions!")
         ui.label_strength_count.update("You have " + str(len(gamestate.loadout.strength_potions)) + " strength potions!")
