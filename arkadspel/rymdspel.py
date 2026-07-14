@@ -20,19 +20,30 @@ bomb_pic = pygame.transform.scale(explosion_pic, (30, 30))
 player_pic = pygame.transform.scale(player_pic, (50, 50))
 missil_pic = pygame.image.load("images/bullet.png").convert_alpha()
 background_pic = pygame.image.load("images/background.png").convert()
-Shop_pic = pygame.image.load("images/shop.png").convert_alpha()
-Shop_pic = pygame.transform.scale(Shop_pic, (80, 80))
+shop_pic = pygame.image.load("images/shop.png").convert_alpha()
+shop_pic = pygame.transform.scale(shop_pic, (80, 80))
+shop_rect = pygame.Rect(185, 10, 80, 80)
 cogwheel_pic = pygame.image.load("images/cogwheel.png").convert_alpha()
 cogwheel_pic = pygame.transform.scale(cogwheel_pic, (120, 120))
 cogwheel_rect = pygame.Rect(490, 10, 80, 80)
-Backpack_pic = pygame.image.load("images/backpack.png").convert_alpha()
-Backpack_pic = pygame.transform.scale(Backpack_pic, (100, 100))
+backpack_pic = pygame.image.load("images/backpack.png").convert_alpha()
+backpack_pic = pygame.transform.scale(backpack_pic, (100, 100))
+backpack_rect = pygame.Rect(350, 5, 100, 100)
 Strength_potion_pic = pygame.image.load("images/strength_potion.png").convert_alpha()
 Strength_potion_pic = pygame.transform.scale(Strength_potion_pic, (30, 30))
 
 font = pygame.font.Font(None, 40)
 stor_font = pygame.font.Font(None, 65)
 
+# for clickable text
+easy = font.render("1 - Easy", True, (0, 255, 0))
+easy_rect = pygame.Rect(195, 250, 100, 25)
+medium = font.render("2 - Medium", True, (0, 255, 0))
+medium_rect = pygame.Rect(195, 300, 100, 25)
+hard = font.render("3 - Hard", True, (0, 255, 0))
+hard_rect = pygame.Rect(195, 350, 100, 25)
+insane = font.render("4 - Insane", True, (0, 255, 0))
+insane_rect = pygame.Rect(195, 400, 150, 25)
 
 from player import Player
 
@@ -224,7 +235,7 @@ def handle_input():
                 if event.key == keybinds["open_shop"]:
                     mode = "shop"
                 if event.key == keybinds["open_backpack"]:
-                    mode = "Backpack"
+                    mode = "backpack"
                 if event.key == pygame.K_k:
                     mode = "keybinds"
 
@@ -265,7 +276,7 @@ def handle_input():
                 if event.key == pygame.K_ESCAPE:
                     mode = "menu"
 
-            if mode == "Backpack":
+            if mode == "backpack":
                 if event.key == pygame.K_ESCAPE:
                     mode = "menu"
 
@@ -330,8 +341,31 @@ def handle_input():
             if event.button == 1 and mode == "menu":
                 if cogwheel_rect.collidepoint(event.pos):
                     mode = "keybinds"
+                if shop_rect.collidepoint(event.pos):
+                    mode = "shop"
+                if backpack_rect.collidepoint(event.pos):
+                    mode = "backpack"
+
+                if easy_rect.collidepoint(event.pos):
+                    degree_of_difficulty = "easy"
+                    mode = "game"
+                    Life = 5
+                if medium_rect.collidepoint(event.pos):
+                    degree_of_difficulty = "medium"
+                    mode = "game"
+                    Life = 3
+                if hard_rect.collidepoint(event.pos):
+                    degree_of_difficulty = "hard"
+                    mode = "game"
+                    Life = 2
+                if insane_rect.collidepoint(event.pos):
+                    degree_of_difficulty = "insane"
+                    mode = "game"
+                    Life = 1
+
             if event.button == 1 and mode == "game":
                 missiles.append(Missil(Player.rect.center, event.pos))
+
             if event.button == keybinds["use_bomb"] and mode == "game":
                 if bomb_cooldown == 0:
                     if loadout.use_bomb():
@@ -429,17 +463,17 @@ def draw():
                         font.render("Enter to confirm, Esc to cancel", True, (178, 34, 34)).get_rect(center=(300, 545)))
 
     elif mode == "menu":
-        screen.blit(stor_font.render("Choose difficulty", True, (255, 255, 255)), stor_font.render("Choose " "svårighetsgrad", True, (255, 255, 255)).get_rect(center=(370, 150)))
-        screen.blit(font.render("1 - Easy", True, (0, 255, 0)), font.render("1 - Easy", True, (0, 255, 0)).get_rect(center=(300, 250)))
-        screen.blit(font.render("2 - Medium", True, (255, 255, 0)), font.render("2 - Medium", True, (255, 255, 0)).get_rect(center=(300, 300)))
-        screen.blit(font.render("3 - Hard", True, (255, 165, 0)), font.render("3 - Hard", True, (255, 165, 0)).get_rect(center=(300, 350)))
-        screen.blit(font.render("4 - Insane", True, (255, 0, 0)), font.render("4 - Insane", True, (255, 0, 0)).get_rect(center=(300, 400)))
-        screen.blit(Shop_pic, Shop_pic.get_rect(center=(225, 50)))
+        screen.blit(stor_font.render("Choose difficulty", True, (255, 255, 255)), stor_font.render("Choose " "difficulty", True, (255, 255, 255)).get_rect(center=(370, 150)))
+        screen.blit(easy, easy_rect)
+        screen.blit(medium, medium_rect)
+        screen.blit(hard, hard_rect)
+        screen.blit(insane, insane_rect)
+        screen.blit(shop_pic, shop_rect)
         screen.blit(cogwheel_pic, cogwheel_rect)
         key_shop = pygame.key.name(keybinds["open_shop"]).upper()
         key_backpack = pygame.key.name(keybinds["open_backpack"]).upper()
         screen.blit(stor_font.render(key_shop, True, (0, 255, 0)), stor_font.render(key_shop, True, (0, 255, 0)).get_rect(center=(225, 110)))
-        screen.blit(Backpack_pic, Backpack_pic.get_rect(center=(400, 50)))
+        screen.blit(backpack_pic, backpack_rect)
         screen.blit(stor_font.render(key_backpack, True, (0, 255, 0)), stor_font.render(key_backpack, True, (0, 255, 0)).get_rect(center=(395, 110)))
         screen.blit(font.render("K - Key Settings", True, (200, 200, 200)), font.render("K - Key Settings", True, (200, 200, 200)).get_rect(center=(300, 460)))
         screen.blit(font.render("L - Leaderboard", True, (200, 200, 200)), font.render("L - Leaderboard", True, (200, 200, 200)).get_rect(center=(300, 500)))
@@ -477,7 +511,7 @@ def draw():
             t_shop_message = font.render(shop_message, True, (255, 215, 0))
             screen.blit(t_shop_message, t_shop_message.get_rect(center=(WIDTH // 2, 80)))
 
-    elif mode == "Backpack":
+    elif mode == "backpack":
         t_Bomb_count = font.render("You have " + str(len(loadout.bombs)) + " bombs!", True, (255, 255, 255))
         t_Health_potion_count = font.render("You have " + str(len(loadout.health_potions)) + " health potions!", True, (255, 255, 255))
         t_Strength_potion_count = font.render("You have " + str(len(loadout.strength_potions)) + " strength potions!", True,(255, 255, 255))
