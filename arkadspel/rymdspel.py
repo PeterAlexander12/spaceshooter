@@ -2,8 +2,6 @@ import pygame, sys
 import random
 import datetime
 
-from arkadspel.pointy_missile import pointy_missile_pic
-
 pygame.init()
 
 WIDTH = 600
