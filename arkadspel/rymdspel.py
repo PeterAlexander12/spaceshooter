@@ -179,6 +179,12 @@ def handle_input():
                 if event.key == pygame.K_l:
                     gamestate.mode = "leaderboard"
 
+            # settings
+            if gamestate.mode == "settings":
+                if event.key == pygame.K_ESCAPE:
+                    gamestate.mode = "menu"
+
+
             if gamestate.mode == "game":
                 if event.key == gamestate.keybinds["use_health_potion"]:
                     if gamestate.health_potion_cooldown == 0:
@@ -265,7 +271,7 @@ def handle_input():
                         gamestate.keybind_selecting = "use_bomb"
                     if event.key == pygame.K_ESCAPE:
                         save_keybinds(gamestate.keybinds, gamestate.Current_profile_id)
-                        gamestate.mode = "menu"
+                        gamestate.mode = "settings"
                 else:
                     gamestate.keybinds[gamestate.keybind_selecting] = event.key
                     gamestate.keybind_selecting = None
@@ -283,6 +289,10 @@ def handle_input():
                 # settings
                 if cogwheel_rect.collidepoint(event.pos):
                     gamestate.mode = "settings"
+
+                # leaderboard
+                if ui.label_leaderboard_hint.rect.collidepoint(event.pos):
+                    gamestate.mode = "leaderboard"
 
                 # shop
                 if shop_rect.collidepoint(event.pos):
@@ -312,25 +322,54 @@ def handle_input():
                     gamestate.mode = "game"
                     gamestate.Life = 1
                     spawn_enemies(3)
+
             if event.button == 1 and gamestate.mode == "game":
                 if gamestate.level > 1:
                     gamestate.missiles.append(Pointy_Missile(Player.rect.center, event.pos))
                 else:
                     gamestate.missiles.append(Missil(Player.rect.center, event.pos))
 
-            if event.button == 1 and gamestate.mode == "settings":
-                if ui.label_settings_keybinds.rect.collidepoint(event.pos):
-                    gamestate.mode = "keybinds"
-                if ui.label_settings_logout.rect.collidepoint(event.pos):
-                    gamestate.mode = "Login"
-                    gamestate.Current_profile_id = None
-                    gamestate.loadout = Loadout()
             if event.button == gamestate.keybinds["use_bomb"] and gamestate.mode == "game":
                 if gamestate.bomb_cooldown == 0:
                     if gamestate.loadout.use_bomb():
                         gamestate.enemies.clear()
                         gamestate.explosion_size = 10
                         gamestate.bomb_cooldown = 600
+
+
+            if event.button == 1 and gamestate.mode == "leaderboard":
+                if ui.label_leaderboard_leave.rect.collidepoint(event.pos):
+                    gamestate.mode = "menu"
+
+            if event.button == 1 and gamestate.mode == "settings":
+                if ui.label_settings_key_settings.rect.collidepoint(event.pos):
+                    gamestate.mode = "keybinds"
+                if ui.label_settings_logout.rect.collidepoint(event.pos):
+                    gamestate.mode = "Login"
+                    gamestate.Current_profile_id = None
+                    gamestate.loadout = Loadout()
+
+                if ui.label_settings_leave.rect.collidepoint(event.pos):
+                    gamestate.mode = "menu"
+
+
+            if event.button == 1 and gamestate.mode == "keybinds":
+                if ui.label_bind_shop.rect.collidepoint(event.pos):
+                    gamestate.keybind_selecting = "open_shop"
+                if ui.label_bind_inventory.rect.collidepoint(event.pos):
+                    gamestate.keybind_selecting = "use_inventory"
+                if ui.label_bind_bomb.rect.collidepoint(event.pos):
+                    gamestate.keybind_selecting = "use_bomb"
+                if ui.label_bind_health.rect.collidepoint(event.pos):
+                    gamestate.keybind_selecting = "use_health_potion"
+                if ui.label_bind_strength.rect.collidepoint(event.pos):
+                    gamestate.keybind_selecting = "use_strength_potion"
+
+                #if ui.label_save_back.rect.collidepoint(event.pos):
+                    #save_game(gamestate.keybinds, gamestate.Current_profile_id)
+                    #gamestate.mode = "menu"
+
+
 
 def update():
     if gamestate.explosion_size > 0:
@@ -428,13 +467,12 @@ def draw():
         screen.blit(inventory_pic, inventory_rect)
         ui.label_inventory_key.update(pygame.key.name(gamestate.keybinds["open_inventory"]).upper())
         ui.label_inventory_key.draw(screen)
-        ui.label_key_settings_hint.draw(screen)
         ui.label_leaderboard_hint.draw(screen)
 
     elif gamestate.mode == "leaderboard":
         screen.fill((0, 0, 0))
         ui.label_leaderboard_title.draw(screen)
-        ui.label_esc_back.draw(screen)
+        ui.label_leaderboard_leave.draw(screen)
         scores = load_scores()
         y = 120
         for i, (name, score_coins) in enumerate(scores):
@@ -469,7 +507,8 @@ def draw():
         screen.fill((0, 0, 0))
         ui.label_settings_title.draw(screen)
         ui.label_settings_logout.draw(screen)
-        ui.label_settings_keybinds.draw(screen)
+        ui.label_settings_key_settings.draw(screen)
+        ui.label_settings_leave.draw(screen)
 
     elif gamestate.mode == "keybinds":
         ui.label_key_settings_title.draw(screen)

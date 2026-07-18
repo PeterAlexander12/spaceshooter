@@ -45,14 +45,13 @@ label_easy = TextLabel(font, "1 - Easy", (0, 255, 0), (300, 250))
 label_medium = TextLabel(font, "2 - Medium", (255, 255, 0), (300, 300))
 label_hard = TextLabel(font, "3 - Hard", (255, 165, 0), (300, 350))
 label_insane = TextLabel(font, "4 - Insane", (255, 0, 0), (300, 400))
-label_key_settings_hint = TextLabel(font, "K - Key Settings", (200, 200, 200), (300, 460))
-label_leaderboard_hint = TextLabel(font, "L - Leaderboard", (200, 200, 200), (300, 500))
+label_leaderboard_hint = TextLabel(font, "L - Leaderboard", (200, 200, 200), (300, 450))
 label_shop_key = TextLabel(stor_font, "S", (0, 255, 0), (225, 110))
 label_inventory_key = TextLabel(stor_font, "E", (0, 255, 0), (395, 110))
 
 # Leaderboard
 label_leaderboard_title = TextLabel(stor_font, "Leaderboard", (255, 255, 255), (300, 50))
-label_esc_back = TextLabel(font, "Esc - Back", (178, 34, 34), (10, 10), centered=False)
+label_leaderboard_leave = TextLabel(font, "Esc - Back", (178, 34, 34), (10, 10), centered=False)
 
 # Shop
 label_shop_title = TextLabel(stor_font, "shop", (0, 255, 0), (250, 200))
@@ -79,13 +78,14 @@ label_bind_strength = TextLabel(font, "2 - Use Strength Potion: z", (255, 255, 2
 label_bind_shop = TextLabel(font, "3 - Open Shop: s", (255, 255, 255), (100, 350), centered=False)
 label_bind_inventory = TextLabel(font, "4 - Open inventory: e", (255, 255, 255), (100, 400), centered=False)
 label_bind_bomb = TextLabel(font, "5 - Use Bomb: right click", (255, 255, 255), (100, 450), centered=False)
-label_save_back = TextLabel(font, "Esc - Save and go back", (178, 34, 34), (100, 470), centered=False)
+label_save_back = TextLabel(font, "Esc - Save and go back", (178, 34, 34), (100, 550), centered=False)
 label_waiting = TextLabel(font, "", (255, 215, 0), (300, 530))
 
 # Settings
 label_settings_title = TextLabel(stor_font, "Settings", (0, 255, 0), (300, 50))
 label_settings_logout = TextLabel(font, "Logout", (178, 34, 34), (250, 150), centered=False)
-label_settings_keybinds = TextLabel(font, "Keybinds", (255, 215, 0), (250, 200), centered=False)
+label_settings_key_settings = TextLabel(font, "K - Keybinds", (200, 200, 200), (250, 200), centered=False)
+label_settings_leave = TextLabel(font, "Esc - go back", (178, 34, 34), (5, 5), centered=False)
 
 # Game Over
 label_game_over = TextLabel(stor_font, "Game Over!", (255, 0, 0), (300, 180))
