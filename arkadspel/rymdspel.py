@@ -273,12 +273,24 @@ def handle_input():
                 gamestate.keybind_selecting = None
 
             if event.button == 1 and gamestate.mode == "menu":
+
+                # settings
                 if cogwheel_rect.collidepoint(event.pos):
+                    gamestate.mode = "settings"
+                if ui.label_settings_keybinds.rect.collidepoint(event.pos):
                     gamestate.mode = "keybinds"
+                if ui.label_settings_logout.rect.collidepoint(event.pos):
+                    gamestate.mode = "login"
+
+                # shop
                 if shop_rect.collidepoint(event.pos):
                     gamestate.mode = "shop"
+
+                # backpack
                 if backpack_rect.collidepoint(event.pos):
                     gamestate.mode = "backpack"
+
+                # difficulty
                 if ui.label_easy.rect.collidepoint(event.pos):
                     gamestate.degree_of_difficulty = "easy"
                     gamestate.mode = "game"
@@ -383,7 +395,7 @@ def update():
 def draw():
     screen.blit(background_pic, (0, 0))
 
-    if gamestate.mode == "Login":
+    if gamestate.mode == "login":
         ui.label_select_profile.draw(screen)
         profiles = get_profiles()
         for i, (profile_id, name) in enumerate(profiles):
@@ -443,6 +455,12 @@ def draw():
         ui.label_strength_count.draw(screen)
         ui.label_leave_backpack.draw(screen)
         ui.label_coin_count.draw(screen)
+
+    elif gamestate.mode == "settings":
+        screen.fill((0, 0, 0))
+        ui.label_settings_title.draw(screen)
+        ui.label_settings_logout.draw(screen)
+        ui.label_settings_keybinds.draw(screen)
 
     elif gamestate.mode == "keybinds":
         ui.label_key_settings_title.draw(screen)

@@ -82,6 +82,11 @@ label_bind_bomb = TextLabel(font, "5 - Use Bomb: right click", (255, 255, 255), 
 label_save_back = TextLabel(font, "Esc - Save and go back", (178, 34, 34), (100, 470), centered=False)
 label_waiting = TextLabel(font, "", (255, 215, 0), (300, 530))
 
+# Settings
+label_settings_title = TextLabel(stor_font, "Settings", (0, 255, 0), (300, 50))
+label_settings_logout = TextLabel(font, "Logout", (178, 34, 34), (250, 150), centered=False)
+label_settings_keybinds = TextLabel(font, "Keybinds", (255, 215, 0), (250, 200), centered=False)
+
 # Game Over
 label_game_over = TextLabel(stor_font, "Game Over!", (255, 0, 0), (300, 180))
 label_press_space = TextLabel(font, "Press space too go to the menu ", (255, 255, 255), (300, 370))
