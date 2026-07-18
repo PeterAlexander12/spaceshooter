@@ -2,8 +2,6 @@ import pygame, sys
 import random
 import datetime
 
-from arkadspel import loadout
-
 pygame.init()
 
 WIDTH = 600
@@ -23,8 +21,8 @@ shop_pic = pygame.transform.scale(pygame.image.load("images/shop.png").convert_a
 shop_rect = pygame.Rect(185, 10, 80, 80)
 cogwheel_pic = pygame.transform.scale(pygame.image.load("images/cogwheel.png").convert_alpha(), (120, 120))
 cogwheel_rect = pygame.Rect(490, 10, 80, 80)
-backpack_pic = pygame.transform.scale(pygame.image.load("images/backpack.png").convert_alpha(), (100, 100))
-backpack_rect = pygame.Rect(350, 5, 100, 100)
+inventory_pic = pygame.transform.scale(pygame.image.load("images/inventory.png").convert_alpha(), (100, 100))
+inventory_rect = pygame.Rect(350, 5, 100, 100)
 Strength_potion_pic = pygame.transform.scale(pygame.image.load("images/strength_potion.png").convert_alpha(), (30, 30))
 
 from player import Player
@@ -174,8 +172,8 @@ def handle_input():
                     gamestate.mode = "menu"
                 if event.key == gamestate.keybinds["open_shop"]:
                     gamestate.mode = "shop"
-                if event.key == gamestate.keybinds["open_backpack"]:
-                    gamestate.mode = "backpack"
+                if event.key == gamestate.keybinds["open_inventory"]:
+                    gamestate.mode = "inventory"
                 if event.key == pygame.K_k:
                     gamestate.mode = "keybinds"
                 if event.key == pygame.K_l:
@@ -214,7 +212,7 @@ def handle_input():
                 if event.key == pygame.K_ESCAPE:
                     gamestate.mode = "menu"
 
-            if gamestate.mode == "backpack":
+            if gamestate.mode == "inventory":
                 if event.key == pygame.K_ESCAPE:
                     gamestate.mode = "menu"
 
@@ -262,7 +260,7 @@ def handle_input():
                     if event.key == pygame.K_3:
                         gamestate.keybind_selecting = "open_shop"
                     if event.key == pygame.K_4:
-                        gamestate.keybind_selecting = "open_backpack"
+                        gamestate.keybind_selecting = "open_inventory"
                     if event.key == pygame.K_5:
                         gamestate.keybind_selecting = "use_bomb"
                     if event.key == pygame.K_ESCAPE:
@@ -290,9 +288,9 @@ def handle_input():
                 if shop_rect.collidepoint(event.pos):
                     gamestate.mode = "shop"
 
-                # backpack
-                if backpack_rect.collidepoint(event.pos):
-                    gamestate.mode = "backpack"
+                # inventory
+                if inventory_rect.collidepoint(event.pos):
+                    gamestate.mode = "inventory"
 
                 # difficulty
                 if ui.label_easy.rect.collidepoint(event.pos):
@@ -427,9 +425,9 @@ def draw():
         screen.blit(cogwheel_pic, cogwheel_rect)
         ui.label_shop_key.update(pygame.key.name(gamestate.keybinds["open_shop"]).upper())
         ui.label_shop_key.draw(screen)
-        screen.blit(backpack_pic, backpack_rect)
-        ui.label_backpack_key.update(pygame.key.name(gamestate.keybinds["open_backpack"]).upper())
-        ui.label_backpack_key.draw(screen)
+        screen.blit(inventory_pic, inventory_rect)
+        ui.label_inventory_key.update(pygame.key.name(gamestate.keybinds["open_inventory"]).upper())
+        ui.label_inventory_key.draw(screen)
         ui.label_key_settings_hint.draw(screen)
         ui.label_leaderboard_hint.draw(screen)
 
@@ -456,7 +454,7 @@ def draw():
             ui.label_shop_message.update(gamestate.shop_message)
             ui.label_shop_message.draw(screen)
 
-    elif gamestate.mode == "backpack":
+    elif gamestate.mode == "inventory":
         ui.label_bomb_count.update("You have " + str(len(gamestate.loadout.bombs)) + " bombs!")
         ui.label_health_count.update("You have " + str(len(gamestate.loadout.health_potions)) + " health potions!")
         ui.label_strength_count.update("You have " + str(len(gamestate.loadout.strength_potions)) + " strength potions!")
@@ -464,7 +462,7 @@ def draw():
         ui.label_bomb_count.draw(screen)
         ui.label_health_count.draw(screen)
         ui.label_strength_count.draw(screen)
-        ui.label_leave_backpack.draw(screen)
+        ui.label_leave_inventory.draw(screen)
         ui.label_coin_count.draw(screen)
 
     elif gamestate.mode == "settings":
@@ -478,12 +476,12 @@ def draw():
         ui.label_bind_health.update("1 - Use Health Potion: " + bind_name(gamestate.keybinds["use_health_potion"]))
         ui.label_bind_strength.update("2 - Use Strength Potion: " + bind_name(gamestate.keybinds["use_strength_potion"]))
         ui.label_bind_shop.update("3 - Open Shop:     " + bind_name(gamestate.keybinds["open_shop"]))
-        ui.label_bind_backpack.update("4 - Open Backpack: " + bind_name(gamestate.keybinds["open_backpack"]))
+        ui.label_bind_inventory.update("4 - Open inventory: " + bind_name(gamestate.keybinds["open_inventory"]))
         ui.label_bind_bomb.update("5 - Use Bomb:      " + bind_name(gamestate.keybinds["use_bomb"]))
         ui.label_bind_health.draw(screen)
         ui.label_bind_strength.draw(screen)
         ui.label_bind_shop.draw(screen)
-        ui.label_bind_backpack.draw(screen)
+        ui.label_bind_inventory.draw(screen)
         ui.label_bind_bomb.draw(screen)
         ui.label_save_back.draw(screen)
         if gamestate.keybind_selecting:

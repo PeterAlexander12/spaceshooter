@@ -48,7 +48,7 @@ label_insane = TextLabel(font, "4 - Insane", (255, 0, 0), (300, 400))
 label_key_settings_hint = TextLabel(font, "K - Key Settings", (200, 200, 200), (300, 460))
 label_leaderboard_hint = TextLabel(font, "L - Leaderboard", (200, 200, 200), (300, 500))
 label_shop_key = TextLabel(stor_font, "S", (0, 255, 0), (225, 110))
-label_backpack_key = TextLabel(stor_font, "E", (0, 255, 0), (395, 110))
+label_inventory_key = TextLabel(stor_font, "E", (0, 255, 0), (395, 110))
 
 # Leaderboard
 label_leaderboard_title = TextLabel(stor_font, "Leaderboard", (255, 255, 255), (300, 50))
@@ -65,11 +65,11 @@ label_health_price = TextLabel(font, "300 coins", (255, 255, 255), (400, 315))
 label_strength_price = TextLabel(font, "400 coins", (255, 255, 255), (430, 365))
 label_shop_message = TextLabel(font, "", (255, 215, 0), (300, 80))
 
-# Backpack
+# Inventory
 label_bomb_count = TextLabel(font, "You have 0 bombs!", (255, 255, 255), (200, 250), centered=False)
 label_health_count = TextLabel(font, "You have 0 health potions!", (255, 255, 255), (200, 300), centered=False)
 label_strength_count = TextLabel(font, "You have 0 strength potions!", (255, 255, 255), (200, 350), centered=False)
-label_leave_backpack = TextLabel(font, "Esc - Leave backpack", (178, 34, 34), (150, 30))
+label_leave_inventory = TextLabel(font, "Esc - Leave inventory", (178, 34, 34), (150, 30))
 label_coin_count = TextLabel(font, "You have 0 coins!", (255, 215, 0), (150, 550), centered=False)
 
 # Keybinds
@@ -77,7 +77,7 @@ label_key_settings_title = TextLabel(stor_font, "Key Settings", (0, 255, 0), (30
 label_bind_health = TextLabel(font, "1 - Use Health Potion: space", (255, 255, 255), (100, 250), centered=False)
 label_bind_strength = TextLabel(font, "2 - Use Strength Potion: z", (255, 255, 255), (100, 300), centered=False)
 label_bind_shop = TextLabel(font, "3 - Open Shop: s", (255, 255, 255), (100, 350), centered=False)
-label_bind_backpack = TextLabel(font, "4 - Open Backpack: e", (255, 255, 255), (100, 400), centered=False)
+label_bind_inventory = TextLabel(font, "4 - Open inventory: e", (255, 255, 255), (100, 400), centered=False)
 label_bind_bomb = TextLabel(font, "5 - Use Bomb: right click", (255, 255, 255), (100, 450), centered=False)
 label_save_back = TextLabel(font, "Esc - Save and go back", (178, 34, 34), (100, 470), centered=False)
 label_waiting = TextLabel(font, "", (255, 215, 0), (300, 530))

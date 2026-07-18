@@ -1,3 +1,4 @@
+from arkadspel.sub_menu import SubMenu
 from loadout import Loadout
 from keybinds import DEFAULT_KEYBINDS
 
@@ -44,3 +45,7 @@ class GameState:
         self.health_potion_cooldown = 0
         self.strength_potion_cooldown = 0
         self.bomb_cooldown = 0
+        # sub menu
+        self.shop_menu = SubMenu(["Gadgets", "Bullets"])
+        # bullets
+        self.current_bullet = "Basic Bullet"
