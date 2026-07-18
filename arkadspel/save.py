@@ -94,10 +94,11 @@ def save_score(profile_id, coins, level, difficulty, date):
 def load_scores():
     with sqlite3.connect(DB) as con:
         rows = con.execute("""
-            SELECT p.name, l.score_coins
+            SELECT p.name, MAX(l.score_coins)
             FROM leaderboard l
             JOIN profiles p ON l.profile_id = p.id
-            ORDER BY l.score_coins DESC
+            GROUP BY l.profile_id
+            ORDER BY MAX(l.score_coins) DESC
         """).fetchall()
     return rows
 
