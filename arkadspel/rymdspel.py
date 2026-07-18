@@ -2,6 +2,8 @@ import pygame, sys
 import random
 import datetime
 
+from arkadspel import loadout
+
 pygame.init()
 
 WIDTH = 600
@@ -217,6 +219,17 @@ def handle_input():
                     gamestate.mode = "menu"
 
             if gamestate.mode == "shop":
+
+                if event.key == pygame.K_1:
+                    if gamestate.coins > 4999:
+                        gamestate.loadout.add_bomb()
+                        gamestate.coins -= 5000
+                        save_game(gamestate.coins, gamestate.loadout, gamestate.Current_profile_id)
+                        gamestate.shop_message = "You bought a bomb"
+                    else:
+                        gamestate.shop_message = "You brokey! You don't have enough coins!"
+                    gamestate.shop_message_timer = 30
+
                 if event.key == pygame.K_2:
                     if gamestate.coins > 299:
                         gamestate.loadout.add_health_potion()
@@ -226,12 +239,7 @@ def handle_input():
                     else:
                         gamestate.shop_message = "You brokey! You don´t have enough coins!"
                     gamestate.shop_message_timer = 30
-                if event.key == pygame.K_1:
-                    if gamestate.coins > 4999:
-                        gamestate.loadout.add_bomb()
-                        gamestate.coins -= 5000
-                        save_game(gamestate.coins, gamestate.loadout, gamestate.Current_profile_id)
-                        gamestate.shop_message = "You bought a bomb"
+
                 if event.key == pygame.K_3:
                     if gamestate.coins > 299:
                         gamestate.loadout.add_strength_potion()
@@ -239,7 +247,7 @@ def handle_input():
                         save_game(gamestate.coins, gamestate.loadout, gamestate.Current_profile_id)
                         gamestate.shop_message = "You bought a strength potion"
                     else:
-                        gamestate.shop_message = "You brokey! You don't have enough coins"
+                        gamestate.shop_message = "You brokey! You don't have enough coins!"
                     gamestate.shop_message_timer = 30
 
                 if event.key == pygame.K_ESCAPE:
@@ -277,10 +285,6 @@ def handle_input():
                 # settings
                 if cogwheel_rect.collidepoint(event.pos):
                     gamestate.mode = "settings"
-                if ui.label_settings_keybinds.rect.collidepoint(event.pos):
-                    gamestate.mode = "keybinds"
-                if ui.label_settings_logout.rect.collidepoint(event.pos):
-                    gamestate.mode = "login"
 
                 # shop
                 if shop_rect.collidepoint(event.pos):
@@ -316,6 +320,13 @@ def handle_input():
                 else:
                     gamestate.missiles.append(Missil(Player.rect.center, event.pos))
 
+            if event.button == 1 and gamestate.mode == "settings":
+                if ui.label_settings_keybinds.rect.collidepoint(event.pos):
+                    gamestate.mode = "keybinds"
+                if ui.label_settings_logout.rect.collidepoint(event.pos):
+                    gamestate.mode = "Login"
+                    gamestate.Current_profile_id = None
+                    gamestate.loadout = Loadout()
             if event.button == gamestate.keybinds["use_bomb"] and gamestate.mode == "game":
                 if gamestate.bomb_cooldown == 0:
                     if gamestate.loadout.use_bomb():
@@ -395,7 +406,7 @@ def update():
 def draw():
     screen.blit(background_pic, (0, 0))
 
-    if gamestate.mode == "login":
+    if gamestate.mode == "Login":
         ui.label_select_profile.draw(screen)
         profiles = get_profiles()
         for i, (profile_id, name) in enumerate(profiles):
