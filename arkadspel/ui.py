@@ -70,6 +70,10 @@ label_health_count = TextLabel(font, "You have 0 health potions!", (255, 255, 25
 label_strength_count = TextLabel(font, "You have 0 strength potions!", (255, 255, 255), (200, 350), centered=False)
 label_leave_inventory = TextLabel(font, "Esc - Leave inventory", (178, 34, 34), (150, 30))
 label_coin_count = TextLabel(font, "You have 0 coins!", (255, 215, 0), (150, 550), centered=False)
+label_tab_switch_gears = TextLabel(font, "Gears", (255, 215, 0), (150, 550), centered=False)
+# bullets tab
+label_pointy_bullet_item = TextLabel(font, "Pointy bullet", (255, 215, 0), (300, 80), centered=False)
+label_tab_switch_bullets = TextLabel(font, "Bullets", (255, 215, 0), (300, 80), centered=False)
 
 # Keybinds
 label_key_settings_title = TextLabel(stor_font, "Key Settings", (0, 255, 0), (300, 150))

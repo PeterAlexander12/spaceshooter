@@ -324,9 +324,9 @@ def handle_input():
                     spawn_enemies(3)
 
             if event.button == 1 and gamestate.mode == "game":
-                if gamestate.level > 1:
-                    gamestate.missiles.append(Pointy_Missile(Player.rect.center, event.pos))
-                else:
+                if gamestate.current_bullet == "Pointy Bullet":
+                        gamestate.missiles.append(Pointy_Missile(Player.rect.center, event.pos))
+                else: # to do, change to elif
                     gamestate.missiles.append(Missil(Player.rect.center, event.pos))
 
             if event.button == gamestate.keybinds["use_bomb"] and gamestate.mode == "game":
@@ -335,6 +335,19 @@ def handle_input():
                         gamestate.enemies.clear()
                         gamestate.explosion_size = 10
                         gamestate.bomb_cooldown = 600
+
+            if gamestate.mode == "shop":
+                if event.button == 1:
+                    if ui.label_leave_shop.rect.collidepoint(event.pos):
+                        gamestate.mode = "menu"
+
+
+            if gamestate.mode == "inventory":
+                if event.button == 1:
+                    if ui.label_leave_inventory.rect.collidepoint(event.pos):
+                        gamestate.mode = "menu"
+                    for i,bullet in enumerate(gamestate.owned_bullets):
+                       gamestate.current_bullet = bullet
 
 
             if event.button == 1 and gamestate.mode == "leaderboard":

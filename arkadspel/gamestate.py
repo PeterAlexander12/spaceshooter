@@ -49,3 +49,4 @@ class GameState:
         self.shop_menu = SubMenu(["Gadgets", "Bullets"])
         # bullets
         self.current_bullet = "Basic Bullet"
+        self.owned_bullets = ["Basic Bullet", "Pointy Bullet"]
