@@ -7,7 +7,7 @@ HEIGHT = 600
 
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 
-pointy_missile_pic = pygame.transform.scale(pygame.image.load("images/pointy_bullet.png").convert_alpha(),(100, 100))
+pointy_missile_pic = pygame.transform.scale(pygame.image.load("images/pointy_bullet.png").convert_alpha(),(50, 50))
 
 class Pointy_Missile:
     def __init__(self, start_pos, target_pos):

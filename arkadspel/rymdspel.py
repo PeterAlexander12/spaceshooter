@@ -15,7 +15,7 @@ enemy_pic = pygame.transform.scale(pygame.image.load("images/fiende.png").conver
 potion_pic = pygame.transform.scale(pygame.image.load("images/Red_potion.png").convert_alpha(), (30, 30))
 explosion_pic = pygame.image.load("images/nuclear_explosion.png").convert_alpha()
 bomb_pic = pygame.transform.scale(explosion_pic, (30, 30))
-missil_pic = pygame.image.load("images/bullet.png").convert_alpha()
+missile_pic = pygame.image.load("images/bullet.png").convert_alpha()
 background_pic = pygame.image.load("images/background.png").convert()
 shop_pic = pygame.transform.scale(pygame.image.load("images/shop.png").convert_alpha(), (80, 80))
 shop_rect = pygame.Rect(185, 10, 80, 80)
@@ -73,7 +73,7 @@ def level_up():
     gamestate.coin_message = "+" + str(gamestate.bonus_coins * gamestate.level) + " coins!"
     gamestate.coin_message_timer = 90
 
-    upgrade = random.choice(["extra_Life", "shoot_power"])
+    upgrade = random.choice(["extra_Life", "shoot_power"]) # to do after sub menu, add extra upgrade, phace
     if upgrade == "extra_Life":
         gamestate.Life += 1
     if upgrade == "shoot_power":
@@ -347,7 +347,9 @@ def handle_input():
                     if ui.label_leave_inventory.rect.collidepoint(event.pos):
                         gamestate.mode = "menu"
                     for i,bullet in enumerate(gamestate.owned_bullets):
-                       gamestate.current_bullet = bullet
+                        if ui.equip_labels[i].rect.collidepoint(event.pos):
+                            if bullet != gamestate.current_bullet:
+                                gamestate.current_bullet = bullet
 
 
             if event.button == 1 and gamestate.mode == "leaderboard":
@@ -506,6 +508,13 @@ def draw():
             ui.label_shop_message.draw(screen)
 
     elif gamestate.mode == "inventory":
+        screen.fill((0, 0, 0))
+        ui.label_inventory_title.draw(screen)
+        for i,bullet in enumerate(gamestate.owned_bullets):
+            ui.bullet_labels[i].draw(screen)
+            if bullet != gamestate.current_bullet:
+                ui.equip_labels[i].draw(screen)
+
         ui.label_bomb_count.update("You have " + str(len(gamestate.loadout.bombs)) + " bombs!")
         ui.label_health_count.update("You have " + str(len(gamestate.loadout.health_potions)) + " health potions!")
         ui.label_strength_count.update("You have " + str(len(gamestate.loadout.strength_potions)) + " strength potions!")
