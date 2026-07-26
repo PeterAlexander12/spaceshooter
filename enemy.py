@@ -4,7 +4,7 @@ import random
 WIDTH = 600
 HEIGHT = 600
 
-enemy_bild = pygame.image.load("images/fiende.png").convert_alpha()
+enemy_bild = pygame.image.load("images/enemy.png").convert_alpha()
 enemy_bild = pygame.transform.scale(enemy_bild, (50, 50))
 
 screen = pygame.display.set_mode((WIDTH, HEIGHT))

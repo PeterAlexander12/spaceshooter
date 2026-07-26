@@ -11,7 +11,10 @@ clock = pygame.time.Clock()
 
 # load pictures
 player_pic = pygame.transform.scale(pygame.image.load("images/spelare.png").convert_alpha(), (50, 50))
-enemy_pic = pygame.transform.scale(pygame.image.load("images/fiende.png").convert_alpha(), (50, 50))
+enemy_pic = pygame.transform.scale(pygame.image.load("images/enemy.png").convert_alpha(), (50, 50))
+fast_enemy_pic = pygame.transform.scale(pygame.image.load("images/fast_enemy.png").convert_alpha(), (50, 50))
+tanky_enemy_pic = pygame.transform.scale(pygame.image.load("images/tanky_enemy.png").convert_alpha(), (50, 50))
+boss_enemy_pic = pygame.transform.scale(pygame.image.load("images/boss_enemy.png").convert_alpha(), (50, 50))
 potion_pic = pygame.transform.scale(pygame.image.load("images/red_potion.png").convert_alpha(), (30, 30))
 explosion_pic = pygame.image.load("images/nuclear_explosion.png").convert_alpha()
 bomb_pic = pygame.transform.scale(explosion_pic, (30, 30))
