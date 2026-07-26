@@ -16,7 +16,8 @@ def _init_db():
                 coins INTEGER,
                 health_potions INTEGER,
                 strength_potions INTEGER,
-                bombs INTEGER
+                bombs INTEGER,
+                current_bullet TEXT
             )
         """)
         con.execute("""
@@ -49,23 +50,25 @@ def create_profile(name):
     with sqlite3.connect(DB) as con:
         con.execute("INSERT INTO profiles (name) VALUES (?)", (name,))
         profile_id = con.execute("SELECT id FROM profiles WHERE name = ?", (name,)).fetchone()[0]
-        con.execute("INSERT INTO game_save (profile_id, coins, health_potions, strength_potions, bombs) VALUES (?, 0, 0, 0, 0)", (profile_id,))
+        con.execute("INSERT INTO game_save (profile_id, coins, health_potions, strength_potions, bombs, current_bullet) VALUES (?, 0, 0, 0, 0, Basic_bullet)", (profile_id,))
     return profile_id
 
-def save_game(coins, loadout, profile_id):
+def save_game(coins, loadout, current_bullet, profile_id):
     with sqlite3.connect(DB) as con:
         con.execute("""
             UPDATE game_save SET
                 coins = ?,
                 health_potions = ?,
                 strength_potions = ?,
-                bombs = ?
+                bombs = ?,
+                current_bullet = ?
                 WHERE profile_id = ?
         """, (
             coins,
             len(loadout.health_potions),
             len(loadout.strength_potions),
             len(loadout.bombs),
+            current_bullet,
             profile_id
         ))
 
@@ -105,12 +108,12 @@ def load_scores():
 def load_game(loadout, profile_id):
     _init_db()
     with sqlite3.connect(DB) as con:
-        row = con.execute("SELECT coins, health_potions, strength_potions, bombs FROM game_save WHERE profile_id = ?", (profile_id,)).fetchone()
-    coins, health_potions, strength_potions, bombs = row
+        row = con.execute("SELECT coins, health_potions, strength_potions, bombs, current_bullet FROM game_save WHERE profile_id = ?", (profile_id,)).fetchone()
+    coins, health_potions, strength_potions, bombs, current_bullet = row
     for _ in range(health_potions):
         loadout.add_health_potion()
     for _ in range(strength_potions):
         loadout.add_strength_potion()
     for _ in range(bombs):
         loadout.add_bomb()
-    return coins
+    return coins, current_bullet or str("Basic_bullet")

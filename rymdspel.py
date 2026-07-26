@@ -109,7 +109,7 @@ def restart():
 def handle_input():
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            save_game(gamestate.coins, gamestate.loadout, gamestate.current_profile_id)
+            save_game(gamestate.coins, gamestate.loadout, gamestate.current_bullet, gamestate.current_profile_id)
             gamestate.running = False
 
         if event.type == pygame.KEYDOWN:
@@ -119,7 +119,7 @@ def handle_input():
                     for i, (pid, name) in enumerate(profiles):
                         if event.key == pygame.K_1 + i:
                             gamestate.current_profile_id = pid
-                            gamestate.coins = load_game(gamestate.loadout, gamestate.current_profile_id)
+                            gamestate.coins, gamestate.current_bullet = load_game(gamestate.loadout, gamestate.current_profile_id)
                             gamestate.keybinds = load_keybinds(gamestate.current_profile_id)
                             gamestate.mode = "menu"
                     if event.key == pygame.K_n:
@@ -128,7 +128,7 @@ def handle_input():
                     if event.key == pygame.K_RETURN:
                         if gamestate.login_input.strip():
                             gamestate.current_profile_id = create_profile(gamestate.login_input.strip())
-                            gamestate.coins = load_game(gamestate.loadout, gamestate.current_profile_id)
+                            gamestate.coins, gamestate.current_bullet = load_game(gamestate.loadout, gamestate.current_profile_id)
                             gamestate.keybinds = load_keybinds(gamestate.current_profile_id)
                             gamestate.login_input = ""
                             gamestate.creating_profile = False
@@ -209,7 +209,7 @@ def handle_input():
                             gamestate.bomb_cooldown = 600
 
                 if event.key == pygame.K_ESCAPE:
-                    save_game(gamestate.coins, gamestate.loadout, gamestate.current_profile_id)
+                    save_game(gamestate.coins, gamestate.loadout, gamestate.current_bullet, gamestate.current_profile_id)
                     gamestate.mode = "menu"
                     restart()
 
@@ -227,7 +227,7 @@ def handle_input():
                     if gamestate.coins > 4999:
                         gamestate.loadout.add_bomb()
                         gamestate.coins -= 5000
-                        save_game(gamestate.coins, gamestate.loadout, gamestate.current_profile_id)
+                        save_game(gamestate.coins, gamestate.loadout, gamestate.current_bullet, gamestate.current_profile_id)
                         gamestate.shop_message = "You bought a bomb"
                     else:
                         gamestate.shop_message = "You brokey! You don't have enough coins!"
@@ -237,7 +237,7 @@ def handle_input():
                     if gamestate.coins > 299:
                         gamestate.loadout.add_health_potion()
                         gamestate.coins -= 300
-                        save_game(gamestate.coins, gamestate.loadout, gamestate.current_profile_id)
+                        save_game(gamestate.coins, gamestate.loadout, gamestate.current_bullet, gamestate.current_profile_id)
                         gamestate.shop_message = "You bought a health potion"
                     else:
                         gamestate.shop_message = "You brokey! You don´t have enough coins!"
@@ -247,7 +247,7 @@ def handle_input():
                     if gamestate.coins > 299:
                         gamestate.loadout.add_strength_potion()
                         gamestate.coins -= 300
-                        save_game(gamestate.coins, gamestate.loadout, gamestate.current_profile_id)
+                        save_game(gamestate.coins, gamestate.loadout, gamestate.current_bullet, gamestate.current_profile_id)
                         gamestate.shop_message = "You bought a strength potion"
                     else:
                         gamestate.shop_message = "You brokey! You don't have enough coins!"
@@ -418,7 +418,7 @@ def update():
             gamestate.Life -= 1
             if gamestate.Life <= 0:
                 gamestate.mode = "slut"
-                save_game(gamestate.coins, gamestate.loadout, gamestate.current_profile_id)
+                save_game(gamestate.coins, gamestate.loadout, gamestate.current_bullet, gamestate.current_profile_id)
                 save_score(gamestate.current_profile_id, gamestate.coins_this_run, gamestate.level, gamestate.degree_of_difficulty, datetime.date.today().isoformat())
 
     # move missile
