@@ -31,8 +31,8 @@ from enemy import Enemy
 from missil import Missil
 from pointy_missile import PointyMissile
 from loadout import Loadout
-from save import save_game, load_game, save_keybinds, get_profiles, create_profile, load_scores, save_score
-from keybinds import load_keybinds, bind_name, DEFAULT_KEYBINDS
+from storage.save import save_game, load_game, save_keybinds, get_profiles, create_profile, load_scores, save_score
+from storage.keybinds import load_keybinds, bind_name, DEFAULT_KEYBINDS
 from gamestate import GameState
 import ui
 

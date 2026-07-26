@@ -1,6 +1,6 @@
 import sqlite3
 
-DB = "save.db"
+DB = "storage/save.db"
 
 def _init_db():
     with sqlite3.connect(DB) as con:

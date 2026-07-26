@@ -1,5 +1,5 @@
 import pygame
-from save import save_keybinds, load_keybinds as _load_keybinds
+from storage.save import save_keybinds, load_keybinds as _load_keybinds
 
 DEFAULT_KEYBINDS = {
     "use_health_potion": pygame.K_SPACE,

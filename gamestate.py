@@ -1,6 +1,6 @@
 from sub_menu import SubMenu
 from loadout import Loadout
-from keybinds import DEFAULT_KEYBINDS
+from storage.keybinds import DEFAULT_KEYBINDS
 
 
 class GameState:

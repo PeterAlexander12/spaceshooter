@@ -7,6 +7,7 @@ This file provides guidance to Claude Code when working with code in this reposi
 This is a pygame space shooter built by Peter and his nephew Oliver as a learning project.
 Oliver is a fast learner but still building his Python foundations — keep explanations concrete.
 Always explain a proposed change and wait for explicit approval before editing any file.
+Never run `git commit` in this repo — Peter commits manually every time.
 
 ## Running the game
 
@@ -70,9 +71,9 @@ of `TextLabel` indexed to match `gamestate.owned_bullets`.
 
 ### Persistence
 
-`save.py` manages a local SQLite database (`save.db`) with four tables: `profiles`, `game_save`,
-`keybinds`, `leaderboard`. The DB is auto-initialized on first access. Always call
-`keybinds.load_keybinds(profile_id)` — not the raw `save.py` version directly.
+`storage/save.py` manages a local SQLite database (`storage/save.db`) with four tables: `profiles`,
+`game_save`, `keybinds`, `leaderboard`. The DB is auto-initialized on first access. Always call
+`storage.keybinds.load_keybinds(profile_id)` — not the raw `storage/save.py` version directly.
 
 ### Naming conventions (PEP 8)
 

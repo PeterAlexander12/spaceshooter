@@ -3,5 +3,5 @@
 __pycache__/
 highscore.txt
 CLAUDE.md
-/save.db
+/storage/save.db
 arkadspel/
