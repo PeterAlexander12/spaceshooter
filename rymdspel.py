@@ -46,6 +46,7 @@ bomb_price = 5000
 health_potion_price = 300
 strength_potion_price = 400
 MAX_DODGE_CHANCE = 20
+MAX_ENEMY_BLOCK_CHANCE = 6  # cap enemyBlockChance so dodge odds (enemyBlockChance / MAX_DODGE_CHANCE) never exceed 30%
 
 
 def spawn_enemies(hp):
@@ -83,7 +84,7 @@ def level_up():
 
     enemy_upgrade = random.choice(["enemy_dodge", "enemy_speed"])
     if enemy_upgrade == "enemy_dodge":
-        gamestate.enemyBlockChance = min(MAX_DODGE_CHANCE, gamestate.enemyBlockChance + 1)
+        gamestate.enemyBlockChance = min(MAX_ENEMY_BLOCK_CHANCE, gamestate.enemyBlockChance + 1)
     if enemy_upgrade == "enemy_speed":
         gamestate.enemy_speed += 1
 
