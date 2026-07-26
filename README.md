@@ -1,4 +1,4 @@
-# Arkadspel — Architecture Overview
+# Spaceshooter — Architecture Overview
 
 ## Game Loop
 
@@ -72,7 +72,7 @@ label_easy.rect.collidepoint(event.pos)  # click detection
 label_easy.draw(screen)
 ```
 
-**`render_text()`** — draws text once and throws the position away. Use for headings and dynamic text that never needs to be clicked.
+**`render_text()`** — draws text once and throws the position away. Use for headings and static text that never needs to be clicked.
 
 ---
 
@@ -89,7 +89,7 @@ When the player fires (left click in game mode), the current bullet determines w
 
 ```python
 if gamestate.current_bullet == "Pointy Bullet":
-    gamestate.missiles.append(Pointy_Missile(...))
+    gamestate.missiles.append(PointyMissile(...))
 else:
     gamestate.missiles.append(Missil(...))
 ```
