@@ -28,7 +28,7 @@ from player import Player
 
 from enemy import Enemy
 
-from missil import Missil
+from basic_missile import Missil
 from pointy_missile import PointyMissile
 from loadout import Loadout
 from storage.save import save_game, load_game, save_keybinds, get_profiles, create_profile, load_scores, save_score
