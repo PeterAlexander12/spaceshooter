@@ -1,4 +1,4 @@
-from arkadspel.sub_menu import SubMenu
+from sub_menu import SubMenu
 from loadout import Loadout
 from keybinds import DEFAULT_KEYBINDS
 
