@@ -50,7 +50,7 @@ def create_profile(name):
     with sqlite3.connect(DB) as con:
         con.execute("INSERT INTO profiles (name) VALUES (?)", (name,))
         profile_id = con.execute("SELECT id FROM profiles WHERE name = ?", (name,)).fetchone()[0]
-        con.execute("INSERT INTO game_save (profile_id, coins, health_potions, strength_potions, bombs, current_bullet) VALUES (?, 0, 0, 0, 0, Basic_bullet)", (profile_id,))
+        con.execute("INSERT INTO game_save (profile_id, coins, health_potions, strength_potions, bombs, current_bullet) VALUES (?, 0, 0, 0, 0, ?)", (profile_id, "Basic_bullet"))
     return profile_id
 
 def save_game(coins, loadout, current_bullet, profile_id):
