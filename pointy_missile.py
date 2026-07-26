@@ -9,7 +9,7 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 
 pointy_missile_pic = pygame.transform.scale(pygame.image.load("images/pointy_bullet.png").convert_alpha(),(50, 50))
 
-class Pointy_Missile:
+class PointyMissile:
     def __init__(self, start_pos, target_pos):
         self.rect = pointy_missile_pic.get_rect(center=start_pos)
         x_led = target_pos[0] - start_pos[0]

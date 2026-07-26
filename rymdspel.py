@@ -15,7 +15,6 @@ enemy_pic = pygame.transform.scale(pygame.image.load("images/fiende.png").conver
 potion_pic = pygame.transform.scale(pygame.image.load("images/red_potion.png").convert_alpha(), (30, 30))
 explosion_pic = pygame.image.load("images/nuclear_explosion.png").convert_alpha()
 bomb_pic = pygame.transform.scale(explosion_pic, (30, 30))
-missile_pic = pygame.image.load("images/bullet.png").convert_alpha()
 background_pic = pygame.image.load("images/background.png").convert()
 shop_pic = pygame.transform.scale(pygame.image.load("images/shop.png").convert_alpha(), (80, 80))
 shop_rect = pygame.Rect(185, 10, 80, 80)
@@ -23,14 +22,14 @@ cogwheel_pic = pygame.transform.scale(pygame.image.load("images/cogwheel.png").c
 cogwheel_rect = pygame.Rect(490, 10, 80, 80)
 inventory_pic = pygame.transform.scale(pygame.image.load("images/inventory.png").convert_alpha(), (100, 100))
 inventory_rect = pygame.Rect(350, 5, 100, 100)
-Strength_potion_pic = pygame.transform.scale(pygame.image.load("images/strength_potion.png").convert_alpha(), (30, 30))
+strength_potion_pic = pygame.transform.scale(pygame.image.load("images/yellow_potion.png").convert_alpha(), (30, 30))
 
 from player import Player
 
 from enemy import Enemy
 
 from missil import Missil
-from pointy_missile import Pointy_Missile
+from pointy_missile import PointyMissile
 from loadout import Loadout
 from save import save_game, load_game, save_keybinds, get_profiles, create_profile, load_scores, save_score
 from keybinds import load_keybinds, bind_name, DEFAULT_KEYBINDS
@@ -38,12 +37,12 @@ from gamestate import GameState
 import ui
 
 # game variables
-Player = Player(screen, player_pic)
+player = Player(screen, player_pic)
 gamestate = GameState()
 bomb_price = 5000
 health_potion_price = 300
 strength_potion_price = 400
-MaxDodgeChance = 20
+MAX_DODGE_CHANCE = 20
 
 
 def spawn_enemies(hp):
@@ -81,7 +80,7 @@ def level_up():
 
     enemy_upgrade = random.choice(["enemy_dodge", "enemy_speed"])
     if enemy_upgrade == "enemy_dodge":
-        gamestate.enemyBlockChance = min(MaxDodgeChance, gamestate.enemyBlockChance + 1)
+        gamestate.enemyBlockChance = min(MAX_DODGE_CHANCE, gamestate.enemyBlockChance + 1)
     if enemy_upgrade == "enemy_speed":
         gamestate.enemy_speed += 1
 
@@ -95,7 +94,7 @@ def restart():
     gamestate.level = 1
     gamestate.shoot_power = 1
     gamestate.enemy_speed = 1
-    Player.rect.center = (300, 300)
+    player.rect.center = (300, 300)
     gamestate.missiles = []
     gamestate.enemies = []
     gamestate.coins_this_run = 0
@@ -110,7 +109,7 @@ def restart():
 def handle_input():
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            save_game(gamestate.coins, gamestate.loadout, gamestate.Current_profile_id)
+            save_game(gamestate.coins, gamestate.loadout, gamestate.current_profile_id)
             gamestate.running = False
 
         if event.type == pygame.KEYDOWN:
@@ -119,18 +118,18 @@ def handle_input():
                     profiles = get_profiles()
                     for i, (pid, name) in enumerate(profiles):
                         if event.key == pygame.K_1 + i:
-                            gamestate.Current_profile_id = pid
-                            gamestate.coins = load_game(gamestate.loadout, gamestate.Current_profile_id)
-                            gamestate.keybinds = load_keybinds(gamestate.Current_profile_id)
+                            gamestate.current_profile_id = pid
+                            gamestate.coins = load_game(gamestate.loadout, gamestate.current_profile_id)
+                            gamestate.keybinds = load_keybinds(gamestate.current_profile_id)
                             gamestate.mode = "menu"
                     if event.key == pygame.K_n:
                         gamestate.creating_profile = True
                 else:
                     if event.key == pygame.K_RETURN:
                         if gamestate.login_input.strip():
-                            gamestate.Current_profile_id = create_profile(gamestate.login_input.strip())
-                            gamestate.coins = load_game(gamestate.loadout, gamestate.Current_profile_id)
-                            gamestate.keybinds = load_keybinds(gamestate.Current_profile_id)
+                            gamestate.current_profile_id = create_profile(gamestate.login_input.strip())
+                            gamestate.coins = load_game(gamestate.loadout, gamestate.current_profile_id)
+                            gamestate.keybinds = load_keybinds(gamestate.current_profile_id)
                             gamestate.login_input = ""
                             gamestate.creating_profile = False
                             gamestate.mode = "menu"
@@ -210,7 +209,7 @@ def handle_input():
                             gamestate.bomb_cooldown = 600
 
                 if event.key == pygame.K_ESCAPE:
-                    save_game(gamestate.coins, gamestate.loadout, gamestate.Current_profile_id)
+                    save_game(gamestate.coins, gamestate.loadout, gamestate.current_profile_id)
                     gamestate.mode = "menu"
                     restart()
 
@@ -228,7 +227,7 @@ def handle_input():
                     if gamestate.coins > 4999:
                         gamestate.loadout.add_bomb()
                         gamestate.coins -= 5000
-                        save_game(gamestate.coins, gamestate.loadout, gamestate.Current_profile_id)
+                        save_game(gamestate.coins, gamestate.loadout, gamestate.current_profile_id)
                         gamestate.shop_message = "You bought a bomb"
                     else:
                         gamestate.shop_message = "You brokey! You don't have enough coins!"
@@ -238,7 +237,7 @@ def handle_input():
                     if gamestate.coins > 299:
                         gamestate.loadout.add_health_potion()
                         gamestate.coins -= 300
-                        save_game(gamestate.coins, gamestate.loadout, gamestate.Current_profile_id)
+                        save_game(gamestate.coins, gamestate.loadout, gamestate.current_profile_id)
                         gamestate.shop_message = "You bought a health potion"
                     else:
                         gamestate.shop_message = "You brokey! You don´t have enough coins!"
@@ -248,7 +247,7 @@ def handle_input():
                     if gamestate.coins > 299:
                         gamestate.loadout.add_strength_potion()
                         gamestate.coins -= 300
-                        save_game(gamestate.coins, gamestate.loadout, gamestate.Current_profile_id)
+                        save_game(gamestate.coins, gamestate.loadout, gamestate.current_profile_id)
                         gamestate.shop_message = "You bought a strength potion"
                     else:
                         gamestate.shop_message = "You brokey! You don't have enough coins!"
@@ -270,7 +269,7 @@ def handle_input():
                     if event.key == pygame.K_5:
                         gamestate.keybind_selecting = "use_bomb"
                     if event.key == pygame.K_ESCAPE:
-                        save_keybinds(gamestate.keybinds, gamestate.Current_profile_id)
+                        save_keybinds(gamestate.keybinds, gamestate.current_profile_id)
                         gamestate.mode = "settings"
                 else:
                     gamestate.keybinds[gamestate.keybind_selecting] = event.key
@@ -325,9 +324,9 @@ def handle_input():
 
             if event.button == 1 and gamestate.mode == "game":
                 if gamestate.current_bullet == "Pointy Bullet":
-                        gamestate.missiles.append(Pointy_Missile(Player.rect.center, event.pos))
+                        gamestate.missiles.append(PointyMissile(player.rect.center, event.pos))
                 else: # to do, change to elif
-                    gamestate.missiles.append(Missil(Player.rect.center, event.pos))
+                    gamestate.missiles.append(Missil(player.rect.center, event.pos))
 
             if event.button == gamestate.keybinds["use_bomb"] and gamestate.mode == "game":
                 if gamestate.bomb_cooldown == 0:
@@ -361,7 +360,7 @@ def handle_input():
                     gamestate.mode = "keybinds"
                 if ui.label_settings_logout.rect.collidepoint(event.pos):
                     gamestate.mode = "Login"
-                    gamestate.Current_profile_id = None
+                    gamestate.current_profile_id = None
                     gamestate.loadout = Loadout()
 
                 if ui.label_settings_leave.rect.collidepoint(event.pos):
@@ -381,7 +380,7 @@ def handle_input():
                     gamestate.keybind_selecting = "use_strength_potion"
 
                 #if ui.label_save_back.rect.collidepoint(event.pos):
-                    #save_game(gamestate.keybinds, gamestate.Current_profile_id)
+                    #save_game(gamestate.keybinds, gamestate.current_profile_id)
                     #gamestate.mode = "menu"
 
 
@@ -410,17 +409,17 @@ def update():
 
     # enemies move towards the player
     for f in gamestate.enemies:
-        f.move_toward(Player)
+        f.move_toward(player)
 
     # enemies-player collision
     for f in list(gamestate.enemies):
-        if f.rect.colliderect(Player.rect):
+        if f.rect.colliderect(player.rect):
             gamestate.enemies.remove(f)
             gamestate.Life -= 1
             if gamestate.Life <= 0:
                 gamestate.mode = "slut"
-                save_game(gamestate.coins, gamestate.loadout, gamestate.Current_profile_id)
-                save_score(gamestate.Current_profile_id, gamestate.coins_this_run, gamestate.level, gamestate.degree_of_difficulty, datetime.date.today().isoformat())
+                save_game(gamestate.coins, gamestate.loadout, gamestate.current_profile_id)
+                save_score(gamestate.current_profile_id, gamestate.coins_this_run, gamestate.level, gamestate.degree_of_difficulty, datetime.date.today().isoformat())
 
     # move missile
     for m in list(gamestate.missiles):
@@ -433,7 +432,7 @@ def update():
         for f in list(gamestate.enemies):
             if m.rect.colliderect(f.rect):
                 # roll to see if enemy dodges
-                if random.randint(1, MaxDodgeChance) <= gamestate.enemyBlockChance:
+                if random.randint(1, MAX_DODGE_CHANCE) <= gamestate.enemyBlockChance:
                     # enemy dodged and the missile disappear
                     gamestate.missiles.remove(m)
                     break
@@ -560,7 +559,7 @@ def draw():
         ui.label_press_space.draw(screen)
 
     else:
-        Player.draw()
+        player.draw()
         for f in gamestate.enemies:
             f.draw()
         for m in gamestate.missiles:
@@ -577,7 +576,7 @@ def draw():
         for i in range(len(gamestate.loadout.health_potions)):
             screen.blit(potion_pic, (10 + i * 40, 530))
         for i in range(len(gamestate.loadout.strength_potions)):
-            screen.blit(Strength_potion_pic, (10 + i * 40, 490))
+            screen.blit(strength_potion_pic, (10 + i * 40, 490))
         for i in range(len(gamestate.loadout.bombs)):
             screen.blit(bomb_pic, (10 + i * 40, 450))
         if gamestate.explosion_size > 0:

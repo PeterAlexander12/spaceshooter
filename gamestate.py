@@ -14,7 +14,7 @@ class GameState:
         self.shoot_power = 1
         self.loadout = Loadout()
         # login
-        self.Current_profile_id = None
+        self.current_profile_id = None
         self.login_input = ""
         self.creating_profile = False
         # difficulty
