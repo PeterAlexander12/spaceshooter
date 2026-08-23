@@ -51,3 +51,8 @@ class GameState:
         # bullets
         self.current_bullet = "Basic Bullet"
         self.owned_bullets = ["Basic Bullet", "Pointy Bullet"]
+        # quests
+        self.quests = [
+            {"description": "Deal 10 damage on insane mode", "Goal": 10, "Progress": 0, "Completed": False, "Reward": "100 XP", "Reward type": "XP"},
+            {"description": "Drink 10 potions", "Goal": 10, "Progress": 0, "Completed": False, "Reward": "100 XP", "Reward type": "XP"},
+        ]

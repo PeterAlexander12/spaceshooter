@@ -4,7 +4,10 @@ import datetime
 
 # todo:
 #  prestidge system with battle/space pass and quests
-#  Uppgrades with xp
+#  Upgrades with xp
+#  RNG system
+#  setting:
+#  remove keys to open modes
 
 pygame.init()
 
@@ -29,6 +32,8 @@ cogwheel_pic = pygame.transform.scale(pygame.image.load("images/cogwheel.png").c
 cogwheel_rect = pygame.Rect(490, 10, 80, 80)
 upgrade_arrow_pic = pygame.transform.scale(pygame.image.load("images/upgrade_arrow.png").convert_alpha(), (80, 80))
 upgrade_arrow_rect = pygame.Rect(275, 10, 80, 80)
+quest_icon = pygame.transform.scale(pygame.image.load("images/quest_icon.png").convert_alpha(), (80, 80))
+quest_icon_rect = pygame.Rect(0, 500, 80, 80)
 inventory_pic = pygame.transform.scale(pygame.image.load("images/inventory.png").convert_alpha(), (100, 100))
 inventory_rect = pygame.Rect(360, 5, 100, 100)
 strength_potion_pic = pygame.transform.scale(pygame.image.load("images/yellow_potion.png").convert_alpha(), (30, 30))
@@ -235,6 +240,10 @@ def handle_input():
                 if event.key == pygame.K_ESCAPE:
                     gamestate.mode = "menu"
 
+            if gamestate.mode == "quest":
+                if event.key == pygame.K_ESCAPE:
+                    gamestate.mode = "menu"
+
             if gamestate.mode == "shop":
 
                 if event.key == pygame.K_1:
@@ -309,6 +318,10 @@ def handle_input():
                 # upgrade
                 if upgrade_arrow_rect.collidepoint(event.pos):
                     gamestate.mode = "upgrade"
+
+                # quest
+                if quest_icon_rect.collidepoint(event.pos):
+                    gamestate.mode = "quest"
 
                 # leaderboard
                 if ui.label_leaderboard_hint.rect.collidepoint(event.pos):
@@ -506,6 +519,7 @@ def draw():
         screen.blit(shop_pic, shop_rect)
         screen.blit(cogwheel_pic, cogwheel_rect)
         screen.blit(upgrade_arrow_pic, upgrade_arrow_rect)
+        screen.blit(quest_icon, quest_icon_rect)
         ui.label_shop_key.update(pygame.key.name(gamestate.keybinds["open_shop"]).upper())
         ui.label_shop_key.draw(screen)
         screen.blit(inventory_pic, inventory_rect)
@@ -513,6 +527,7 @@ def draw():
         ui.label_inventory_key.draw(screen)
         ui.label_upgrade_key.update(pygame.key.name(gamestate.keybinds["open_upgrade"]).upper())
         ui.label_upgrade_key.draw(screen)
+        ui.label_quest_key.draw(screen)
         ui.label_leaderboard_hint.draw(screen)
 
     elif gamestate.mode == "leaderboard":
@@ -564,6 +579,7 @@ def draw():
         ui.label_leave_inventory.draw(screen)
         ui.label_coin_count.draw(screen)
 
+
     elif gamestate.mode == "settings":
         screen.fill((0, 0, 0))
         ui.label_settings_title.draw(screen)
@@ -571,10 +587,26 @@ def draw():
         ui.label_settings_key_settings.draw(screen)
         ui.label_settings_leave.draw(screen)
 
+
     elif gamestate.mode == "upgrade":
         ui.label_upgrade_title.draw(screen)
 
         ui.label_leave_upgrades.draw(screen)
+
+
+        #if active_tab == "Bullets":
+            #for i,bullet in enumerate(gamestate.owned_bullets):
+                #ui.bullet_labels[i].draw(screen)
+                #if bullet != gamestate.current_bullet:
+                    #ui.equip_labels[i].draw(screen)
+    elif gamestate.mode == "quest":
+        ui.label_quests_title.draw(screen)
+        for i,quest in enumerate(gamestate.quests):
+            text = quest["description"] + "(" + str(quest["Progress"]) + "/" + str(quest["Goal"]) + ")"
+            ui.render_text(screen, ui.font, text, (255, 255, 255), (20, 110 + i * 30), centered=False)
+
+        ui.label_leave_quests.draw(screen)
+
 
     elif gamestate.mode == "keybinds":
         ui.label_key_settings_title.draw(screen)
