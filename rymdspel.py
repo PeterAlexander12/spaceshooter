@@ -2,6 +2,10 @@ import pygame, sys
 import random
 import datetime
 
+# todo:
+#  prestidge system with battle/space pass and quests
+#  Uppgrades with xp
+
 pygame.init()
 
 WIDTH = 600
@@ -301,7 +305,7 @@ def handle_input():
                 # settings
                 if cogwheel_rect.collidepoint(event.pos):
                     gamestate.mode = "settings"
-                
+
                 # upgrade
                 if upgrade_arrow_rect.collidepoint(event.pos):
                     gamestate.mode = "upgrade"
@@ -362,10 +366,16 @@ def handle_input():
                 if event.button == 1:
                     if ui.label_leave_inventory.rect.collidepoint(event.pos):
                         gamestate.mode = "menu"
-                    for i,bullet in enumerate(gamestate.owned_bullets):
-                        if ui.equip_labels[i].rect.collidepoint(event.pos):
-                            if bullet != gamestate.current_bullet:
-                                gamestate.current_bullet = bullet
+                    if ui.label_tab_gadgets_inventory.rect.collidepoint(event.pos):
+                        gamestate.inventory_menu.active = 0
+                    if ui.label_tab_bullets_inventory.rect.collidepoint(event.pos):
+                        gamestate.inventory_menu.active = 1
+
+                    if gamestate.inventory_menu.current() == "Bullets":
+                        for i,bullet in enumerate(gamestate.owned_bullets):
+                            if ui.equip_labels[i].rect.collidepoint(event.pos):
+                                if bullet != gamestate.current_bullet:
+                                    gamestate.current_bullet = bullet
 
 
             if event.button == 1 and gamestate.mode == "leaderboard":
@@ -452,8 +462,8 @@ def update():
             if m.rect.colliderect(f.rect):
                 # roll to see if enemy dodges
                 if random.randint(1, MAX_DODGE_CHANCE) <= gamestate.enemyBlockChance:
-                    # enemy dodged and the missile disappear
-                    gamestate.missiles.remove(m)
+                    # enemy dodges to the side, missile keeps flying
+                    f.dodge()
                     break
                 # enemy didn´t dodge so it takes damage
                 f.hp -= gamestate.shoot_power * m.damage
@@ -531,18 +541,26 @@ def draw():
     elif gamestate.mode == "inventory":
         screen.fill((0, 0, 0))
         ui.label_inventory_title.draw(screen)
-        for i,bullet in enumerate(gamestate.owned_bullets):
-            ui.bullet_labels[i].draw(screen)
-            if bullet != gamestate.current_bullet:
-                ui.equip_labels[i].draw(screen)
+        active_tab = gamestate.inventory_menu.current()
+        ui.label_tab_gadgets_inventory.update(("> " if active_tab == "Gadgets" else " ")+ "Gadgets")
+        ui.label_tab_bullets_inventory.update(("> " if active_tab == "Bullets" else " ") + "Bullets")
 
-        ui.label_bomb_count.update("You have " + str(len(gamestate.loadout.bombs)) + " bombs!")
-        ui.label_health_count.update("You have " + str(len(gamestate.loadout.health_potions)) + " health potions!")
-        ui.label_strength_count.update("You have " + str(len(gamestate.loadout.strength_potions)) + " strength potions!")
-        ui.label_coin_count.update("You have " + str(gamestate.coins) + " coins!")
-        ui.label_bomb_count.draw(screen)
-        ui.label_health_count.draw(screen)
-        ui.label_strength_count.draw(screen)
+        ui.label_tab_bullets_inventory.draw(screen)
+        ui.label_tab_gadgets_inventory.draw(screen)
+
+        if active_tab == "Bullets":
+            for i,bullet in enumerate(gamestate.owned_bullets):
+                ui.bullet_labels[i].draw(screen)
+                if bullet != gamestate.current_bullet:
+                    ui.equip_labels[i].draw(screen)
+        else:
+            ui.label_bomb_count.update("You have " + str(len(gamestate.loadout.bombs)) + " bombs!")
+            ui.label_health_count.update("You have " + str(len(gamestate.loadout.health_potions)) + " health potions!")
+            ui.label_strength_count.update("You have " + str(len(gamestate.loadout.strength_potions)) + " strength potions!")
+            ui.label_coin_count.update("You have " + str(gamestate.coins) + " coins!")
+            ui.label_bomb_count.draw(screen)
+            ui.label_health_count.draw(screen)
+            ui.label_strength_count.draw(screen)
         ui.label_leave_inventory.draw(screen)
         ui.label_coin_count.draw(screen)
 

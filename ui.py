@@ -64,6 +64,8 @@ label_bomb_price = TextLabel(font, "5000 coins", (255, 255, 255), (400, 265))
 label_health_price = TextLabel(font, "300 coins", (255, 255, 255), (400, 315))
 label_strength_price = TextLabel(font, "400 coins", (255, 255, 255), (430, 365))
 label_shop_message = TextLabel(font, "", (255, 215, 0), (300, 80))
+label_tab_gadgets_shop = TextLabel(font, "Gadgets", (255, 215, 0), (150, 550), centered=False)
+label_tab_bullets_shop = TextLabel(font, "Bullets", (255, 215, 0), (250, 550), centered=False)
 
 # Inventory
 label_inventory_title = TextLabel(stor_font, "Inventory", (0, 255, 0), (300, 70))
@@ -72,15 +74,17 @@ label_health_count = TextLabel(font, "You have 0 health potions!", (255, 255, 25
 label_strength_count = TextLabel(font, "You have 0 strength potions!", (255, 255, 255), (200, 350), centered=False)
 label_leave_inventory = TextLabel(font, "Esc - Leave inventory", (178, 34, 34), (150, 30))
 label_coin_count = TextLabel(font, "You have 0 coins!", (255, 215, 0), (150, 550), centered=False)
-label_tab_switch_gears = TextLabel(font, "Gears", (255, 215, 0), (150, 550), centered=False)
+label_tab_gadgets_inventory = TextLabel(font, "Gears", (255, 215, 0), (100, 100), centered=False)
+label_tab_bullets_inventory = TextLabel(font, "Bullets", (255, 215, 0), (350, 100), centered=False)
+
 # bullets tab
-label_bullet1 = TextLabel(font, "Basic bullet", (200, 200, 200), (200, 130), centered=False)
-label_equip1 = TextLabel(font, "Equip", (200, 200, 200), (100, 130), centered=False)
-label_bullet2 = TextLabel(font, "Pointy bullet", (255, 215, 0), (200, 190), centered=False)
-label_equip2 = TextLabel(font, "Equip", (255, 215, 0), (100, 190), centered=False)
+label_bullet1 = TextLabel(font, "Basic bullet", (200, 200, 200), (200, 250), centered=False)
+label_equip1 = TextLabel(font, "Equip", (200, 200, 200), (100, 250), centered=False)
+label_bullet2 = TextLabel(font, "Pointy bullet", (255, 215, 0), (200, 300), centered=False)
+label_equip2 = TextLabel(font, "Equip", (255, 215, 0), (100, 300), centered=False)
 bullet_labels = [label_bullet1, label_bullet2]
 equip_labels = [label_equip1, label_equip2]
-label_tab_switch_bullets = TextLabel(font, "Bullets", (255, 215, 0), (300, 80), centered=False)
+#label_tab_switch_bullets = TextLabel(font, "Bullets", (255, 215, 0), (300, 80), centered=False)
 
 # Keybinds
 label_key_settings_title = TextLabel(stor_font, "Key Settings", (0, 255, 0), (300, 150))

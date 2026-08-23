@@ -47,6 +47,7 @@ class GameState:
         self.bomb_cooldown = 0
         # sub menu
         self.shop_menu = SubMenu(["Gadgets", "Bullets"])
+        self.inventory_menu = SubMenu(["Gadgets", "Bullets"])
         # bullets
         self.current_bullet = "Basic Bullet"
         self.owned_bullets = ["Basic Bullet", "Pointy Bullet"]
