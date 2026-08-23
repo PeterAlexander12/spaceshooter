@@ -20,13 +20,13 @@ explosion_pic = pygame.image.load("images/nuclear_explosion.png").convert_alpha(
 bomb_pic = pygame.transform.scale(explosion_pic, (30, 30))
 background_pic = pygame.image.load("images/background.png").convert()
 shop_pic = pygame.transform.scale(pygame.image.load("images/shop.png").convert_alpha(), (80, 80))
-shop_rect = pygame.Rect(185, 10, 80, 80)
+shop_rect = pygame.Rect(170, 10, 80, 80)
 cogwheel_pic = pygame.transform.scale(pygame.image.load("images/cogwheel.png").convert_alpha(), (120, 120))
 cogwheel_rect = pygame.Rect(490, 10, 80, 80)
 upgrade_arrow_pic = pygame.transform.scale(pygame.image.load("images/upgrade_arrow.png").convert_alpha(), (80, 80))
-upgrade_arrow_rect = pygame.Rect(490, 10, 80, 80)
+upgrade_arrow_rect = pygame.Rect(275, 10, 80, 80)
 inventory_pic = pygame.transform.scale(pygame.image.load("images/inventory.png").convert_alpha(), (100, 100))
-inventory_rect = pygame.Rect(350, 5, 100, 100)
+inventory_rect = pygame.Rect(360, 5, 100, 100)
 strength_potion_pic = pygame.transform.scale(pygame.image.load("images/yellow_potion.png").convert_alpha(), (30, 30))
 
 from player import Player
@@ -552,6 +552,11 @@ def draw():
         ui.label_settings_logout.draw(screen)
         ui.label_settings_key_settings.draw(screen)
         ui.label_settings_leave.draw(screen)
+
+    elif gamestate.mode == "upgrade":
+        ui.label_upgrade_title.draw(screen)
+
+        ui.label_leave_upgrades.draw(screen)
 
     elif gamestate.mode == "keybinds":
         ui.label_key_settings_title.draw(screen)

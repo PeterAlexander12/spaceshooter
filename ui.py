@@ -46,9 +46,9 @@ label_medium = TextLabel(font, "2 - Medium", (255, 255, 0), (300, 300))
 label_hard = TextLabel(font, "3 - Hard", (255, 165, 0), (300, 350))
 label_insane = TextLabel(font, "4 - Insane", (255, 0, 0), (300, 400))
 label_leaderboard_hint = TextLabel(font, "L - Leaderboard", (200, 200, 200), (300, 450))
-label_shop_key = TextLabel(stor_font, "S", (0, 255, 0), (225, 110))
-label_inventory_key = TextLabel(stor_font, "E", (0, 255, 0), (395, 110))
-label_upgrade_key = TextLabel(stor_font, "U", (0, 255, 0), (390, 110))
+label_shop_key = TextLabel(stor_font, "S", (0, 255, 0), (210, 110))
+label_inventory_key = TextLabel(stor_font, "E", (0, 255, 0), (404, 110))
+label_upgrade_key = TextLabel(stor_font, "U", (0, 255, 0), (315, 110))
 
 # Leaderboard
 label_leaderboard_title = TextLabel(stor_font, "Leaderboard", (255, 255, 255), (300, 50))
@@ -92,6 +92,10 @@ label_bind_inventory = TextLabel(font, "5 - Open inventory: e", (255, 255, 255),
 label_bind_upgrade = TextLabel(font, "6 - Open upgrade: u", (255, 255, 255), (100, 350), centered=False)
 label_save_back = TextLabel(font, "Esc - Save and go back", (178, 34, 34), (100, 550), centered=False)
 label_waiting = TextLabel(font, "", (255, 215, 0), (300, 530))
+
+# Upgrade
+label_upgrade_title = TextLabel(stor_font, "Upgrades", (255, 215, 0), (300, 50))
+label_leave_upgrades = TextLabel(font, "Esc - Leave upgrades", (255, 215, 0), (5, 5), centered=False)
 
 # Settings
 label_settings_title = TextLabel(stor_font, "Settings", (0, 255, 0), (300, 50))
