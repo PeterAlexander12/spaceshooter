@@ -6,6 +6,7 @@ DEFAULT_KEYBINDS = {
     "use_strength_potion": pygame.K_z,
     "open_shop": pygame.K_s,
     "open_inventory": pygame.K_e,
+    "open_upgrade": pygame.K_u,
     "use_bomb": 3,
     
 }

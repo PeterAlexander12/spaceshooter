@@ -23,6 +23,8 @@ shop_pic = pygame.transform.scale(pygame.image.load("images/shop.png").convert_a
 shop_rect = pygame.Rect(185, 10, 80, 80)
 cogwheel_pic = pygame.transform.scale(pygame.image.load("images/cogwheel.png").convert_alpha(), (120, 120))
 cogwheel_rect = pygame.Rect(490, 10, 80, 80)
+upgrade_arrow_pic = pygame.transform.scale(pygame.image.load("images/upgrade_arrow.png").convert_alpha(), (80, 80))
+upgrade_arrow_rect = pygame.Rect(490, 10, 80, 80)
 inventory_pic = pygame.transform.scale(pygame.image.load("images/inventory.png").convert_alpha(), (100, 100))
 inventory_rect = pygame.Rect(350, 5, 100, 100)
 strength_potion_pic = pygame.transform.scale(pygame.image.load("images/yellow_potion.png").convert_alpha(), (30, 30))
@@ -225,6 +227,10 @@ def handle_input():
                 if event.key == pygame.K_ESCAPE:
                     gamestate.mode = "menu"
 
+            if gamestate.mode == "upgrade":
+                if event.key == pygame.K_ESCAPE:
+                    gamestate.mode = "menu"
+
             if gamestate.mode == "shop":
 
                 if event.key == pygame.K_1:
@@ -267,11 +273,14 @@ def handle_input():
                     if event.key == pygame.K_2:
                         gamestate.keybind_selecting = "use_strength_potion"
                     if event.key == pygame.K_3:
-                        gamestate.keybind_selecting = "open_shop"
-                    if event.key == pygame.K_4:
-                        gamestate.keybind_selecting = "open_inventory"
-                    if event.key == pygame.K_5:
                         gamestate.keybind_selecting = "use_bomb"
+                    if event.key == pygame.K_4:
+                        gamestate.keybind_selecting = "open_shop"
+                    if event.key == pygame.K_5:
+                        gamestate.keybind_selecting = "open_inventory"
+                    if event.key == pygame.K_6:
+                        gamestate.keybinds_selecting = "open_upgrade"
+
                     if event.key == pygame.K_ESCAPE:
                         save_keybinds(gamestate.keybinds, gamestate.current_profile_id)
                         gamestate.mode = "settings"
@@ -292,6 +301,10 @@ def handle_input():
                 # settings
                 if cogwheel_rect.collidepoint(event.pos):
                     gamestate.mode = "settings"
+                
+                # upgrade
+                if upgrade_arrow_rect.collidepoint(event.pos):
+                    gamestate.mode = "upgrade"
 
                 # leaderboard
                 if ui.label_leaderboard_hint.rect.collidepoint(event.pos):
@@ -376,6 +389,8 @@ def handle_input():
                     gamestate.keybind_selecting = "open_shop"
                 if ui.label_bind_inventory.rect.collidepoint(event.pos):
                     gamestate.keybind_selecting = "use_inventory"
+                if ui.label_bind_upgrade.rect.collidepoint(event.pos):
+                    gamestate.keybind_selecting = "open_upgrade"
                 if ui.label_bind_bomb.rect.collidepoint(event.pos):
                     gamestate.keybind_selecting = "use_bomb"
                 if ui.label_bind_health.rect.collidepoint(event.pos):
@@ -480,11 +495,14 @@ def draw():
         ui.label_insane.draw(screen)
         screen.blit(shop_pic, shop_rect)
         screen.blit(cogwheel_pic, cogwheel_rect)
+        screen.blit(upgrade_arrow_pic, upgrade_arrow_rect)
         ui.label_shop_key.update(pygame.key.name(gamestate.keybinds["open_shop"]).upper())
         ui.label_shop_key.draw(screen)
         screen.blit(inventory_pic, inventory_rect)
         ui.label_inventory_key.update(pygame.key.name(gamestate.keybinds["open_inventory"]).upper())
         ui.label_inventory_key.draw(screen)
+        ui.label_upgrade_key.update(pygame.key.name(gamestate.keybinds["open_upgrade"]).upper())
+        ui.label_upgrade_key.draw(screen)
         ui.label_leaderboard_hint.draw(screen)
 
     elif gamestate.mode == "leaderboard":

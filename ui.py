@@ -48,6 +48,7 @@ label_insane = TextLabel(font, "4 - Insane", (255, 0, 0), (300, 400))
 label_leaderboard_hint = TextLabel(font, "L - Leaderboard", (200, 200, 200), (300, 450))
 label_shop_key = TextLabel(stor_font, "S", (0, 255, 0), (225, 110))
 label_inventory_key = TextLabel(stor_font, "E", (0, 255, 0), (395, 110))
+label_upgrade_key = TextLabel(stor_font, "U", (0, 255, 0), (390, 110))
 
 # Leaderboard
 label_leaderboard_title = TextLabel(stor_font, "Leaderboard", (255, 255, 255), (300, 50))
@@ -85,9 +86,10 @@ label_tab_switch_bullets = TextLabel(font, "Bullets", (255, 215, 0), (300, 80), 
 label_key_settings_title = TextLabel(stor_font, "Key Settings", (0, 255, 0), (300, 150))
 label_bind_health = TextLabel(font, "1 - Use Health Potion: space", (255, 255, 255), (100, 250), centered=False)
 label_bind_strength = TextLabel(font, "2 - Use Strength Potion: z", (255, 255, 255), (100, 300), centered=False)
-label_bind_shop = TextLabel(font, "3 - Open Shop: s", (255, 255, 255), (100, 350), centered=False)
-label_bind_inventory = TextLabel(font, "4 - Open inventory: e", (255, 255, 255), (100, 400), centered=False)
-label_bind_bomb = TextLabel(font, "5 - Use Bomb: right click", (255, 255, 255), (100, 450), centered=False)
+label_bind_bomb = TextLabel(font, "3 - Use Bomb: right click", (255, 255, 255), (100, 450), centered=False)
+label_bind_shop = TextLabel(font, "4 - Open Shop: s", (255, 255, 255), (100, 350), centered=False)
+label_bind_inventory = TextLabel(font, "5 - Open inventory: e", (255, 255, 255), (100, 400), centered=False)
+label_bind_upgrade = TextLabel(font, "6 - Open upgrade: u", (255, 255, 255), (100, 350), centered=False)
 label_save_back = TextLabel(font, "Esc - Save and go back", (178, 34, 34), (100, 550), centered=False)
 label_waiting = TextLabel(font, "", (255, 215, 0), (300, 530))
 
