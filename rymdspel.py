@@ -118,7 +118,13 @@ def restart():
     gamestate.health_potion_cooldown = 0
     gamestate.strength_potion_cooldown = 0
 
-
+def advance_quest(description, amount = 1):
+    for quest in gamestate.quests:
+        if quest["description"] == description and quest["Completed"]:
+            quest["Progress"] = min(quest["Goal"], quest["Progress"] + amount)
+            if quest["Progress"] >= quest["Goal"]:
+                quest["Completed"] = True
+            break
 
 
 def handle_input():
@@ -207,6 +213,7 @@ def handle_input():
                         gamestate.Life += 1
                         gamestate.health_potion_cooldown = 150
                         gamestate.potion_message_timer = 30
+                        advance_quest("Drink 10 potions")
 
                 if event.key == gamestate.keybinds["use_strength_potion"]:
                     if gamestate.strength_potion_cooldown == 0:
@@ -215,6 +222,7 @@ def handle_input():
                         gamestate.shoot_power += 1
                         gamestate.strength_potion_cooldown = 150
                         gamestate.potion_message_timer = 30
+                        advance_quest("Drink 10 potions")
 
                 if event.key == gamestate.keybinds["use_bomb"]:
                     if gamestate.bomb_cooldown == 0:
@@ -479,7 +487,11 @@ def update():
                     f.dodge()
                     break
                 # enemy didn´t dodge so it takes damage
-                f.hp -= gamestate.shoot_power * m.damage
+                damage_dealt = gamestate.shoot_power * m.damage
+                f.hp -= damage_dealt
+                if gamestate.degree_of_difficulty == "insane":
+                    advance_quest("Deal 10 damage on insane mode", damage_dealt)
+
                 if f.hp <= 0:
                     gamestate.enemies.remove(f)
                     gamestate.kill_count += 1
@@ -594,11 +606,7 @@ def draw():
         ui.label_leave_upgrades.draw(screen)
 
 
-        #if active_tab == "Bullets":
-            #for i,bullet in enumerate(gamestate.owned_bullets):
-                #ui.bullet_labels[i].draw(screen)
-                #if bullet != gamestate.current_bullet:
-                    #ui.equip_labels[i].draw(screen)
+
     elif gamestate.mode == "quest":
         ui.label_quests_title.draw(screen)
         for i,quest in enumerate(gamestate.quests):
