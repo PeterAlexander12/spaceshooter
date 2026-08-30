@@ -120,7 +120,7 @@ def restart():
 
 def advance_quest(description, amount = 1):
     for quest in gamestate.quests:
-        if quest["description"] == description and quest["Completed"]:
+        if quest["description"] == description and not quest["Completed"]:
             quest["Progress"] = min(quest["Goal"], quest["Progress"] + amount)
             if quest["Progress"] >= quest["Goal"]:
                 quest["Completed"] = True
