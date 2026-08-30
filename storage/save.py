@@ -20,6 +20,9 @@ def _init_db():
                 current_bullet TEXT
             )
         """)
+        columns = [row[1] for row in con.execute("PRAGMA table_info(game_save)").fetchall()]
+        if "xp" not in columns:
+            con.execute("ALTER TABLE game_save ADD COLUMN xp INTEGER DEFAULT 0")
         con.execute("""
             CREATE TABLE IF NOT EXISTS keybinds (
                 profile_id INTEGER,
@@ -59,10 +62,10 @@ def create_profile(name):
     with sqlite3.connect(DB) as con:
         con.execute("INSERT INTO profiles (name) VALUES (?)", (name,))
         profile_id = con.execute("SELECT id FROM profiles WHERE name = ?", (name,)).fetchone()[0]
-        con.execute("INSERT INTO game_save (profile_id, coins, health_potions, strength_potions, bombs, current_bullet) VALUES (?, 0, 0, 0, 0, ?)", (profile_id, "Basic_bullet"))
+        con.execute("INSERT INTO game_save (profile_id, coins, health_potions, strength_potions, bombs, current_bullet, xp) VALUES (?, 0, 0, 0, 0, ?, 0)", (profile_id, "Basic_bullet"))
     return profile_id
 
-def save_game(coins, loadout, current_bullet, profile_id):
+def save_game(coins, loadout, current_bullet, xp, profile_id):
     with sqlite3.connect(DB) as con:
         con.execute("""
             UPDATE game_save SET
@@ -70,7 +73,8 @@ def save_game(coins, loadout, current_bullet, profile_id):
                 health_potions = ?,
                 strength_potions = ?,
                 bombs = ?,
-                current_bullet = ?
+                current_bullet = ?,
+                xp = ?
                 WHERE profile_id = ?
         """, (
             coins,
@@ -78,6 +82,7 @@ def save_game(coins, loadout, current_bullet, profile_id):
             len(loadout.strength_potions),
             len(loadout.bombs),
             current_bullet,
+            xp,
             profile_id
         ))
 
@@ -136,12 +141,12 @@ def load_scores():
 def load_game(loadout, profile_id):
     _init_db()
     with sqlite3.connect(DB) as con:
-        row = con.execute("SELECT coins, health_potions, strength_potions, bombs, current_bullet FROM game_save WHERE profile_id = ?", (profile_id,)).fetchone()
-    coins, health_potions, strength_potions, bombs, current_bullet = row
+        row = con.execute("SELECT coins, health_potions, strength_potions, bombs, current_bullet, xp FROM game_save WHERE profile_id = ?", (profile_id,)).fetchone()
+    coins, health_potions, strength_potions, bombs, current_bullet, xp = row
     for _ in range(health_potions):
         loadout.add_health_potion()
     for _ in range(strength_potions):
         loadout.add_strength_potion()
     for _ in range(bombs):
         loadout.add_bomb()
-    return coins, current_bullet or str("Basic_bullet")
+    return coins, current_bullet or str("Basic_bullet"), xp or 0
