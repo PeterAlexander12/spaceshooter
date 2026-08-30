@@ -45,7 +45,7 @@ from enemy import Enemy
 from basic_missile import Missil
 from pointy_missile import PointyMissile
 from loadout import Loadout
-from storage.save import save_game, load_game, save_keybinds, get_profiles, create_profile, load_scores, save_score
+from storage.save import save_game, load_game, save_keybinds, get_profiles, create_profile, load_scores, save_score, save_quest_progress, load_quest_progress
 from storage.keybinds import load_keybinds, bind_name, DEFAULT_KEYBINDS
 from gamestate import GameState
 import ui
@@ -124,6 +124,7 @@ def advance_quest(description, amount = 1):
             quest["Progress"] = min(quest["Goal"], quest["Progress"] + amount)
             if quest["Progress"] >= quest["Goal"]:
                 quest["Completed"] = True
+            save_quest_progress(quest["Progress"], [quest["Description"], quest["Completed"], gamestate.current_profile_id])
             break
 
 
@@ -142,6 +143,7 @@ def handle_input():
                             gamestate.current_profile_id = pid
                             gamestate.coins, gamestate.current_bullet = load_game(gamestate.loadout, gamestate.current_profile_id)
                             gamestate.keybinds = load_keybinds(gamestate.current_profile_id)
+                            gamestate.quests = load_quest_progress(gamestate.quests, gamestate.current_profile_id)
                             gamestate.mode = "menu"
                     if event.key == pygame.K_n:
                         gamestate.creating_profile = True
@@ -151,6 +153,7 @@ def handle_input():
                             gamestate.current_profile_id = create_profile(gamestate.login_input.strip())
                             gamestate.coins, gamestate.current_bullet = load_game(gamestate.loadout, gamestate.current_profile_id)
                             gamestate.keybinds = load_keybinds(gamestate.current_profile_id)
+                            gamestate.quests = load_quest_progress(gamestate.quests, gamestate.current_profile_id)
                             gamestate.login_input = ""
                             gamestate.creating_profile = False
                             gamestate.mode = "menu"
