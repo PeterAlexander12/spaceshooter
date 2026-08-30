@@ -29,6 +29,15 @@ def _init_db():
             )
         """)
         con.execute("""
+                    CREATE TABLE IF NOT EXISTS quest_progress (
+                                                                  profile_id INTEGER,
+                                                                  description TEXT,
+                                                                  progress INTEGER,
+                                                                  completed INTEGER,
+                                                                  PRIMARY KEY (profile_id, description)
+                        )
+                    """)
+        con.execute("""
             CREATE TABLE IF NOT EXISTS leaderboard (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 profile_id INTEGER,
@@ -86,6 +95,25 @@ def load_keybinds(defaults, profile_id):
         if action in keybinds:
             keybinds[action] = value
     return keybinds
+
+def save_quest_progress(description, progress, completed, profile_id):
+    with sqlite3.connect(DB) as con:
+        con.execute(
+            "INSERT OR REPLACE INTO quest_progress (profile_id, description, progress, completed) VALUES (?, ?, ?, ?)",
+            (profile_id, description, progress, int(completed))
+        )
+
+def load_quest_progress(quests, profile_id):
+    _init_db()
+    with sqlite3.connect(DB) as con:
+        rows = con.execute("SELECT description, progress, completed FROM quest_progress WHERE profile_id = ?", (profile_id,)).fetchall()
+    saved = {description: (progress, completed) for description, progress, completed in rows}
+    for quest in quests:
+        if quest["description"] in saved:
+            progress, completed = saved[quest["description"]]
+            quest["Progress"] = progress
+            quest["Completed"] = bool(completed)
+    return quests
 
 def save_score(profile_id, coins, level, difficulty, date):
     with sqlite3.connect(DB) as con:
