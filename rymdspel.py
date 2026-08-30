@@ -124,7 +124,7 @@ def advance_quest(description, amount = 1):
             quest["Progress"] = min(quest["Goal"], quest["Progress"] + amount)
             if quest["Progress"] >= quest["Goal"]:
                 quest["Completed"] = True
-            save_quest_progress(quest["Progress"], [quest["Description"], quest["Completed"], gamestate.current_profile_id])
+            save_quest_progress(quest["description"], quest["Progress"], quest["Completed"], gamestate.current_profile_id)
             break
 
 
