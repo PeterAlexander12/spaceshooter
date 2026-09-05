@@ -4,7 +4,6 @@ import datetime
 
 # todo:
 #  prestidge system with battle/space pass and quests
-#  Upgrades with xp
 #  RNG system
 #  setting:
 #  remove keys to open modes
@@ -34,6 +33,8 @@ upgrade_arrow_pic = pygame.transform.scale(pygame.image.load("images/upgrade_arr
 upgrade_arrow_rect = pygame.Rect(275, 10, 80, 80)
 quest_icon = pygame.transform.scale(pygame.image.load("images/quest_icon.png").convert_alpha(), (80, 80))
 quest_icon_rect = pygame.Rect(0, 500, 80, 80)
+pass_icon = pygame.transform.scale(pygame.image.load("images/spacepass.png").convert_alpha(), (100, 100))
+pass_icon_rect = pygame.Rect(0, 0, 80, 80)
 inventory_pic = pygame.transform.scale(pygame.image.load("images/inventory.png").convert_alpha(), (100, 100))
 inventory_rect = pygame.Rect(360, 5, 100, 100)
 strength_potion_pic = pygame.transform.scale(pygame.image.load("images/yellow_potion.png").convert_alpha(), (30, 30))
@@ -263,6 +264,10 @@ def handle_input():
                 if event.key == pygame.K_ESCAPE:
                     gamestate.mode = "menu"
 
+            if gamestate.mode == "SpacePass":
+                if event.key == pygame.K_ESCAPE:
+                    gamestate.mode = "menu"
+
             if gamestate.mode == "shop":
 
                 if event.key == pygame.K_1:
@@ -341,6 +346,10 @@ def handle_input():
                 # quest
                 if quest_icon_rect.collidepoint(event.pos):
                     gamestate.mode = "quest"
+
+                # space pass
+                if pass_icon_rect.collidepoint(event.pos):
+                    gamestate.mode = "SpacePass"
 
                 # leaderboard
                 if ui.label_leaderboard_hint.rect.collidepoint(event.pos):
@@ -543,6 +552,7 @@ def draw():
         screen.blit(cogwheel_pic, cogwheel_rect)
         screen.blit(upgrade_arrow_pic, upgrade_arrow_rect)
         screen.blit(quest_icon, quest_icon_rect)
+        screen.blit(pass_icon, pass_icon_rect)
         ui.label_shop_key.update(pygame.key.name(gamestate.keybinds["open_shop"]).upper())
         ui.label_shop_key.draw(screen)
         screen.blit(inventory_pic, inventory_rect)
@@ -551,7 +561,10 @@ def draw():
         ui.label_upgrade_key.update(pygame.key.name(gamestate.keybinds["open_upgrade"]).upper())
         ui.label_upgrade_key.draw(screen)
         ui.label_quest_key.draw(screen)
+        ui.label_pass_key.draw(screen)
         ui.label_leaderboard_hint.draw(screen)
+
+
 
     elif gamestate.mode == "leaderboard":
         screen.fill((0, 0, 0))
@@ -625,6 +638,12 @@ def draw():
             ui.render_text(screen, ui.font, text, (255, 255, 255), (20, 110 + i * 30), centered=False)
 
         ui.label_leave_quests.draw(screen)
+
+    elif gamestate.mode == "pass":
+        ui.label_pass_title.draw(screen)
+
+
+        ui.label_leave_pass.draw(screen)
 
 
     elif gamestate.mode == "keybinds":

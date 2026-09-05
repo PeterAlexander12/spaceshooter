@@ -50,6 +50,7 @@ label_shop_key = TextLabel(stor_font, "S", (0, 255, 0), (210, 110))
 label_inventory_key = TextLabel(stor_font, "E", (0, 255, 0), (404, 110))
 label_upgrade_key = TextLabel(stor_font, "U", (0, 255, 0), (315, 110))
 label_quest_key = TextLabel(stor_font, "Q", (0, 255, 0), (35, 580))
+label_pass_key = TextLabel(stor_font, "P", (0, 255, 0), (45, 580))
 
 # Leaderboard
 label_leaderboard_title = TextLabel(stor_font, "Leaderboard", (255, 255, 255), (300, 50))
@@ -105,6 +106,10 @@ label_leave_upgrades = TextLabel(font, "Esc - Leave upgrades", (255, 215, 0), (5
 # Quests
 label_quests_title = TextLabel(stor_font, "Quests", (255, 215, 0), (300, 50))
 label_leave_quests = TextLabel(font, "Esc - Leave quests", (255, 215, 0), (5, 5), centered=False)
+
+# Space Pass
+label_pass_title = TextLabel(stor_font, "Space Pass", (255, 215, 0), (300, 50))
+label_leave_pass = TextLabel(font, "Esc - Leave pass", (255, 215, 0), (5, 5), centered=False)
 
 # Settings
 label_settings_title = TextLabel(stor_font, "Settings", (0, 255, 0), (300, 50))
