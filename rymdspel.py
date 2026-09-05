@@ -264,7 +264,7 @@ def handle_input():
                 if event.key == pygame.K_ESCAPE:
                     gamestate.mode = "menu"
 
-            if gamestate.mode == "SpacePass":
+            if gamestate.mode == "pass":
                 if event.key == pygame.K_ESCAPE:
                     gamestate.mode = "menu"
 
