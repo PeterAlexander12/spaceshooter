@@ -641,6 +641,27 @@ def draw():
 
     elif gamestate.mode == "pass":
         ui.label_pass_title.draw(screen)
+        next_tier = None
+        for tier in gamestate.pass_tiers:
+            if gamestate.xp < tier["XP required"]:
+                next_tier = tier
+                break
+
+        if next_tier == None:
+            ""  # todo
+        else:
+            xp_left = next_tier["XP required"] - gamestate.xp
+            ui.render_text(screen, ui.font, "XP until next tier:" + str(xp_left), (255, 255, 255), (20, 80), centered=False)
+
+        for i,tier in enumerate(gamestate.pass_tiers):
+            text = "tier " + str(tier["tier"]) + ": " + str(tier["XP required"]) + "XP " + tier["Reward"]
+            if gamestate.xp >= tier["XP required"]:
+                color = 144, 238, 144  # todo
+            else:
+                color = 255, 255, 255
+            ui.render_text(screen, ui.font, text, (color), (20, 110 + i * 30), centered=False)
+
+
 
 
         ui.label_leave_pass.draw(screen)

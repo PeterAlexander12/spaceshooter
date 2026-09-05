@@ -60,7 +60,7 @@ class GameState:
         self.pass_tiers = [
             {"tier": 1, "XP required": 0, "Reward": "100 coins", "Claimed": True},
             {"tier": 2, "XP required": 200, "Reward": "1 health potion", "Claimed": False},
-            {"tier": 3, "XP required": 400, "Reward": "5 strenght potion", "Claimed": False},
+            {"tier": 3, "XP required": 400, "Reward": "5 strength potion", "Claimed": False},
             {"tier": 4, "XP required": 600, "Reward": "100 coins", "Claimed": False},
             {"tier": 5, "XP required": 800, "Reward": "100 coins", "Claimed": False},
             {"tier": 6, "XP required": 1100, "Reward": "100 coins", "Claimed": False},
