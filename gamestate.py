@@ -11,6 +11,7 @@ class GameState:
         self.Life = 3
         self.coins = 0
         self.coins_this_run = 0
+        self.xp = 0
         self.shoot_power = 1
         self.loadout = Loadout()
         # login
