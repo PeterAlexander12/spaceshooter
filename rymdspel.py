@@ -349,7 +349,7 @@ def handle_input():
 
                 # space pass
                 if pass_icon_rect.collidepoint(event.pos):
-                    gamestate.mode = "SpacePass"
+                    gamestate.mode = "pass"
 
                 # leaderboard
                 if ui.label_leaderboard_hint.rect.collidepoint(event.pos):
